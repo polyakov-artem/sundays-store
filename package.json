@@ -8,7 +8,18 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:fix": "eslint . --fix",
+    "format:fix": "prettier . --write"
+  },
+  "lint-staged": {
+    "*.{css,scss,sass}": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "eslint-plugin-react": "^7.37.4",
