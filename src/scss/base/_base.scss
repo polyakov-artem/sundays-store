@@ -1,0 +1,37 @@
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  min-width: var(--g-page-min-width);
+  background-color: var(--g-page-bg-color);
+  color: var(--g-page-text-color);
+  font-family: var(--g-ff-sans-serif);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 150%;
+  overflow-x: hidden;
+  background-size: cover;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  position: relative;
+}
