@@ -1,0 +1,27 @@
+:root {
+  --white-1: rgb(255, 255, 255);
+  --black-1: rgb(0, 0, 0);
+
+  --g-page-bg-color: var(--white-1);
+  --g-page-text-color: var(--black-1);
+}
+
+:root {
+  --g-ff-sans-serif: 'Roboto', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --g-ff-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+}
+
+:root {
+  --g-page-min-width: 320px;
+  --g-container-max-width: 1320px;
+  --g-default-padding: 20px;
+}
+
+$breakpoint-sm: 575.98px;
+$breakpoint-md: 767.98px;
+$breakpoint-lg: 991.98px;
+$breakpoint-xl: 1199.98px;
+$breakpoint-xxl: 1399.98px;
