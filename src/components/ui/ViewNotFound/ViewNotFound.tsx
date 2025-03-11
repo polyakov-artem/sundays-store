@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { PUBLIC_PATH } from '../../../constants/constants';
-import Button from '../Button/Button';
+import Button from '../../shared/Button/Button';
 import './ViewNotFound.scss';
 
 export const NOT_FOUND = 'view-not-found';
