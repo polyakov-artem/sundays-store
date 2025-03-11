@@ -1,5 +1,9 @@
 import { ComponentProps } from 'react';
 
+export type TAuthProps = {
+  type: 'login' | 'register';
+};
+
 export type TIntrinsicFooter = ComponentProps<'footer'>;
 export type TIntrinsicHeader = ComponentProps<'header'>;
 export type TIntrinsicMain = ComponentProps<'main'>;
