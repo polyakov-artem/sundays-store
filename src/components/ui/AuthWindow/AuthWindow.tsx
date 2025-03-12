@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_LOGIN, VIEW_REGISTER } from '../../../routes';
 import { TAuthProps, TIntrinsicDiv } from '../../../types/types';
+import FormLogin from '../FormLogin/FormLogin';
 
 import './AuthWindow.scss';
 
@@ -23,6 +24,7 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
     <div className={classes} {...restProps}>
       {type === 'login' ? (
         <>
+          <FormLogin />
           <p className={AUTH_WINDOW_QUESTION}>
             {REGISTER_LINK_TEXT}
             <Link relative="path" className={AUTH_WINDOW_LINK} to={getFullPath(VIEW_REGISTER)}>

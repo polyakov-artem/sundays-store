@@ -13,3 +13,4 @@ export type TIntrinsicSection = ComponentProps<'section'>;
 export type TIntrinsicButton = ComponentProps<'button'>;
 export type TIntrinsicLink = ComponentProps<'a'>;
 export type TIntrinsicInput = ComponentProps<'input'>;
+export type TIntrinsicForm = ComponentProps<'form'>;
