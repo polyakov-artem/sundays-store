@@ -4,6 +4,7 @@
   --white-2: rgb(247, 247, 243);
   --white-2: rgb(247, 247, 243);
   --black-1: rgb(0, 0, 0);
+  --black-1-10: rgba(0, 0, 0, 0.1);
   --black-1-30: rgba(0, 0, 0, 0.3);
   --black-1-50: rgba(0, 0, 0, 0.5);
   --green-1: rgb(104, 115, 92);
@@ -31,7 +32,8 @@
   --g-min-header-height: 3rem;
   --g-page-min-width: 320px;
   --g-container-max-width: 1320px;
-
+  --g-block-border-radius: 10px;
+  --g-block-box-shadow: 0 0 1.25rem 0 var(--black-1-10);
   --g-xlg-gap: 1.875rem;
   --g-lg-gap: 1.5625rem;
   --g-md-gap: 1.25rem;

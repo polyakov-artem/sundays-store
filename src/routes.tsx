@@ -1,15 +1,26 @@
 import App from './App';
+import ViewAuth from './components/ui/ViewAuth/ViewAuth';
 import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
 import { PUBLIC_PATH } from './constants/constants';
 import { RouteObject } from 'react-router';
 
 export const VIEW_NOT_FOUND = 'not-found';
+export const VIEW_LOGIN = 'login';
+export const VIEW_REGISTER = 'register';
 
 const routes: RouteObject[] = [
   {
     path: `${PUBLIC_PATH}`,
     element: <App />,
     children: [
+      {
+        path: VIEW_LOGIN,
+        element: <ViewAuth type="login" />,
+      },
+      {
+        path: VIEW_REGISTER,
+        element: <ViewAuth type="register" />,
+      },
       {
         path: `*`,
         element: <ViewNotFound />,

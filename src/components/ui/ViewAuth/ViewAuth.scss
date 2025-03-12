@@ -1,0 +1,12 @@
+.view-auth {
+  flex-grow: 1;
+  background-color: var(--white-2);
+  display: flex;
+  padding: var(--g-md-gap);
+
+  &__window {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+  }
+}
