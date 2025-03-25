@@ -53,9 +53,12 @@ const axiosBaseQuery = ({
 export const storeApi = createApi({
   reducerPath: 'storeApi',
   baseQuery: axiosBaseQuery({ httpService }),
+  tagTypes: ['Customer'],
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
+      providesTags: (result) =>
+        result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
     }),
   }),
 });
