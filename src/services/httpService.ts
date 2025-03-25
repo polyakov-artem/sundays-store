@@ -96,15 +96,15 @@ export class HttpService {
         try {
           const tokenData = await this.authService.getBasicTokenData();
           this.dispatch?.(basicTokenLoaded({ basicToken: tokenData.access_token }));
+          return;
         } catch {
-          this.dispatch?.(tokenLoadingEnded());
+          // ignore
         }
-      } else {
-        this.dispatch?.(tokenLoadingEnded());
       }
     } catch {
-      this.dispatch?.(tokenLoadingEnded());
+      // ignore
     }
+    this.dispatch?.(tokenLoadingEnded());
   }
 
   private configure = () => {
