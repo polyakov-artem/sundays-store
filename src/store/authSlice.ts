@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { authService, TokenRole } from '../services/authService';
 import { Mutex } from 'async-mutex';
-import { AppDispatch } from './store';
+import { AppDispatch, RootState } from './store';
 
 type TAuthState = {
   role: TokenRole;
@@ -115,6 +115,8 @@ export const loadInitialTokens = () => (dispatch: AppDispatch) => {
   const role = userToken && userRefreshToken ? TokenRole.user : TokenRole.basic;
   dispatch(lsTokensLoaded({ userToken, userRefreshToken, basicToken, role }));
 };
+
+export const selectUserRole = (state: RootState) => state[SLICE_NAME].role;
 
 export const {
   tokenLoadingStarted,
