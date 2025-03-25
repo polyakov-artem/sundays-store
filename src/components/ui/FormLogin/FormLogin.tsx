@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useCallback, useState } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
@@ -10,12 +10,22 @@ import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { inputErrors } from '../../../constants/constants';
 import { useFormik } from 'formik';
 import './FormLogin.scss';
+import { useAppDispatch } from '../../../hooks/store-hooks';
+import {
+  mutex,
+  tokenLoadingEnded,
+  tokenLoadingStarted,
+  userTokenLoaded,
+} from '../../../store/authSlice';
+import { authService } from '../../../services/authService';
+import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 
 type TFormLoginProps = TIntrinsicForm;
 
 export const FORM_LOGIN = 'form-login';
 export const FORM_LOGIN_LABEL = `${FORM_LOGIN}__label`;
 export const FORM_LOGIN_BTN = `${FORM_LOGIN}__btn`;
+export const FORM_LOGIN_ERROR_MESSAGE = `${FORM_LOGIN}__error-message`;
 
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 30;
@@ -42,6 +52,10 @@ const validationSchema = Yup.object().shape({
 const FormLogin: FC<TFormLoginProps> = (props) => {
   const { className, ...restProps } = props;
   const classes = classNames(FORM_LOGIN, className);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState('');
+
+  const dispatch = useAppDispatch();
 
   const formik = useFormik({
     initialValues: {
@@ -49,16 +63,43 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2));
+    onSubmit: async (values) => {
+      setIsSubmitting(true);
+      setLoginError('');
+      if (mutex.isLocked()) {
+        await mutex.waitForUnlock();
+      }
+
+      const release = await mutex.acquire();
+
+      try {
+        const tokenData = await authService.getUserTokenData(values);
+        dispatch(tokenLoadingStarted());
+        dispatch(
+          userTokenLoaded({
+            userToken: tokenData.access_token,
+            userRefreshToken: tokenData.refresh_token,
+          })
+        );
+      } catch (e) {
+        setLoginError(getMsgFromAxiosError(e));
+        dispatch(tokenLoadingEnded());
+      }
+
+      release();
+      setIsSubmitting(false);
     },
   });
+
+  const handleInputFocus = useCallback(() => {
+    setLoginError('');
+  }, []);
 
   const emailError = getFormikErrorMsg(formik, 'email');
   const passwordError = getFormikErrorMsg(formik, 'password');
 
   return (
-    <form className={classes} {...restProps} onSubmit={(e) => e.preventDefault()}>
+    <form className={classes} {...restProps} onSubmit={formik.handleSubmit}>
       <label className={FORM_LOGIN_LABEL} htmlFor="email">
         Email
       </label>
@@ -71,6 +112,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
           value={formik.values.email}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          onFocus={handleInputFocus}
         />
       </ValidationField>
       <label className={FORM_LOGIN_LABEL} htmlFor="password">
@@ -86,10 +128,18 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
             value: formik.values.password,
             onChange: formik.handleChange,
             onBlur: formik.handleBlur,
+            onFocus: handleInputFocus,
           }}
         />
       </ValidationField>
-      <Button className={FORM_LOGIN_BTN} theme="primary" view="primary" el="button">
+      <p className={FORM_LOGIN_ERROR_MESSAGE}> {loginError}</p>
+      <Button
+        className={FORM_LOGIN_BTN}
+        theme="primary"
+        view="primary"
+        el="button"
+        type="submit"
+        disabled={isSubmitting}>
         Login
       </Button>
     </form>

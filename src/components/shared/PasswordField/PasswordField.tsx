@@ -32,7 +32,7 @@ const PasswordField: FC<TPasswordFieldProps> = (props) => {
         type={isShown ? 'text' : 'password'}
         className={PASSWORD_FIELD_INPUT}
       />
-      <Button className={PASSWORD_FIELD_BTN} el="button" onClick={handleBtnClick}>
+      <Button className={PASSWORD_FIELD_BTN} el="button" onClick={handleBtnClick} type="button">
         {isShown ? <FaEyeSlash /> : <FaEye />}
       </Button>
     </div>

@@ -9,6 +9,12 @@
     margin-bottom: 0.5rem;
   }
 
+  &__error-message {
+    margin-bottom: 0;
+    color: var(--red-1);
+    text-align: center;
+  }
+
   &__btn {
     margin-top: 1rem;
   }

@@ -4,6 +4,31 @@ export type TAuthProps = {
   type: 'login' | 'register';
 };
 
+export type TCustomer = {
+  id: string;
+  version: 1;
+  createdAt: string;
+  lastModifiedAt: string;
+  lastModifiedBy: {
+    clientId: string;
+    isPlatformClient: boolean;
+  };
+  createdBy: {
+    clientId: string;
+    isPlatformClient: boolean;
+  };
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  addresses: [];
+  shippingAddressIds: [];
+  billingAddressIds: [];
+  isEmailVerified: false;
+  stores: [];
+  authenticationMode: string;
+};
+
 export type TIntrinsicFooter = ComponentProps<'footer'>;
 export type TIntrinsicHeader = ComponentProps<'header'>;
 export type TIntrinsicMain = ComponentProps<'main'>;
