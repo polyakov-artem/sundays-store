@@ -10,15 +10,19 @@ import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { inputErrors } from '../../../constants/constants';
 import { useFormik } from 'formik';
 import './FormLogin.scss';
-import { useAppDispatch } from '../../../hooks/store-hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import {
   mutex,
+  selectUserRole,
   tokenLoadingEnded,
   tokenLoadingStarted,
   userTokenLoaded,
 } from '../../../store/authSlice';
-import { authService } from '../../../services/authService';
+import { authService, TokenRole } from '../../../services/authService';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
+import { Navigate, useLocation } from 'react-router';
+import { getFullPath } from '../../../utils/getFullPath';
+import { VIEW_MAIN } from '../../../routes';
 
 type TFormLoginProps = TIntrinsicForm;
 
@@ -54,6 +58,8 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
   const classes = classNames(FORM_LOGIN, className);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const role = useAppSelector(selectUserRole);
+  const location = useLocation();
 
   const dispatch = useAppDispatch();
 
@@ -97,6 +103,11 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
 
   const emailError = getFormikErrorMsg(formik, 'email');
   const passwordError = getFormikErrorMsg(formik, 'password');
+
+  if (role === TokenRole.user) {
+    const from = (location as { state?: { from?: { pathname?: string } } }).state?.from?.pathname;
+    return <Navigate to={from ? from : getFullPath(VIEW_MAIN)} relative="path" replace />;
+  }
 
   return (
     <form className={classes} {...restProps} onSubmit={formik.handleSubmit}>

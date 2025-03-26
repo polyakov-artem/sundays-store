@@ -6,6 +6,7 @@ import { RouteObject } from 'react-router';
 
 export const VIEW_NOT_FOUND = 'not-found';
 export const VIEW_LOGIN = 'login';
+export const VIEW_MAIN = 'main';
 export const VIEW_REGISTER = 'register';
 
 const routes: RouteObject[] = [
@@ -17,6 +18,11 @@ const routes: RouteObject[] = [
         path: VIEW_LOGIN,
         element: <ViewAuth type="login" />,
       },
+      {
+        path: VIEW_MAIN,
+        element: 'Main view data',
+      },
+
       {
         path: VIEW_REGISTER,
         element: <ViewAuth type="register" />,
