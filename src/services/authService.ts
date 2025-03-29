@@ -57,6 +57,7 @@ export const BASIC_SCOPE_KEYS = [
   'view_categories',
   'view_published_products',
   'create_anonymous_token',
+  'manage_my_profile',
 ];
 
 export const ANONYMOUS_SCOPE_KEYS = [
