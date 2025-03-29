@@ -1,0 +1,21 @@
+.form-registration {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-xxs-gap);
+
+  &__label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  &__error-message {
+    margin-bottom: 0;
+    color: var(--red-1);
+    text-align: center;
+  }
+
+  &__btn {
+    margin-top: 1rem;
+  }
+}

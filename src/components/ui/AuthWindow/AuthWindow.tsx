@@ -5,7 +5,7 @@ import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_LOGIN, VIEW_REGISTER } from '../../../routes';
 import { TAuthProps, TIntrinsicDiv } from '../../../types/types';
 import FormLogin from '../FormLogin/FormLogin';
-
+import FormRegistration from '../FormRegistration/FormRegistration';
 import './AuthWindow.scss';
 
 export type TAuthWindow = TIntrinsicDiv & TAuthProps;
@@ -34,6 +34,7 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
         </>
       ) : (
         <>
+          <FormRegistration />
           <p className={AUTH_WINDOW_QUESTION}>
             {LOGIN_LINK_TEXT}
             <Link relative="path" className={AUTH_WINDOW_LINK} to={getFullPath(VIEW_LOGIN)}>
