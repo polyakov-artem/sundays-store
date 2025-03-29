@@ -1,0 +1,100 @@
+.checkbox {
+  position: relative;
+  display: inline-flex;
+
+  &__box {
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color);
+    border-color: var(--border-color);
+    background-color: var(--bg-color);
+  }
+
+  &__icon {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    width: 80%;
+    height: 80%;
+    transform: translateY(-150%);
+    transition-property: opacity, transform, visibility;
+    transition-duration: 0.1s;
+  }
+
+  &__control {
+    position: absolute;
+    z-index: -1;
+    margin: 0;
+    opacity: 0;
+
+    &:focus-visible {
+      ~ .checkbox__box {
+        box-shadow: 0 0 0 0.25rem var(--focus-box-shadow);
+      }
+    }
+
+    &:disabled {
+      cursor: default;
+
+      ~ .checkbox__box {
+        color: var(--disabled-color);
+        background-color: var(--disabled-bg-color);
+        border-color: var(--disabled-border-color);
+      }
+    }
+
+    &:checked {
+      ~ .checkbox__box {
+        .checkbox__icon {
+          visibility: visible;
+          opacity: 1;
+          transform: translateY(0%);
+        }
+      }
+    }
+  }
+
+  &_invalid {
+    .checkbox__box {
+      color: var(--invalid-color);
+      background-color: var(--invalid-bg-color);
+      border-color: var(--invalid-border-color);
+    }
+
+    .checkbox__control:focus-visible {
+      ~ .checkbox__box {
+        box-shadow: 0 0 0 0.25rem var(--invalid-focus-box-shadow);
+      }
+    }
+  }
+}
+
+.checkbox_view_primary {
+  .checkbox__box {
+    height: 1.2rem;
+    width: 1.2rem;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+  }
+}
+
+.checkbox_theme_primary {
+  --color: var(--black-1);
+  --disabled-color: var(--color);
+  --invalid-color: var(--color);
+
+  --bg-color: var(--white-1);
+  --disabled-bg-color: var(--gray-1);
+  --invalid-bg-color: var(--bg-color);
+
+  --border-color: var(--gray-1);
+  --disabled-border-color: var(--disabled-bg-color);
+  --invalid-border-color: var(--red-1);
+
+  --focus-box-shadow: var(--gray-1-50);
+  --invalid-focus-box-shadow: var(--red-1-20);
+}
