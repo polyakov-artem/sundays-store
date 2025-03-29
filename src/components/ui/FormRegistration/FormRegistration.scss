@@ -23,4 +23,16 @@
     text-align: center;
     margin-bottom: 0;
   }
+
+  &__message-completed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon-completed {
+    font-size: 2rem;
+    margin-right: 0.5rem;
+    color: var(--green-4);
+  }
 }
