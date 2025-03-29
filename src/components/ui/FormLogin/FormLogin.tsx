@@ -20,9 +20,9 @@ import {
 } from '../../../store/authSlice';
 import { authService, TokenRole } from '../../../services/authService';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
-import { Navigate, useLocation } from 'react-router';
+import { Link, Navigate, useLocation } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_MAIN } from '../../../routes';
+import { VIEW_MAIN, VIEW_REGISTER } from '../../../routes';
 
 type TFormLoginProps = TIntrinsicForm;
 
@@ -30,6 +30,9 @@ export const FORM_LOGIN = 'form-login';
 export const FORM_LOGIN_LABEL = `${FORM_LOGIN}__label`;
 export const FORM_LOGIN_BTN = `${FORM_LOGIN}__btn`;
 export const FORM_LOGIN_ERROR_MESSAGE = `${FORM_LOGIN}__error-message`;
+export const FORM_LOGIN_QUESTION = `${FORM_LOGIN}__question`;
+export const FORM_LOGIN_LINK = `${FORM_LOGIN}__link`;
+export const REGISTER_LINK_TEXT = `Don't have an account yet? `;
 
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 30;
@@ -153,6 +156,12 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         disabled={isSubmitting}>
         Login
       </Button>
+      <p className={FORM_LOGIN_QUESTION}>
+        {REGISTER_LINK_TEXT}
+        <Link relative="path" className={FORM_LOGIN_LINK} to={getFullPath(VIEW_REGISTER)}>
+          Register
+        </Link>
+      </p>
     </form>
   );
 };

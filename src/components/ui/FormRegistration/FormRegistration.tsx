@@ -15,6 +15,9 @@ import {
   PASSWORD_SPECIAL_CHARS,
 } from '../FormLogin/FormLogin';
 import Select, { TSelectOptions } from '../../shared/Select/Select';
+import { getFullPath } from '../../../utils/getFullPath';
+import { Link } from 'react-router';
+import { VIEW_LOGIN } from '../../../routes';
 import './FormRegistration.scss';
 
 type TFormRegistrationProps = TIntrinsicForm;
@@ -23,6 +26,9 @@ export const FORM_REGISTRATION = 'form-login';
 export const FORM_REGISTRATION_LABEL = `${FORM_REGISTRATION}__label`;
 export const FORM_REGISTRATION_BTN = `${FORM_REGISTRATION}__btn`;
 export const FORM_REGISTRATION_ERROR_MESSAGE = `${FORM_REGISTRATION}__error-message`;
+export const FORM_REGISTRATION_QUESTION = `${FORM_REGISTRATION}__question`;
+export const FORM_REGISTRATION_LINK = `${FORM_REGISTRATION}__link`;
+export const LOGIN_LINK_TEXT = `Already have an account? `;
 
 export const MIN_AGE = 13;
 
@@ -293,6 +299,12 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
         type="submit">
         Register
       </Button>
+      <p className={FORM_REGISTRATION_QUESTION}>
+        {LOGIN_LINK_TEXT}
+        <Link relative="path" className={FORM_REGISTRATION_LINK} to={getFullPath(VIEW_LOGIN)}>
+          Log in
+        </Link>
+      </p>
     </form>
   );
 };
