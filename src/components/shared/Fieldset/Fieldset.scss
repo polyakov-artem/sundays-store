@@ -1,0 +1,10 @@
+.fieldset {
+  border: 1px solid var(--gray-1-50);
+  padding: var(--g-xs-gap);
+  border-radius: 3px;
+  margin: 0;
+
+  &__title {
+    font-weight: bold;
+  }
+}

@@ -134,3 +134,6 @@ export type TIntrinsicButton = ComponentProps<'button'>;
 export type TIntrinsicLink = ComponentProps<'a'>;
 export type TIntrinsicInput = ComponentProps<'input'>;
 export type TIntrinsicForm = ComponentProps<'form'>;
+export type TIntrinsicSVG = ComponentProps<'svg'>;
+export type TIntrinsicLabel = ComponentProps<'label'>;
+export type TIntrinsicFieldset = ComponentProps<'fieldset'>;
