@@ -4,30 +4,125 @@ export type TAuthProps = {
   type: 'login' | 'register';
 };
 
-export type TCustomer = {
-  id: string;
-  version: 1;
-  createdAt: string;
-  lastModifiedAt: string;
-  lastModifiedBy: {
-    clientId: string;
-    isPlatformClient: boolean;
-  };
-  createdBy: {
-    clientId: string;
-    isPlatformClient: boolean;
-  };
-  email: string;
+export enum CountryCode {
+  'GB' = 'GB',
+  'DE' = 'DE',
+  'US' = 'US',
+}
+
+export type TBaseAddress = {
+  key: string;
+  country: CountryCode;
+  title: string;
+  salutation: string;
   firstName: string;
   lastName: string;
-  password: string;
-  addresses: [];
-  shippingAddressIds: [];
-  billingAddressIds: [];
-  isEmailVerified: false;
-  stores: [];
-  authenticationMode: string;
+  streetName: string;
+  streetNumber: string;
+  additionalStreetInfo: string;
+  postalCode: string;
+  city: string;
+  region: string;
+  state: string;
+  company: string;
+  department: string;
+  building: string;
+  apartment: string;
+  pOBox: string;
+  phone: string;
+  mobile: string;
+  email: string;
+  fax: string;
+  additionalAddressInfo: string;
 };
+
+export type TAddress = TBaseAddress & { custom: unknown };
+
+export type TCustomer = {
+  id: string;
+  version: number;
+  key: string;
+  customerNumber: string;
+  externalId: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  title: string;
+  dateOfBirth: Date;
+  companyName: string;
+  vatId: string;
+  addresses: TAddress[];
+  defaultShippingAddressId: string;
+  shippingAddressIds: string[];
+  defaultBillingAddressId: string;
+  billingAddressIds: string[];
+  isEmailVerified: boolean;
+  customerGroup: 'Password';
+  locale: string;
+  salutation: string;
+  stores: [];
+  authenticationMode: '';
+  customerGroupAssignments: unknown;
+  custom: unknown;
+  createdAt: string;
+  createdBy: unknown;
+  lastModifiedAt: string;
+  LastModifiedBy: unknown;
+};
+
+export type TCustomerDraft = {
+  key: string;
+  customerNumber: string;
+  externalId?: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  title: string;
+  anonymousCart?: unknown;
+  anonymousId?: string;
+  dateOfBirth: string;
+  companyName?: string;
+  vatId?: string;
+  addresses: TBaseAddress[];
+  defaultShippingAddress: number;
+  shippingAddresses: number[];
+  defaultBillingAddress: number;
+  billingAddresses: number[];
+  isEmailVerified: boolean;
+  customerGroup?: unknown;
+  locale: string;
+  salutation?: string;
+  stores?: unknown[];
+  authenticationMode: 'Password';
+  customerGroupAssignments?: unknown;
+  custom?: unknown;
+};
+
+export type TMyCustomerDraft = {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  title?: string;
+  salutation?: string;
+  dateOfBirth?: string;
+  companyName?: string;
+  vatId?: string;
+  addresses?: TBaseAddress[];
+  defaultShippingAddress?: number;
+  defaultBillingAddress?: number;
+  locale?: string;
+  stores?: [];
+  custom?: unknown;
+};
+
+export type TCart = object;
+export type TCustomerSignInResult = TCustomer & Partial<TCart>;
 
 export type TIntrinsicFooter = ComponentProps<'footer'>;
 export type TIntrinsicHeader = ComponentProps<'header'>;
