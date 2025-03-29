@@ -4,6 +4,7 @@ import type { AxiosRequestConfig, AxiosError } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
 import { AppGetState } from './store';
 import { TCustomer } from '../types/types';
+import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -20,7 +21,10 @@ const axiosBaseQuery = ({
     headers?: AxiosRequestConfig['headers'];
   },
   unknown,
-  unknown
+  {
+    status?: number;
+    data: unknown;
+  }
 > => {
   return async ({ url, method, data, params, headers }, { dispatch, getState }) => {
     httpService.setDispatchFn(dispatch);
@@ -42,8 +46,8 @@ const axiosBaseQuery = ({
       const err = axiosError as AxiosError;
       return {
         error: {
-          status: err.response?.status,
-          data: err.response?.data || err.message,
+          status: err?.status,
+          data: getMsgFromAxiosError(err),
         },
       };
     }
