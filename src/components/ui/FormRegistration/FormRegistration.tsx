@@ -3,11 +3,9 @@ import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
 import Input from '../../shared/Input/input';
-import { CountryCode, TIntrinsicForm } from '../../../types/types';
+import { CountryCode, TBaseAddress, TIntrinsicForm } from '../../../types/types';
 import PasswordField from '../../shared/PasswordField/PasswordField';
-import * as Yup from 'yup';
 import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
-import { inputErrors, regexps } from '../../../constants/constants';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../../hooks/store-hooks';
 import {
@@ -17,12 +15,7 @@ import {
   userTokenLoaded,
 } from '../../../store/authSlice';
 import { authService } from '../../../services/authService';
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-  PASSWORD_SPECIAL_CHARS,
-} from '../FormLogin/FormLogin';
-import Select, { TSelectOptions } from '../../shared/Select/Select';
+import Select from '../../shared/Select/Select';
 import { getFullPath } from '../../../utils/getFullPath';
 import { Link } from 'react-router';
 import { VIEW_LOGIN } from '../../../routes';
@@ -31,6 +24,12 @@ import { getLocale } from '../../../utils/getLocale';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 import { delay } from '../../../utils/delay';
 import { FaCheckCircle } from 'react-icons/fa';
+import Checkbox from '../../shared/Checkbox/Checkbox';
+import Fieldset from '../../shared/Fieldset/Fieldset';
+import { nanoid } from '@reduxjs/toolkit';
+import { SELECT_OPTIONS } from './selectOptions';
+import { validationSchema } from './validationSchema';
+
 import './FormRegistration.scss';
 
 type TFormRegistrationProps = TIntrinsicForm;
@@ -43,89 +42,9 @@ export const FORM_REGISTRATION_QUESTION = `${FORM_REGISTRATION}__question`;
 export const FORM_REGISTRATION_LINK = `${FORM_REGISTRATION}__link`;
 export const FORM_REGISTRATION_MESSAGE_COMPLETED = `${FORM_REGISTRATION}__message-completed`;
 export const FORM_REGISTRATION_iCON_COMPLETED = `${FORM_REGISTRATION}__icon-completed`;
+export const FORM_REGISTRATION_CHECKBOX_FIELD = `${FORM_REGISTRATION}__checkbox-field`;
+export const FORM_REGISTRATION_CHECKBOX_LABEL = `${FORM_REGISTRATION}__checkbox-label`;
 export const LOGIN_LINK_TEXT = `Already have an account? `;
-
-export const MIN_AGE = 13;
-
-export const emailValidator = Yup.string()
-  .matches(regexps.onlyNonWhitespaces, inputErrors.whitespaces)
-  .matches(regexps.containsEmailSeparator, inputErrors.emailSeparator)
-  .matches(regexps.containsDomainName, inputErrors.domainName)
-  .email(inputErrors.email)
-  .required(inputErrors.required);
-
-export const passwordValidator = Yup.string()
-  .min(PASSWORD_MIN_LENGTH, inputErrors.length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH))
-  .max(PASSWORD_MAX_LENGTH, inputErrors.length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH))
-  .matches(regexps.onlyNonWhitespaces, inputErrors.whitespaces)
-  .matches(regexps.containsUppercaseLetter, inputErrors.uppercaseLetter)
-  .matches(regexps.containsLowercaseLetter, inputErrors.lowercaseLetter)
-  .matches(regexps.containsDigit, inputErrors.digit)
-  .matches(new RegExp(`[${PASSWORD_SPECIAL_CHARS}]`), inputErrors.oneOf(PASSWORD_SPECIAL_CHARS))
-  .required(inputErrors.required);
-
-const validationSchema = Yup.object().shape({
-  email: emailValidator,
-  password: passwordValidator,
-  firstName: Yup.string()
-    .matches(regexps.charsWithoutNumbersAndSpecials, inputErrors.charsWithoutNumbersAndSpecials)
-    .required(inputErrors.required),
-  lastName: Yup.string()
-    .matches(regexps.charsWithoutNumbersAndSpecials, inputErrors.charsWithoutNumbersAndSpecials)
-    .required(inputErrors.required),
-  dateOfBirth: Yup.string()
-    .matches(regexps.dateYYYYMMDDFormat, inputErrors.date)
-    .test('dates-test', inputErrors.age(MIN_AGE), (value: string | undefined) => {
-      if (!value) return false;
-      const dates = value.split('-');
-
-      if (dates.length !== 3) return false;
-      let dateOfBirth: Date;
-
-      try {
-        dateOfBirth = new Date(parseInt(dates[0]), parseInt(dates[1]) - 1, parseInt(dates[2]));
-      } catch {
-        return false;
-      }
-
-      if (Date.now() - dateOfBirth.getTime() < new Date(1970 + MIN_AGE, 0).getTime()) {
-        return false;
-      }
-
-      return true;
-    })
-
-    .required(inputErrors.required),
-  street: Yup.string()
-    .matches(regexps.containsChar, inputErrors.chars)
-    .required(inputErrors.required),
-  city: Yup.string()
-    .matches(regexps.charsWithoutNumbersAndSpecials, inputErrors.charsWithoutNumbersAndSpecials)
-    .required(inputErrors.required),
-  postalCode: Yup.string()
-    .matches(regexps.postalCode, inputErrors.postalCode)
-    .required(inputErrors.required),
-  country: Yup.string()
-    .test('country-test', inputErrors.country, (currentValue: string | undefined) => {
-      return SELECT_OPTIONS.some(({ value }) => value === currentValue);
-    })
-    .required(inputErrors.required),
-});
-
-export const SELECT_OPTIONS: TSelectOptions = [
-  {
-    label: 'United Kingdom',
-    value: 'GB',
-  },
-  {
-    label: 'Germany',
-    value: 'DE',
-  },
-  {
-    label: 'United States',
-    value: 'US',
-  },
-];
 
 const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   const { className, ...restProps } = props;
@@ -146,23 +65,52 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
       firstName: '',
       lastName: '',
       dateOfBirth: '',
-      street: '',
+      streetName: '',
       city: '',
       postalCode: '',
+      isShippingAddress: false,
+      isBillingAddress: false,
       country: SELECT_OPTIONS[0].value,
     },
     validationSchema,
     onSubmit: async (values) => {
-      const { firstName, lastName, email, password, country, dateOfBirth } = values;
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        dateOfBirth,
+        streetName,
+        city,
+        postalCode,
+        isShippingAddress,
+        isBillingAddress,
+        country,
+      } = values;
       setIsSubmitting(true);
       setRegistrationError('');
+
+      const addresses: TBaseAddress[] = [
+        {
+          key: nanoid(),
+          country: country as CountryCode,
+          firstName,
+          lastName,
+          streetName,
+          city,
+          postalCode,
+        },
+      ];
       const data = {
         firstName,
         lastName,
         email,
         password,
         dateOfBirth,
+        addresses,
         locale: getLocale(country as CountryCode),
+        defaultShippingAddress: isShippingAddress ? 0 : undefined,
+        defaultBillingAddress: isBillingAddress ? 0 : undefined,
       };
 
       const response = await register(data);
@@ -210,7 +158,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   const firstNameError = getFormikErrorMsg(formik, 'firstName');
   const lastNameError = getFormikErrorMsg(formik, 'lastName');
   const dateOfBirthError = getFormikErrorMsg(formik, 'dateOfBirth');
-  const streetError = getFormikErrorMsg(formik, 'street');
+  const streetNameError = getFormikErrorMsg(formik, 'streetName');
   const cityError = getFormikErrorMsg(formik, 'city');
   const postalCodeError = getFormikErrorMsg(formik, 'postalCode');
   const countryError = getFormikErrorMsg(formik, 'country');
@@ -310,71 +258,109 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               invalid={!!dateOfBirthError}
             />
           </ValidationField>
-          <label className={FORM_REGISTRATION_LABEL} htmlFor="street">
-            Street
-          </label>
-          <ValidationField errorMsg={streetError}>
-            <Input
-              theme="primary"
-              view="primary"
-              name="street"
-              id="street"
-              value={formik.values.street}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              onFocus={handleInputFocus}
-              invalid={!!streetError}
-            />
-          </ValidationField>
-          <label className={FORM_REGISTRATION_LABEL} htmlFor="city">
-            City
-          </label>
-          <ValidationField errorMsg={cityError}>
-            <Input
-              theme="primary"
-              view="primary"
-              name="city"
-              id="city"
-              value={formik.values.city}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              onFocus={handleInputFocus}
-              invalid={!!cityError}
-            />
-          </ValidationField>
-          <label className={FORM_REGISTRATION_LABEL} htmlFor="postalCode">
-            Postal code
-          </label>
-          <ValidationField errorMsg={postalCodeError}>
-            <Input
-              theme="primary"
-              view="primary"
-              name="postalCode"
-              id="postalCode"
-              value={formik.values.postalCode}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              onFocus={handleInputFocus}
-              invalid={!!postalCodeError}
-            />
-          </ValidationField>
-          <label className={FORM_REGISTRATION_LABEL} htmlFor="country">
-            Country
-          </label>
-          <ValidationField errorMsg={countryError}>
-            <Select
-              theme="primary"
-              view="primary"
-              name="country"
-              id="country"
-              value={formik.values.country}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              onFocus={handleInputFocus}
-              options={SELECT_OPTIONS}
-              invalid={!!countryError}
-            />
-          </ValidationField>
+          <Fieldset title="Address">
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="streetName">
+              Street
+            </label>
+
+            <ValidationField errorMsg={streetNameError}>
+              <Input
+                theme="primary"
+                view="primary"
+                name="streetName"
+                id="streetName"
+                value={formik.values.streetName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                invalid={!!streetNameError}
+              />
+            </ValidationField>
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="city">
+              City
+            </label>
+            <ValidationField errorMsg={cityError}>
+              <Input
+                theme="primary"
+                view="primary"
+                name="city"
+                id="city"
+                value={formik.values.city}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                invalid={!!cityError}
+              />
+            </ValidationField>
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="postalCode">
+              Postal code
+            </label>
+            <ValidationField errorMsg={postalCodeError}>
+              <Input
+                theme="primary"
+                view="primary"
+                name="postalCode"
+                id="postalCode"
+                value={formik.values.postalCode}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                invalid={!!postalCodeError}
+              />
+            </ValidationField>
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="country">
+              Country
+            </label>
+            <ValidationField errorMsg={countryError}>
+              <Select
+                theme="primary"
+                view="primary"
+                name="country"
+                id="country"
+                value={formik.values.country}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                options={SELECT_OPTIONS}
+                invalid={!!countryError}
+              />
+            </ValidationField>
+
+            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
+              <Checkbox
+                theme="primary"
+                view="primary"
+                controlProps={{
+                  name: 'isShippingAddress',
+                  id: 'isShippingAddress',
+                  checked: formik.values.isShippingAddress,
+                  onChange: formik.handleChange,
+                  onBlur: formik.handleBlur,
+                  onFocus: handleInputFocus,
+                }}
+              />
+              <label className={FORM_REGISTRATION_CHECKBOX_LABEL} htmlFor="isShippingAddress">
+                Set as default shipping address
+              </label>
+            </div>
+            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
+              <Checkbox
+                theme="primary"
+                view="primary"
+                controlProps={{
+                  name: 'isBillingAddress',
+                  id: 'isBillingAddress',
+                  checked: formik.values.isBillingAddress,
+                  onChange: formik.handleChange,
+                  onBlur: formik.handleBlur,
+                  onFocus: handleInputFocus,
+                }}
+              />
+              <label className={FORM_REGISTRATION_CHECKBOX_LABEL} htmlFor="isBillingAddress">
+                Set as default billing address
+              </label>
+            </div>
+          </Fieldset>
           <p className={FORM_REGISTRATION_ERROR_MESSAGE}> {registrationError}</p>
           <Button
             className={FORM_REGISTRATION_BTN}
