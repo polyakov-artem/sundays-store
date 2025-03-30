@@ -3,7 +3,8 @@ import type { BaseQueryFn } from '@reduxjs/toolkit/query/react';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
 import { AppGetState } from './store';
-import { TCustomer } from '../types/types';
+import { TCustomer, TCustomerSignInResult, TMyCustomerDraft } from '../types/types';
+import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -20,7 +21,10 @@ const axiosBaseQuery = ({
     headers?: AxiosRequestConfig['headers'];
   },
   unknown,
-  unknown
+  {
+    status?: number;
+    data: unknown;
+  }
 > => {
   return async ({ url, method, data, params, headers }, { dispatch, getState }) => {
     httpService.setDispatchFn(dispatch);
@@ -42,8 +46,8 @@ const axiosBaseQuery = ({
       const err = axiosError as AxiosError;
       return {
         error: {
-          status: err.response?.status,
-          data: err.response?.data || err.message,
+          status: err?.status,
+          data: getMsgFromAxiosError(err),
         },
       };
     }
@@ -60,7 +64,16 @@ export const storeApi = createApi({
       providesTags: (result) =>
         result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
     }),
+    signUp: builder.mutation<TCustomerSignInResult, TMyCustomerDraft>({
+      query: (data: TMyCustomerDraft) => ({
+        url: `${projectKey}/me/signup`,
+        data,
+        method: 'POST',
+      }),
+      invalidatesTags: (result) =>
+        result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
+    }),
   }),
 });
 
-export const { useGetMeQuery } = storeApi;
+export const { useGetMeQuery, useSignUpMutation } = storeApi;

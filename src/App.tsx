@@ -6,6 +6,7 @@ import { loadInitialTokens, selectUserRole } from './store/authSlice';
 import { useGetMeQuery } from './store/storeApi';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { TokenRole } from './services/authService';
+import SvgSprite from './components/shared/SvgSprite/SvgSprite';
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +20,12 @@ const App: FC = () => {
     setLSTokenAreLoaded(true);
   }, [dispatch]);
 
-  return <>{lsTokensAreLoaded ? <Page /> : null}</>;
+  return (
+    <>
+      <SvgSprite />
+      <>{lsTokensAreLoaded ? <Page /> : null}</>
+    </>
+  );
 };
 
 export default App;
