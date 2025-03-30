@@ -26,6 +26,24 @@ export const passwordValidator = Yup.string()
   .matches(new RegExp(`[${PASSWORD_SPECIAL_CHARS}]`), inputErrors.oneOf(PASSWORD_SPECIAL_CHARS))
   .required(inputErrors.required);
 
+export const streetNameValidator = Yup.string()
+  .matches(regexps.containsChar, inputErrors.chars)
+  .required(inputErrors.required);
+
+export const cityValidator = Yup.string()
+  .matches(regexps.charsWithoutNumbersAndSpecials, inputErrors.charsWithoutNumbersAndSpecials)
+  .required(inputErrors.required);
+
+export const postalCodeValidator = Yup.string()
+  .matches(regexps.postalCode, inputErrors.postalCode)
+  .required(inputErrors.required);
+
+export const countryValidator = Yup.string()
+  .test('country-test', inputErrors.country, (currentValue: string | undefined) => {
+    return SELECT_OPTIONS.some(({ value }) => value === currentValue);
+  })
+  .required(inputErrors.required);
+
 export const validationSchema = Yup.object().shape({
   email: emailValidator,
   password: passwordValidator,
@@ -58,18 +76,29 @@ export const validationSchema = Yup.object().shape({
     })
 
     .required(inputErrors.required),
-  streetName: Yup.string()
-    .matches(regexps.containsChar, inputErrors.chars)
-    .required(inputErrors.required),
-  city: Yup.string()
-    .matches(regexps.charsWithoutNumbersAndSpecials, inputErrors.charsWithoutNumbersAndSpecials)
-    .required(inputErrors.required),
-  postalCode: Yup.string()
-    .matches(regexps.postalCode, inputErrors.postalCode)
-    .required(inputErrors.required),
-  country: Yup.string()
-    .test('country-test', inputErrors.country, (currentValue: string | undefined) => {
-      return SELECT_OPTIONS.some(({ value }) => value === currentValue);
-    })
-    .required(inputErrors.required),
+  shippingStreetName: streetNameValidator,
+  shippingCity: cityValidator,
+  shippingPostalCode: postalCodeValidator,
+  shippingCountry: countryValidator,
+  isTheSameAddressAsShipping: Yup.boolean(),
+  billingStreetName: Yup.string().when('isTheSameAddressAsShipping', {
+    is: true,
+    then: () => Yup.string().notRequired(),
+    otherwise: () => streetNameValidator,
+  }),
+  billingCity: Yup.string().when('isTheSameAddressAsShipping', {
+    is: true,
+    then: () => Yup.string().notRequired(),
+    otherwise: () => cityValidator,
+  }),
+  billingPostalCode: Yup.string().when('isTheSameAddressAsShipping', {
+    is: true,
+    then: () => Yup.string().notRequired(),
+    otherwise: () => postalCodeValidator,
+  }),
+  billingCountry: Yup.string().when('isTheSameAddressAsShipping', {
+    is: true,
+    then: () => Yup.string().notRequired(),
+    otherwise: () => countryValidator,
+  }),
 });

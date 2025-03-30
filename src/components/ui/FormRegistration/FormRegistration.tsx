@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useState } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
@@ -44,6 +44,7 @@ export const FORM_REGISTRATION_MESSAGE_COMPLETED = `${FORM_REGISTRATION}__messag
 export const FORM_REGISTRATION_iCON_COMPLETED = `${FORM_REGISTRATION}__icon-completed`;
 export const FORM_REGISTRATION_CHECKBOX_FIELD = `${FORM_REGISTRATION}__checkbox-field`;
 export const FORM_REGISTRATION_CHECKBOX_LABEL = `${FORM_REGISTRATION}__checkbox-label`;
+export const FORM_REGISTRATION_SHIPPING_ADDRESS = `${FORM_REGISTRATION}__shipping-address`;
 export const LOGIN_LINK_TEXT = `Already have an account? `;
 
 const FormRegistration: FC<TFormRegistrationProps> = (props) => {
@@ -65,12 +66,17 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
       firstName: '',
       lastName: '',
       dateOfBirth: '',
-      streetName: '',
-      city: '',
-      postalCode: '',
-      isShippingAddress: false,
-      isBillingAddress: false,
-      country: SELECT_OPTIONS[0].value,
+      shippingStreetName: '',
+      shippingCity: '',
+      shippingPostalCode: '',
+      shippingCountry: SELECT_OPTIONS[0].value,
+      billingStreetName: '',
+      billingCity: '',
+      billingPostalCode: '',
+      billingCountry: SELECT_OPTIONS[0].value,
+      isDefaultShippingAddress: false,
+      isDefaultBillingAddress: false,
+      isTheSameAddressAsShipping: false,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -80,27 +86,47 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
         firstName,
         lastName,
         dateOfBirth,
-        streetName,
-        city,
-        postalCode,
-        isShippingAddress,
-        isBillingAddress,
-        country,
+        shippingStreetName,
+        shippingCity,
+        shippingPostalCode,
+        shippingCountry,
+        billingStreetName,
+        billingCity,
+        billingPostalCode,
+        billingCountry,
+        isDefaultShippingAddress,
+        isDefaultBillingAddress,
+        isTheSameAddressAsShipping,
       } = values;
       setIsSubmitting(true);
       setRegistrationError('');
 
-      const addresses: TBaseAddress[] = [
-        {
-          key: nanoid(),
-          country: country as CountryCode,
-          firstName,
-          lastName,
-          streetName,
-          city,
-          postalCode,
-        },
-      ];
+      const locale = getLocale(billingCountry as CountryCode);
+
+      const shippingAddress: TBaseAddress = {
+        key: nanoid(),
+        firstName,
+        lastName,
+        country: shippingCountry as CountryCode,
+        streetName: shippingStreetName,
+        city: shippingCity,
+        postalCode: shippingPostalCode,
+      };
+
+      const billingAddress: TBaseAddress = {
+        key: nanoid(),
+        firstName,
+        lastName,
+        country: billingCountry as CountryCode,
+        streetName: billingStreetName,
+        city: billingCity,
+        postalCode: billingPostalCode,
+      };
+
+      const addresses: TBaseAddress[] = isTheSameAddressAsShipping
+        ? [shippingAddress]
+        : [shippingAddress, billingAddress];
+
       const data = {
         firstName,
         lastName,
@@ -108,9 +134,13 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
         password,
         dateOfBirth,
         addresses,
-        locale: getLocale(country as CountryCode),
-        defaultShippingAddress: isShippingAddress ? 0 : undefined,
-        defaultBillingAddress: isBillingAddress ? 0 : undefined,
+        locale,
+        defaultShippingAddress: isDefaultShippingAddress ? 0 : undefined,
+        defaultBillingAddress: !isDefaultBillingAddress
+          ? undefined
+          : isTheSameAddressAsShipping
+            ? 0
+            : 1,
       };
 
       const response = await register(data);
@@ -158,10 +188,89 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   const firstNameError = getFormikErrorMsg(formik, 'firstName');
   const lastNameError = getFormikErrorMsg(formik, 'lastName');
   const dateOfBirthError = getFormikErrorMsg(formik, 'dateOfBirth');
-  const streetNameError = getFormikErrorMsg(formik, 'streetName');
-  const cityError = getFormikErrorMsg(formik, 'city');
-  const postalCodeError = getFormikErrorMsg(formik, 'postalCode');
-  const countryError = getFormikErrorMsg(formik, 'country');
+  const shippingStreetNameError = getFormikErrorMsg(formik, 'shippingStreetName');
+  const shippingCityError = getFormikErrorMsg(formik, 'shippingCity');
+  const shippingPostalCodeError = getFormikErrorMsg(formik, 'shippingPostalCode');
+  const shippingCountryError = getFormikErrorMsg(formik, 'shippingCountry');
+  const billingStreetNameError = getFormikErrorMsg(formik, 'billingStreetName');
+  const billingCityError = getFormikErrorMsg(formik, 'billingCity');
+  const billingPostalCodeError = getFormikErrorMsg(formik, 'billingPostalCode');
+  const billingCountryError = getFormikErrorMsg(formik, 'billingCountry');
+
+  const handleTheSameAddressClick = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.checked) {
+        const { shippingStreetName, shippingCity, shippingPostalCode, shippingCountry } =
+          formik.values;
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        formik.setValues(
+          (prevState) => ({
+            ...prevState,
+            billingStreetName: shippingStreetName,
+            billingCity: shippingCity,
+            billingPostalCode: shippingPostalCode,
+            billingCountry: shippingCountry,
+          }),
+          true
+        );
+      }
+
+      formik.handleChange(e);
+    },
+    [formik]
+  );
+
+  const handleShippingStreetNameChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      if (formik.values.isTheSameAddressAsShipping) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        formik.setFieldValue('billingStreetName', value, true);
+      }
+
+      formik.handleChange(e);
+    },
+    [formik]
+  );
+
+  const handleShippingCityChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      if (formik.values.isTheSameAddressAsShipping) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        formik.setFieldValue('billingCity', value, true);
+      }
+
+      formik.handleChange(e);
+    },
+    [formik]
+  );
+
+  const handleShippingPostalCodeChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      if (formik.values.isTheSameAddressAsShipping) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        formik.setFieldValue('billingPostalCode', value, true);
+      }
+
+      formik.handleChange(e);
+    },
+    [formik]
+  );
+
+  const handleShippingCountryChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      const { value } = e.target;
+      if (formik.values.isTheSameAddressAsShipping) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        formik.setFieldValue('billingCountry', value, true);
+      }
+
+      formik.handleChange(e);
+    },
+    [formik]
+  );
 
   return (
     <form className={classes} {...restProps} onSubmit={formik.handleSubmit}>
@@ -258,108 +367,204 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               invalid={!!dateOfBirthError}
             />
           </ValidationField>
-          <Fieldset title="Address">
-            <label className={FORM_REGISTRATION_LABEL} htmlFor="streetName">
+          <Fieldset className={FORM_REGISTRATION_SHIPPING_ADDRESS} title="Shipping address">
+            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
+              <Checkbox
+                theme="primary"
+                view="primary"
+                controlProps={{
+                  name: 'isDefaultShippingAddress',
+                  id: 'isDefaultShippingAddress',
+                  checked: formik.values.isDefaultShippingAddress,
+                  onChange: formik.handleChange,
+                  onBlur: formik.handleBlur,
+                  onFocus: handleInputFocus,
+                }}
+              />
+              <label
+                className={FORM_REGISTRATION_CHECKBOX_LABEL}
+                htmlFor="isDefaultShippingAddress">
+                Set as default shipping address
+              </label>
+            </div>
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingStreetName">
               Street
             </label>
 
-            <ValidationField errorMsg={streetNameError}>
+            <ValidationField errorMsg={shippingStreetNameError}>
               <Input
                 theme="primary"
                 view="primary"
-                name="streetName"
-                id="streetName"
-                value={formik.values.streetName}
-                onChange={formik.handleChange}
+                name="shippingStreetName"
+                id="shippingStreetName"
+                value={formik.values.shippingStreetName}
+                onChange={handleShippingStreetNameChange}
                 onBlur={formik.handleBlur}
                 onFocus={handleInputFocus}
-                invalid={!!streetNameError}
+                invalid={!!shippingStreetNameError}
               />
             </ValidationField>
-            <label className={FORM_REGISTRATION_LABEL} htmlFor="city">
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingCity">
               City
             </label>
-            <ValidationField errorMsg={cityError}>
+            <ValidationField errorMsg={shippingCityError}>
               <Input
                 theme="primary"
                 view="primary"
-                name="city"
-                id="city"
-                value={formik.values.city}
-                onChange={formik.handleChange}
+                name="shippingCity"
+                id="shippingCity"
+                value={formik.values.shippingCity}
+                onChange={handleShippingCityChange}
                 onBlur={formik.handleBlur}
                 onFocus={handleInputFocus}
-                invalid={!!cityError}
+                invalid={!!shippingCityError}
               />
             </ValidationField>
-            <label className={FORM_REGISTRATION_LABEL} htmlFor="postalCode">
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingPostalCode">
               Postal code
             </label>
-            <ValidationField errorMsg={postalCodeError}>
+            <ValidationField errorMsg={shippingPostalCodeError}>
               <Input
                 theme="primary"
                 view="primary"
-                name="postalCode"
-                id="postalCode"
-                value={formik.values.postalCode}
-                onChange={formik.handleChange}
+                name="shippingPostalCode"
+                id="shippingPostalCode"
+                value={formik.values.shippingPostalCode}
+                onChange={handleShippingPostalCodeChange}
                 onBlur={formik.handleBlur}
                 onFocus={handleInputFocus}
-                invalid={!!postalCodeError}
+                invalid={!!shippingPostalCodeError}
               />
             </ValidationField>
-            <label className={FORM_REGISTRATION_LABEL} htmlFor="country">
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingCountry">
               Country
             </label>
-            <ValidationField errorMsg={countryError}>
+            <ValidationField errorMsg={shippingCountryError}>
               <Select
                 theme="primary"
                 view="primary"
-                name="country"
-                id="country"
-                value={formik.values.country}
+                name="shippingCountry"
+                id="shippingCountry"
+                value={formik.values.shippingCountry}
+                onChange={handleShippingCountryChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                options={SELECT_OPTIONS}
+                invalid={!!shippingCountryError}
+              />
+            </ValidationField>
+          </Fieldset>
+          <Fieldset title="Billing address">
+            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
+              <Checkbox
+                theme="primary"
+                view="primary"
+                controlProps={{
+                  name: 'isTheSameAddressAsShipping',
+                  id: 'isTheSameAddressAsShipping',
+                  checked: formik.values.isTheSameAddressAsShipping,
+                  onChange: handleTheSameAddressClick,
+                  onBlur: formik.handleBlur,
+                  onFocus: handleInputFocus,
+                }}
+              />
+              <label
+                className={FORM_REGISTRATION_CHECKBOX_LABEL}
+                htmlFor="isTheSameAddressAsShipping">
+                The same as shipping address
+              </label>
+            </div>
+
+            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
+              <Checkbox
+                theme="primary"
+                view="primary"
+                controlProps={{
+                  name: 'isDefaultBillingAddress',
+                  id: 'isDefaultBillingAddress',
+                  checked: formik.values.isDefaultBillingAddress,
+                  onChange: formik.handleChange,
+                  onBlur: formik.handleBlur,
+                  onFocus: handleInputFocus,
+                }}
+              />
+              <label className={FORM_REGISTRATION_CHECKBOX_LABEL} htmlFor="isDefaultBillingAddress">
+                Set as default billing address
+              </label>
+            </div>
+
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="billingStreetName">
+              Street
+            </label>
+            <ValidationField errorMsg={billingStreetNameError}>
+              <Input
+                theme="primary"
+                view="primary"
+                name="billingStreetName"
+                id="billingStreetName"
+                value={formik.values.billingStreetName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                invalid={!!billingStreetNameError}
+                disabled={formik.values.isTheSameAddressAsShipping}
+              />
+            </ValidationField>
+
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="billingCity">
+              City
+            </label>
+            <ValidationField errorMsg={billingCityError}>
+              <Input
+                theme="primary"
+                view="primary"
+                name="billingCity"
+                id="billingCity"
+                value={formik.values.billingCity}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                invalid={!!billingCityError}
+                disabled={formik.values.isTheSameAddressAsShipping}
+              />
+            </ValidationField>
+
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="billingPostalCode">
+              Postal code
+            </label>
+            <ValidationField errorMsg={billingPostalCodeError}>
+              <Input
+                theme="primary"
+                view="primary"
+                name="billingPostalCode"
+                id="billingPostalCode"
+                value={formik.values.billingPostalCode}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                onFocus={handleInputFocus}
+                invalid={!!billingPostalCodeError}
+                disabled={formik.values.isTheSameAddressAsShipping}
+              />
+            </ValidationField>
+
+            <label className={FORM_REGISTRATION_LABEL} htmlFor="billingCountry">
+              Country
+            </label>
+            <ValidationField errorMsg={billingCountryError}>
+              <Select
+                theme="primary"
+                view="primary"
+                name="billingCountry"
+                id="billingCountry"
+                value={formik.values.billingCountry}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 onFocus={handleInputFocus}
                 options={SELECT_OPTIONS}
-                invalid={!!countryError}
+                invalid={!!billingCountryError}
+                disabled={formik.values.isTheSameAddressAsShipping}
               />
             </ValidationField>
-
-            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
-              <Checkbox
-                theme="primary"
-                view="primary"
-                controlProps={{
-                  name: 'isShippingAddress',
-                  id: 'isShippingAddress',
-                  checked: formik.values.isShippingAddress,
-                  onChange: formik.handleChange,
-                  onBlur: formik.handleBlur,
-                  onFocus: handleInputFocus,
-                }}
-              />
-              <label className={FORM_REGISTRATION_CHECKBOX_LABEL} htmlFor="isShippingAddress">
-                Set as default shipping address
-              </label>
-            </div>
-            <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
-              <Checkbox
-                theme="primary"
-                view="primary"
-                controlProps={{
-                  name: 'isBillingAddress',
-                  id: 'isBillingAddress',
-                  checked: formik.values.isBillingAddress,
-                  onChange: formik.handleChange,
-                  onBlur: formik.handleBlur,
-                  onFocus: handleInputFocus,
-                }}
-              />
-              <label className={FORM_REGISTRATION_CHECKBOX_LABEL} htmlFor="isBillingAddress">
-                Set as default billing address
-              </label>
-            </div>
           </Fieldset>
           <p className={FORM_REGISTRATION_ERROR_MESSAGE}> {registrationError}</p>
           <Button
