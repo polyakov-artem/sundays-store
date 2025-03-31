@@ -7,7 +7,6 @@ import { RouteObject } from 'react-router';
 
 export const VIEW_NOT_FOUND = 'not-found';
 export const VIEW_LOGIN = 'login';
-export const VIEW_MAIN = 'main';
 export const VIEW_PROFILE = 'profile';
 export const VIEW_REGISTER = 'register';
 
@@ -30,7 +29,7 @@ const routes: RouteObject[] = [
         element: <ViewAuth type="login" />,
       },
       {
-        path: VIEW_MAIN,
+        index: true,
         element: 'Main view data',
       },
 
