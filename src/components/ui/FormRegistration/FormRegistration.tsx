@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
 import Input from '../../shared/Input/input';
-import { CountryCode, TBaseAddress, TIntrinsicForm } from '../../../types/types';
+import { CountryCode, CountryLocale, TBaseAddress, TIntrinsicForm } from '../../../types/types';
 import PasswordField from '../../shared/PasswordField/PasswordField';
 import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { useFormik } from 'formik';
@@ -20,7 +20,6 @@ import { getFullPath } from '../../../utils/getFullPath';
 import { Link } from 'react-router';
 import { VIEW_LOGIN } from '../../../routes';
 import { useSignUpMutation } from '../../../store/storeApi';
-import { getLocale } from '../../../utils/getLocale';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 import { delay } from '../../../utils/delay';
 import { FaCheckCircle } from 'react-icons/fa';
@@ -101,7 +100,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
       setIsSubmitting(true);
       setRegistrationError('');
 
-      const locale = getLocale(billingCountry as CountryCode);
+      const locale = CountryLocale[billingCountry as CountryCode];
 
       const shippingAddress: TBaseAddress = {
         key: nanoid(),
