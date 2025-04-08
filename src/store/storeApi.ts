@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query/react';
-import type { AxiosRequestConfig, AxiosError } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
 import { AppGetState } from './store';
 import { TCustomer, TCustomerSignInResult, TMyCustomerDraft } from '../types/types';
@@ -9,6 +9,11 @@ import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
 export type TAxiosBaseQueryParams = { httpService: HttpService };
+
+export type TCustomError = {
+  status?: number;
+  data: string;
+};
 
 const axiosBaseQuery = ({
   httpService,
@@ -21,10 +26,7 @@ const axiosBaseQuery = ({
     headers?: AxiosRequestConfig['headers'];
   },
   unknown,
-  {
-    status?: number;
-    data: unknown;
-  }
+  TCustomError
 > => {
   return async ({ url, method, data, params, headers }, { dispatch, getState }) => {
     httpService.setDispatchFn(dispatch);
@@ -42,11 +44,10 @@ const axiosBaseQuery = ({
         headers,
       });
       return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError;
+    } catch (err: unknown) {
       return {
         error: {
-          status: err?.status,
+          status: (err as { status?: number })?.status,
           data: getMsgFromAxiosError(err),
         },
       };
@@ -61,17 +62,16 @@ export const storeApi = createApi({
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
-      providesTags: (result) =>
-        result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
+      providesTags: ['Customer'],
     }),
+
     signUp: builder.mutation<TCustomerSignInResult, TMyCustomerDraft>({
       query: (data: TMyCustomerDraft) => ({
         url: `${projectKey}/me/signup`,
         data,
         method: 'POST',
       }),
-      invalidatesTags: (result) =>
-        result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
+      invalidatesTags: ['Customer'],
     }),
   }),
 });
