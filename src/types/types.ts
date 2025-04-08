@@ -125,6 +125,124 @@ export type TMyCustomerDraft = {
 export type TCart = object;
 export type TCustomerSignInResult = TCustomer & Partial<TCart>;
 
+export type TCategoryPagedQueryResponse = {
+  limit: number;
+  offset: number;
+  count: number;
+  total?: number;
+  results: TCategory[];
+};
+
+export type TLocalizedString = Record<CountryLocale, string>;
+
+export enum CountryLocale {
+  GB = 'en-GB',
+  US = 'en-US',
+  DE = 'de-DE',
+}
+
+export type TCategoryReference = {
+  id: string;
+  typeId: ReferenceTypeId;
+  obj?: TCategory;
+};
+
+export type TCategory = {
+  id: string;
+  version: number;
+  key: string;
+  externalId?: string;
+  name: TLocalizedString;
+  slug: TLocalizedString;
+  description?: TLocalizedString;
+  ancestors: TCategoryReference[];
+  parent?: TCategoryReference;
+  orderHint: string;
+  metaTitle?: TLocalizedString;
+  metaDescription?: TLocalizedString;
+  metaKeywords?: TLocalizedString;
+  assets?: TAsset[];
+  custom?: unknown;
+  createdAt: string;
+  createdBy?: unknown;
+  lastModifiedAt: string;
+  lastModifiedBy?: unknown;
+};
+
+export type TAsset = {
+  id: string;
+  key?: string;
+  sources: TAssetSource[];
+  name: TLocalizedString;
+  description?: TLocalizedString;
+  tags?: string;
+  custom?: unknown;
+};
+
+export type TAssetSource = {
+  key: string;
+  uri: string;
+  dimensions?: TAssetDimensions;
+  contentType?: string;
+};
+
+export type TAssetDimensions = {
+  w: number;
+  h: number;
+};
+
+export enum ReferenceTypeId {
+  'approval-flow' = 'approval-flow',
+  'approval-rule' = 'approval-rule',
+  'associate-role' = 'associate-role',
+  'attribute-group' = 'attribute-group',
+  'business-unit' = 'business-unit',
+  'cart' = 'cart',
+  'cart-discount' = 'cart-discount',
+  'category' = 'category',
+  'channel' = 'channel',
+  'customer' = 'customer',
+  'customer-email-token' = 'customer-email-token',
+  'customer-group' = 'customer-group',
+  'customer-password-token' = 'customer-password-token',
+  'direct-discount' = 'direct-discount',
+  'discount-code' = 'discount-code',
+  'extension' = 'extension',
+  'inventory-entry' = 'inventory-entry',
+  'key-value-document' = 'key-value-document',
+  'order' = 'order',
+  'order-edit' = 'order-edit',
+  'payment' = 'payment',
+  'product' = 'product',
+  'product-discount' = 'product-discount',
+  'product-price' = 'product-price',
+  'product-selection' = 'product-selection',
+  'product-tailoring' = 'product-tailoring',
+  'product-type' = 'product-type',
+  'quote' = 'quote',
+  'quote-request' = 'quote-request',
+  'review' = 'review',
+  'shipping-method' = 'shipping-method',
+  'shopping-list' = 'shopping-list',
+  'staged-quote' = 'staged-quote',
+  'standalone-price' = 'standalone-price',
+  'state' = 'state',
+  'store' = 'store',
+  'subscription' = 'subscription',
+  'tax-category' = 'tax-category',
+  'type' = 'type',
+  'zone' = 'zone',
+}
+
+export type TQueryCategoriesParams = {
+  where?: string;
+  sort?: string;
+  expand?: string;
+  limit?: number;
+  offset?: number;
+  withTotal?: boolean;
+};
+
 export type TIntrinsicFooter = ComponentProps<'footer'>;
 export type TIntrinsicHeader = ComponentProps<'header'>;
 export type TIntrinsicMain = ComponentProps<'main'>;
