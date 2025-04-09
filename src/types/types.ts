@@ -4,12 +4,6 @@ export type TAuthProps = {
   type: 'login' | 'register';
 };
 
-export enum CountryCode {
-  'GB' = 'GB',
-  'DE' = 'DE',
-  'US' = 'US',
-}
-
 export type TBaseAddress = {
   id?: string;
   key?: string;
@@ -141,6 +135,12 @@ export enum CountryLocale {
   DE = 'de-DE',
 }
 
+export enum CountryCode {
+  'GB' = 'GB',
+  'DE' = 'DE',
+  'US' = 'US',
+}
+
 export type TCategoryReference = {
   id: string;
   typeId: ReferenceTypeId;
@@ -256,3 +256,5 @@ export type TIntrinsicForm = ComponentProps<'form'>;
 export type TIntrinsicSVG = ComponentProps<'svg'>;
 export type TIntrinsicLabel = ComponentProps<'label'>;
 export type TIntrinsicFieldset = ComponentProps<'fieldset'>;
+export type TIntrinsicSpan = ComponentProps<'span'>;
+export type TIntrinsicUl = ComponentProps<'ul'>;
