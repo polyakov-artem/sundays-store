@@ -1,0 +1,12 @@
+.view-catalog {
+  padding-top: var(--g-md-gap);
+
+  &__title {
+    margin-bottom: var(--g-md-gap);
+    text-align: center;
+  }
+
+  &__breadcrumbs {
+    margin-bottom: var(--g-md-gap);
+  }
+}
