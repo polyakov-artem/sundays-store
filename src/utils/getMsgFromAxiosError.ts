@@ -49,7 +49,7 @@ export const getResponseError = (
   response: AxiosResponse<TErrorResponse>,
   message: string
 ): string => {
-  const dataMessage = response.data.message;
+  const dataMessage = response.data?.message;
 
   return dataMessage ? dataMessage : message ? message : DEFAULT_RESPONSE_ERROR_MESSAGE;
 };
