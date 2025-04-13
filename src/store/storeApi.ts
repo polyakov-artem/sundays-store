@@ -3,8 +3,15 @@ import type { BaseQueryFn } from '@reduxjs/toolkit/query/react';
 import type { AxiosRequestConfig } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
 import { AppGetState } from './store';
-import { TCustomer, TCustomerSignInResult, TMyCustomerDraft } from '../types/types';
+import {
+  TCategory,
+  TCustomer,
+  TCustomerSignInResult,
+  TMyCustomerDraft,
+  TQueryCategoriesParams,
+} from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
+import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -54,11 +61,13 @@ const axiosBaseQuery = ({
     }
   };
 };
+const categoriesAdapter = createEntityAdapter<TCategory>();
+export const categoriesAdapterInitialState = categoriesAdapter.getInitialState();
 
 export const storeApi = createApi({
   reducerPath: 'storeApi',
   baseQuery: axiosBaseQuery({ httpService }),
-  tagTypes: ['Customer'],
+  tagTypes: ['Customer', 'Category'],
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
@@ -73,7 +82,39 @@ export const storeApi = createApi({
       }),
       invalidatesTags: ['Customer'],
     }),
+
+    queryCategories: builder.query<TCategory[], TQueryCategoriesParams | void>({
+      query: (params: TQueryCategoriesParams = { limit: 500 }) => ({
+        url: `${projectKey}/categories`,
+        params,
+      }),
+      transformResponse: (response: { results: TCategory[] }) => {
+        return response.results;
+      },
+      providesTags: (result) =>
+        result
+          ? [...result.map(({ id }) => ({ type: 'Category' as const, id })), 'Category']
+          : ['Category'],
+    }),
   }),
 });
 
-export const { useGetMeQuery, useSignUpMutation } = storeApi;
+export const selectQueryCategoriesResult = storeApi.endpoints.queryCategories.select();
+
+export const selectCategoriesAdapterState = createSelector(
+  [selectQueryCategoriesResult],
+  (result) => {
+    return !result.data
+      ? categoriesAdapterInitialState
+      : categoriesAdapter.setAll(categoriesAdapterInitialState, result.data);
+  }
+);
+
+export const {
+  selectAll: selectAllCategories,
+  selectById: selectCategoryById,
+  selectIds: selectCategoriesIds,
+  selectEntities: selectAllCategoriesEntities,
+} = categoriesAdapter.getSelectors(selectCategoriesAdapterState);
+
+export const { useGetMeQuery, useSignUpMutation, useQueryCategoriesQuery } = storeApi;
