@@ -38,7 +38,10 @@ export const Collapse: FC<TCollapse> = (props) => {
 
     window.addEventListener('resize', handleWindowResize);
 
-    return () => window.removeEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+      debouncedSetHeight.cancel();
+    };
   }, [setHeight]);
 
   return (
