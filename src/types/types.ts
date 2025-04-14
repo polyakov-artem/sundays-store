@@ -258,3 +258,4 @@ export type TIntrinsicLabel = ComponentProps<'label'>;
 export type TIntrinsicFieldset = ComponentProps<'fieldset'>;
 export type TIntrinsicSpan = ComponentProps<'span'>;
 export type TIntrinsicUl = ComponentProps<'ul'>;
+export type TIntrinsicImg = ComponentProps<'img'>;
