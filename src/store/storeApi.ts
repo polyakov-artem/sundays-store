@@ -117,4 +117,8 @@ export const {
   selectEntities: selectAllCategoriesEntities,
 } = categoriesAdapter.getSelectors(selectCategoriesAdapterState);
 
+export const selectMainCategories = createSelector([selectAllCategories], (categories) =>
+  categories.filter((category) => category.ancestors.length === 0)
+);
+
 export const { useGetMeQuery, useSignUpMutation, useQueryCategoriesQuery } = storeApi;

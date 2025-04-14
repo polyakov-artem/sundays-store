@@ -1,0 +1,77 @@
+@use '../../../scss/abstracts/mixins';
+
+.header-links {
+  @include mixins.list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--g-xxs-gap);
+
+  &__text {
+    position: relative;
+    display: inline-block;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 0%;
+      height: 2px;
+      width: 0;
+      background-color: var(--green-1);
+      transition: 0.2s width;
+    }
+  }
+
+  &__item {
+    padding: 5px 10px;
+  }
+
+  &__link {
+    display: block;
+    text-transform: capitalize;
+    color: var(--black-1);
+    position: relative;
+    text-decoration: none;
+    font-size: 1.2rem;
+
+    &_active {
+      cursor: default;
+      color: var(--black-1);
+
+      .header-links__text::after {
+        width: 100%;
+      }
+    }
+
+    @media (hover: hover) {
+      &:not(.header-links__link_active) {
+        &:hover {
+          color: var(--green-1);
+
+          .header-links__text::after {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    flex-direction: column;
+    gap: var(--g-xs-gap);
+    padding: var(--g-md-gap) var(--g-md-gap) var(--g-xlg-gap);
+
+    &__link {
+      display: block;
+      padding: 10px 0;
+      text-align: center;
+      transition-duration: 0.2s;
+      transition-property: color, background-color;
+
+      &:active {
+        color: var(--white-1);
+        background-color: var(--green-1);
+      }
+    }
+  }
+}
