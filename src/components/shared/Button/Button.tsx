@@ -1,4 +1,4 @@
-import { ComponentProps, FC } from 'react';
+import { ComponentProps, FC, ReactNode } from 'react';
 import { Link, LinkProps } from 'react-router';
 import { getClasses } from '../../../utils/getClasses';
 import { TIntrinsicButton, TIntrinsicLink } from '../../../types/types';
@@ -6,10 +6,15 @@ import './button.scss';
 
 export const BTN = 'btn';
 export const BTN_INNER = `${BTN}__inner`;
+export const BTN_TEXT = `${BTN}__text`;
+export const BTN_ICON = `${BTN}__icon`;
 
 export type TButtonCustomProps = {
+  size?: 'sm';
   theme?: 'primary';
-  view?: 'primary';
+  view?: 'primary' | 'figure';
+  icon?: ReactNode;
+  text?: ReactNode;
   fullWidth?: boolean;
   capitalized?: boolean;
   uppercase?: boolean;
@@ -28,7 +33,8 @@ export type TButtonProps = (
 const Button: FC<TButtonProps> = (props) => {
   const {
     className,
-    children,
+    text,
+    icon,
     theme,
     view,
     fullWidth,
@@ -37,6 +43,7 @@ const Button: FC<TButtonProps> = (props) => {
     selected,
     bold,
     el = 'button',
+    size,
     ...restProps
   } = props;
   const classes = getClasses(BTN, className, {
@@ -48,11 +55,15 @@ const Button: FC<TButtonProps> = (props) => {
     bold,
     selected,
     disabled: props.disabled,
+    size,
   });
 
   const inner = (
     <span className={BTN_INNER}>
-      <span className={BTN_INNER}>{children}</span>
+      <span className={BTN_INNER}>
+        {text && <span className={BTN_TEXT}>{text}</span>}
+        {icon && <span className={BTN_ICON}>{icon}</span>}
+      </span>
     </span>
   );
 

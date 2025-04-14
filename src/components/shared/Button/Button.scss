@@ -8,7 +8,7 @@
   background-color: var(--bg-color);
 
   @media (hover: hover) {
-    &:where(&:hover) {
+    &:hover {
       color: var(--hover-color);
       background-color: var(--hover-bg-color);
       border-color: var(--hover-border-color);
@@ -70,7 +70,25 @@
   }
 }
 
-.btn_theme_primary {
+.btn_view_primary {
+  font-size: 1.2rem;
+  padding: 1rem 1.5rem;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 1.6rem;
+
+  & .btn__inner {
+    gap: 1rem;
+  }
+
+  &.btn_size_sm {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 1.2rem;
+  }
+}
+
+.btn_view_primary.btn_theme_primary {
   --color: var(--white-1);
   --hover-color: var(--color);
   --disabled-color: var(--color);
@@ -92,14 +110,41 @@
   --selected-focus-box-shadow: var(--focus-box-shadow);
 }
 
-.btn_view_primary {
-  font-size: 1.2rem;
-  padding: 1rem 1.5rem;
+.btn_view_figure {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
   border-width: 1px;
   border-style: solid;
-  border-radius: 1.6rem;
+  border-radius: 5px;
 
-  & .btn__inner {
-    gap: 1rem;
+  .btn__inner {
+    display: flex;
+    flex-flow: column-reverse;
   }
+
+  .btn__icon {
+    font-size: 1.4rem;
+  }
+}
+
+.btn_view_figure.btn_theme_primary {
+  --color: var(--black-1);
+  --hover-color: var(--color);
+  --disabled-color: var(--color);
+  --selected-color: var(--color);
+
+  --bg-color: transparent;
+  --hover-bg-color: color-mix(in oklab, var(--bg-color) 90%, rgb(255, 255, 255));
+  --active-bg-color: color-mix(in oklab, var(--bg-color) 95%, black);
+  --disabled-bg-color: var(--gray-1);
+  --selected-bg-color: var(--bg-color);
+
+  --border-color: var(--bg-color);
+  --hover-border-color: var(--border-color);
+  --active-border-color: var(--border-color);
+  --disabled-border-color: var(--disabled-bg-color);
+  --selected-border-color: var(--border-color);
+
+  --focus-box-shadow: var(--black-1-10);
+  --selected-focus-box-shadow: var(--focus-box-shadow);
 }
