@@ -2,7 +2,7 @@ import { ComponentProps, FC, ReactNode } from 'react';
 import { Link, LinkProps } from 'react-router';
 import { getClasses } from '../../../utils/getClasses';
 import { TIntrinsicButton, TIntrinsicLink } from '../../../types/types';
-import './button.scss';
+import './Button.scss';
 
 export const BTN = 'btn';
 export const BTN_INNER = `${BTN}__inner`;
