@@ -2,7 +2,7 @@ import { FC, useCallback, useState } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
-import Input from '../../shared/Input/input';
+import InputField from '../../shared/InputField/InputField';
 import { TIntrinsicForm } from '../../../types/types';
 import PasswordField from '../../shared/PasswordField/PasswordField';
 import * as Yup from 'yup';
@@ -110,7 +110,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         Email
       </label>
       <ValidationField errorMsg={emailError}>
-        <Input
+        <InputField
           theme="primary"
           view="primary"
           name="email"

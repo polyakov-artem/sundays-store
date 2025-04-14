@@ -15,8 +15,8 @@ import { selectLocale } from '../../../store/settingsSlice';
 import CategoryList from '../CategoryList/CategoryList.';
 import { H1, WRAPPER } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
-import Loader from '../../shared/loader/loader';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
+import Spinner from '../../shared/Spinner/Spinner';
 import './ViewCatalog.scss';
 
 export const VIEW_CATALOG = 'view-catalog';
@@ -78,7 +78,7 @@ const ViewCatalog: FC = () => {
   let content;
 
   if (isFetching) {
-    content = <Loader fullSpace size="lg" theme="primary" />;
+    content = <Spinner fullSpace size="lg" theme="primary" />;
   } else if (isError) {
     content = <p>Error: {(error as TCustomError).data}</p>;
   } else if (isCorrectId !== false) {

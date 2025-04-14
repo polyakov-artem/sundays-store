@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useCallback, useState } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
-import Input from '../../shared/Input/input';
+import InputField from '../../shared/InputField/InputField';
 import { CountryCode, CountryLocale, TBaseAddress, TIntrinsicForm } from '../../../types/types';
 import PasswordField from '../../shared/PasswordField/PasswordField';
 import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
@@ -287,7 +287,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             Email
           </label>
           <ValidationField errorMsg={emailError}>
-            <Input
+            <InputField
               theme="primary"
               view="primary"
               name="email"
@@ -321,7 +321,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             First name
           </label>
           <ValidationField errorMsg={firstNameError}>
-            <Input
+            <InputField
               theme="primary"
               view="primary"
               name="firstName"
@@ -337,7 +337,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             Last name
           </label>
           <ValidationField errorMsg={lastNameError}>
-            <Input
+            <InputField
               theme="primary"
               view="primary"
               name="lastName"
@@ -353,7 +353,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             Date of birth
           </label>
           <ValidationField errorMsg={dateOfBirthError}>
-            <Input
+            <InputField
               theme="primary"
               view="primary"
               name="dateOfBirth"
@@ -391,7 +391,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             </label>
 
             <ValidationField errorMsg={shippingStreetNameError}>
-              <Input
+              <InputField
                 theme="primary"
                 view="primary"
                 name="shippingStreetName"
@@ -407,7 +407,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               City
             </label>
             <ValidationField errorMsg={shippingCityError}>
-              <Input
+              <InputField
                 theme="primary"
                 view="primary"
                 name="shippingCity"
@@ -423,7 +423,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               Postal code
             </label>
             <ValidationField errorMsg={shippingPostalCodeError}>
-              <Input
+              <InputField
                 theme="primary"
                 view="primary"
                 name="shippingPostalCode"
@@ -496,7 +496,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               Street
             </label>
             <ValidationField errorMsg={billingStreetNameError}>
-              <Input
+              <InputField
                 theme="primary"
                 view="primary"
                 name="billingStreetName"
@@ -514,7 +514,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               City
             </label>
             <ValidationField errorMsg={billingCityError}>
-              <Input
+              <InputField
                 theme="primary"
                 view="primary"
                 name="billingCity"
@@ -532,7 +532,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               Postal code
             </label>
             <ValidationField errorMsg={billingPostalCodeError}>
-              <Input
+              <InputField
                 theme="primary"
                 view="primary"
                 name="billingPostalCode"

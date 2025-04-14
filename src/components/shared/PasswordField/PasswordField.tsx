@@ -1,6 +1,6 @@
 import { FC, useCallback, useState } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
-import Input, { TInputProps } from '../Input/input';
+import InputField, { TInputFieldProps } from '../InputField/InputField';
 import Button from '../Button/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { getClasses } from '../../../utils/getClasses';
@@ -11,7 +11,7 @@ export const PASSWORD_FIELD_BTN = `${PASSWORD_FIELD}__btn`;
 export const PASSWORD_FIELD_INPUT = `${PASSWORD_FIELD}__input`;
 
 export type TPasswordFieldProps = TIntrinsicDiv & {
-  inputProps: Omit<TInputProps, 'type' | 'className'>;
+  inputProps: Omit<TInputFieldProps, 'type' | 'className'>;
   textIsVisible?: boolean;
 };
 
@@ -27,7 +27,7 @@ const PasswordField: FC<TPasswordFieldProps> = (props) => {
 
   return (
     <div className={classes} {...restProps}>
-      <Input
+      <InputField
         {...inputProps}
         type={isShown ? 'text' : 'password'}
         className={PASSWORD_FIELD_INPUT}

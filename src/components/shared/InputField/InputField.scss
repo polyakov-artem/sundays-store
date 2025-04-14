@@ -1,4 +1,4 @@
-.input {
+.input-field {
   display: block;
   margin: 0;
   font-family: inherit;
@@ -41,7 +41,7 @@
   }
 }
 
-.input_theme_primary {
+.input-field_theme_primary {
   --color: var(--black-1);
   --disabled-color: var(--color);
   --invalid-color: var(--color);
@@ -60,7 +60,7 @@
   --placeholder-color: var(--gray-1-50);
 }
 
-.input_view_primary {
+.input-field_view_primary {
   height: 2.5rem;
   padding: 0 1rem;
   font-size: 1rem;
