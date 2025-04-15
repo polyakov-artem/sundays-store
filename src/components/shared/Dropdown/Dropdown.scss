@@ -1,0 +1,13 @@
+.dropdown {
+  position: relative;
+
+  &__content {
+    display: none;
+  }
+
+  &_is-open {
+    .dropdown__content {
+      display: block;
+    }
+  }
+}

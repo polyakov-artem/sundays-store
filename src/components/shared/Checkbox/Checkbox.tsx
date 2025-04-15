@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { TIntrinsicInput, TIntrinsicLabel } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import SvgIcon from '../SvgIcon/SvgIcon';
-import './checkbox.scss';
+import './Checkbox.scss';
 
 const CHECKBOX = 'checkbox';
 const CHECKBOX_BOX = `${CHECKBOX}__box`;

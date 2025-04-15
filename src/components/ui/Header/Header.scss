@@ -1,0 +1,60 @@
+@use '../../../scss/abstracts/mixins';
+
+.header {
+  background-color: var(--white-3);
+  position: relative;
+
+  &__nav {
+    display: flex;
+    min-height: var(--g-min-header-height);
+    align-items: center;
+    gap: var(--g-sm-gap);
+  }
+
+  &__logo {
+    margin-right: auto;
+  }
+
+  &__user-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--g-xs-gap);
+    margin-left: auto;
+  }
+
+  &__link {
+    padding: 5px 0;
+    display: block;
+    text-decoration: none;
+    color: var(--black-1);
+  }
+
+  &__link-text {
+    margin: 0;
+  }
+
+  &__burger {
+    display: none;
+  }
+
+  @media (min-width: 992px) {
+    &__menu {
+      height: auto !important;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    &__menu {
+      background-color: var(--white-3);
+      margin: 0 calc(var(--g-md-gap) * -1);
+      position: absolute;
+      top: 100%;
+      width: 100%;
+      z-index: 10;
+    }
+
+    &__burger {
+      display: block;
+    }
+  }
+}

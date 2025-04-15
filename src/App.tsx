@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import Page from './components/ui/Page/Page';
+import 'normalize.css';
 import './scss/index.scss';
 import { useAppDispatch, useAppSelector } from './hooks/store-hooks';
 import { loadInitialTokens, selectUserRole } from './store/authSlice';

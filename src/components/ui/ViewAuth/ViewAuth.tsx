@@ -5,8 +5,7 @@ import { useAppSelector } from '../../../hooks/store-hooks';
 import { Navigate, useLocation } from 'react-router';
 import { selectUserRole } from '../../../store/authSlice';
 import { TokenRole } from '../../../services/authService';
-import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_MAIN } from '../../../routes';
+import { PUBLIC_PATH } from '../../../constants/constants';
 import './ViewAuth.scss';
 
 export const VIEW_AUTH = 'view-auth';
@@ -20,7 +19,7 @@ const ViewAuth: FC<TAuthViewProps> = ({ type }) => {
 
   if (role === TokenRole.user) {
     const from = (location as { state?: { from?: { pathname?: string } } }).state?.from?.pathname;
-    return <Navigate to={from ? from : getFullPath(VIEW_MAIN)} relative="path" replace />;
+    return <Navigate to={from ? from : PUBLIC_PATH} relative="path" replace />;
   }
 
   return (

@@ -1,14 +1,26 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query/react';
-import type { AxiosRequestConfig, AxiosError } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
 import { AppGetState } from './store';
-import { TCustomer, TCustomerSignInResult, TMyCustomerDraft } from '../types/types';
+import {
+  TCategory,
+  TCustomer,
+  TCustomerSignInResult,
+  TMyCustomerDraft,
+  TQueryCategoriesParams,
+} from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
+import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
 export type TAxiosBaseQueryParams = { httpService: HttpService };
+
+export type TCustomError = {
+  status?: number;
+  data: string;
+};
 
 const axiosBaseQuery = ({
   httpService,
@@ -21,10 +33,7 @@ const axiosBaseQuery = ({
     headers?: AxiosRequestConfig['headers'];
   },
   unknown,
-  {
-    status?: number;
-    data: unknown;
-  }
+  TCustomError
 > => {
   return async ({ url, method, data, params, headers }, { dispatch, getState }) => {
     httpService.setDispatchFn(dispatch);
@@ -42,38 +51,74 @@ const axiosBaseQuery = ({
         headers,
       });
       return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError;
+    } catch (err: unknown) {
       return {
         error: {
-          status: err?.status,
+          status: (err as { status?: number })?.status,
           data: getMsgFromAxiosError(err),
         },
       };
     }
   };
 };
+const categoriesAdapter = createEntityAdapter<TCategory>();
+export const categoriesAdapterInitialState = categoriesAdapter.getInitialState();
 
 export const storeApi = createApi({
   reducerPath: 'storeApi',
   baseQuery: axiosBaseQuery({ httpService }),
-  tagTypes: ['Customer'],
+  tagTypes: ['Customer', 'Category'],
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
-      providesTags: (result) =>
-        result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
+      providesTags: ['Customer'],
     }),
+
     signUp: builder.mutation<TCustomerSignInResult, TMyCustomerDraft>({
       query: (data: TMyCustomerDraft) => ({
         url: `${projectKey}/me/signup`,
         data,
         method: 'POST',
       }),
-      invalidatesTags: (result) =>
-        result ? [{ type: 'Customer' as const, id: result.id }, 'Customer'] : ['Customer'],
+      invalidatesTags: ['Customer'],
+    }),
+
+    queryCategories: builder.query<TCategory[], TQueryCategoriesParams | void>({
+      query: (params: TQueryCategoriesParams = { limit: 500 }) => ({
+        url: `${projectKey}/categories`,
+        params,
+      }),
+      transformResponse: (response: { results: TCategory[] }) => {
+        return response.results;
+      },
+      providesTags: (result) =>
+        result
+          ? [...result.map(({ id }) => ({ type: 'Category' as const, id })), 'Category']
+          : ['Category'],
     }),
   }),
 });
 
-export const { useGetMeQuery, useSignUpMutation } = storeApi;
+export const selectQueryCategoriesResult = storeApi.endpoints.queryCategories.select();
+
+export const selectCategoriesAdapterState = createSelector(
+  [selectQueryCategoriesResult],
+  (result) => {
+    return !result.data
+      ? categoriesAdapterInitialState
+      : categoriesAdapter.setAll(categoriesAdapterInitialState, result.data);
+  }
+);
+
+export const {
+  selectAll: selectAllCategories,
+  selectById: selectCategoryById,
+  selectIds: selectCategoriesIds,
+  selectEntities: selectAllCategoriesEntities,
+} = categoriesAdapter.getSelectors(selectCategoriesAdapterState);
+
+export const selectMainCategories = createSelector([selectAllCategories], (categories) =>
+  categories.filter((category) => category.ancestors.length === 0)
+);
+
+export const { useGetMeQuery, useSignUpMutation, useQueryCategoriesQuery } = storeApi;

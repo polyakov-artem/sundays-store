@@ -1,0 +1,10 @@
+@use './../../../scss/abstracts/mixins';
+
+.category-list {
+  @include mixins.list;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, 300px);
+  grid-template-rows: 1fr;
+  gap: var(--g-md-gap);
+}
