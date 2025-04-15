@@ -1,0 +1,36 @@
+@use '../../../scss/abstracts/mixins';
+
+.dropdown-menu {
+  background-color: var(--white-2);
+  padding: var(--g-xs-gap) 0;
+  position: absolute;
+  top: 110%;
+  border: 1px solid var(--gray-1);
+  z-index: 10;
+  min-width: 150px;
+  border-radius: 5px;
+  overflow: hidden;
+
+  &__list {
+    @include mixins.list;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__item {
+    padding: 0 var(--g-xs-gap);
+
+    &:hover {
+      background-color: var(--white-3);
+    }
+  }
+
+  &_position_right {
+    right: 0;
+  }
+
+  &_position_left {
+    left: 0;
+  }
+}
