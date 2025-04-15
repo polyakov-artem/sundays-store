@@ -9,7 +9,7 @@ import { WRAPPER } from '../../../constants/cssHelpers';
 import { useGetMeQuery } from '../../../store/storeApi';
 import Button from '../../shared/Button/Button';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE } from '../../../routes';
+import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../routes';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectUserRole } from '../../../store/authSlice';
 import { TokenRole } from '../../../services/authService';
@@ -110,15 +110,27 @@ const Header: FC = () => {
         />
       </>
     ) : (
-      <Button
-        size="sm"
-        theme="primary"
-        view="primary"
-        el="link"
-        to={getFullPath(VIEW_LOGIN)}
-        relative="path">
-        Log in
-      </Button>
+      <>
+        <Button
+          size="sm"
+          theme="primary"
+          view="primary"
+          el="link"
+          to={getFullPath(VIEW_LOGIN)}
+          relative="path">
+          Log in
+        </Button>
+
+        <Button
+          size="sm"
+          theme="primary"
+          view="primary"
+          el="link"
+          to={getFullPath(VIEW_REGISTER)}
+          relative="path">
+          Register
+        </Button>
+      </>
     );
 
   return (
