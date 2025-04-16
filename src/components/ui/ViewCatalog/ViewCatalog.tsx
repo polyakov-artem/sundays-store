@@ -1,15 +1,13 @@
 import { FC, useMemo } from 'react';
 import {
   selectAllCategories,
-  selectAllCategoriesEntities,
-  selectCategoryById,
   TCustomError,
   useQueryCategoriesQuery,
 } from '../../../store/storeApi';
-import { Navigate, useParams } from 'react-router';
-import { VIEW_CATALOG as VIEW_CATALOG_ROUTE, VIEW_NOT_FOUND } from '../../../routes';
+import { Navigate } from 'react-router';
+import { VIEW_NOT_FOUND } from '../../../routes';
 import { getFullPath } from '../../../utils/getFullPath';
-import Breadcrumbs, { TCrumb } from '../../shared/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs from '../../shared/Breadcrumbs/Breadcrumbs';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
 import CategoryList from '../CategoryList/CategoryList.';
@@ -18,6 +16,8 @@ import classNames from 'classnames';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import Spinner from '../../shared/Spinner/Spinner';
 import './ViewCatalog.scss';
+import { useCrumbs } from '../../../hooks/useCrumbs';
+import { useCurrentCategory } from '../../../hooks/useCurrentCategory';
 
 export const VIEW_CATALOG = 'view-catalog';
 export const VIEW_CATALOG_TITLE = `${VIEW_CATALOG}__title`;
@@ -26,54 +26,15 @@ export const VIEW_CATALOG_BREADCRUMBS = `${VIEW_CATALOG}__breadcrumbs`;
 const ViewCatalog: FC = () => {
   const locale = useAppSelector(selectLocale);
   const { isFetching, isError, error } = useQueryCategoriesQuery();
-  const { id } = useParams();
-
+  const { currentCategory, id } = useCurrentCategory();
+  const crumbs = useCrumbs(currentCategory);
   const allCategories = useAppSelector(selectAllCategories);
-  const allCategoriesEntities = useAppSelector(selectAllCategoriesEntities);
 
-  const currentCategory = useAppSelector((state) =>
-    id ? selectCategoryById(state, id) : undefined
-  );
-
-  const isCorrectId: boolean | undefined = useMemo(() => {
-    if (isFetching || id === undefined) {
-      return undefined;
-    } else {
-      return !!currentCategory;
-    }
-  }, [currentCategory, isFetching, id]);
-
-  const childCategoriesIds: string[] = useMemo(
-    () =>
-      allCategories.filter((category) => category.parent?.id === id).map((category) => category.id),
-    [allCategories, id]
-  );
-
-  const rootTitle = localizedAppStrings[locale].Catalog;
-
-  const crumbs: TCrumb[] = useMemo(() => {
-    const result = [{ name: rootTitle, url: getFullPath(VIEW_CATALOG_ROUTE) }];
-
-    if (!isCorrectId) {
-      return result;
-    }
-
-    if (currentCategory) {
-      currentCategory.ancestors.forEach((ancestorRef) => {
-        result.push({
-          url: getFullPath(VIEW_CATALOG_ROUTE, ancestorRef.id),
-          name: allCategoriesEntities[ancestorRef.id]?.name[locale] || '',
-        });
-      });
-
-      result.push({
-        url: getFullPath(VIEW_CATALOG_ROUTE, currentCategory.id),
-        name: currentCategory.name[locale],
-      });
-    }
-
-    return result;
-  }, [isCorrectId, currentCategory, allCategoriesEntities, locale, rootTitle]);
+  const childCategoriesIds = useMemo(() => {
+    return allCategories
+      .filter((category) => category.parent?.id === currentCategory?.id)
+      .map((category) => category.id);
+  }, [allCategories, currentCategory]);
 
   let content;
 
@@ -81,13 +42,15 @@ const ViewCatalog: FC = () => {
     content = <Spinner fullSpace size="lg" theme="primary" />;
   } else if (isError) {
     content = <p>Error: {(error as TCustomError).data}</p>;
-  } else if (isCorrectId !== false) {
+  } else if (currentCategory || id === undefined) {
     content = <CategoryList ids={childCategoriesIds} />;
   } else {
     content = <Navigate to={getFullPath(VIEW_NOT_FOUND)} relative="path" replace />;
   }
 
-  const title: string = currentCategory ? currentCategory.name[locale] : rootTitle;
+  const title: string = currentCategory
+    ? currentCategory.name[locale]
+    : localizedAppStrings[locale].Catalog;
 
   return (
     <main className={VIEW_CATALOG}>

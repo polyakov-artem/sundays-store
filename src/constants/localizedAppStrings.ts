@@ -1,28 +1,10 @@
-import { CountryLocale, TLocalizedString } from '../types/types';
-
-export enum AppStrings {
-  Catalog = 'Catalog',
-}
-
-export const dictionary: Record<string, Partial<TLocalizedString>> = {
-  catalog: {
-    [CountryLocale.DE]: 'katalog',
-  },
-};
+import { CountryLocale } from '../types/types';
+import { AppStrings } from './appStrings';
+import { dictionary } from './dictionary';
 
 export const localizeString = (locale: CountryLocale, str: string) => {
-  const result = dictionary[str.toLocaleLowerCase()][locale];
-  if (!result) return str;
-
-  if (str.toUpperCase() === str) {
-    return result.toUpperCase();
-  }
-
-  if (str[0].toUpperCase() === str[0]) {
-    return result[0].toUpperCase() + result.slice(1);
-  }
-
-  return result;
+  const result = dictionary[str][locale];
+  return result ? result : str;
 };
 
 export const localizedAppStrings = Object.values(CountryLocale).reduce(

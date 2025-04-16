@@ -4,9 +4,17 @@ export const PARSE_ERROR_MESSAGE = 'Failed to parse JSON data';
 
 export type TLocalStorageService = typeof localStorageService;
 
+const mode = import.meta.env.MODE;
+
 export const localStorageService = {
   saveData<T>(key: string, data: T): void {
-    localStorage.setItem(key, JSON.stringify(data));
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      if (mode === 'development') {
+        console.error(e);
+      }
+    }
   },
 
   getData<T>(key: string): T | null {
@@ -16,7 +24,14 @@ export const localStorageService = {
       return dataStr;
     }
 
-    return JSON.parse(dataStr) as T;
+    try {
+      return JSON.parse(dataStr) as T;
+    } catch (e) {
+      if (mode === 'development') {
+        console.error(e);
+      }
+      return null;
+    }
   },
 
   removeData(key: string) {
