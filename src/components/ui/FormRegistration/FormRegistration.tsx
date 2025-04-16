@@ -7,7 +7,7 @@ import { CountryCode, CountryLocale, TBaseAddress, TIntrinsicForm } from '../../
 import PasswordField from '../../shared/PasswordField/PasswordField';
 import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { useFormik } from 'formik';
-import { useAppDispatch } from '../../../hooks/store-hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import {
   mutex,
   tokenLoadingEnded,
@@ -28,10 +28,12 @@ import Fieldset from '../../shared/Fieldset/Fieldset';
 import { nanoid } from '@reduxjs/toolkit';
 import { SELECT_OPTIONS } from './selectOptions';
 import { validationSchema } from './validationSchema';
-
+import { selectLocale } from '../../../store/settingsSlice';
+import { localizedAppStrings } from '../../../constants/localizedAppStrings';
+import { AppStrings } from '../../../constants/appStrings';
 import './FormRegistration.scss';
 
-type TFormRegistrationProps = TIntrinsicForm;
+export type TFormRegistrationProps = TIntrinsicForm;
 
 export const FORM_REGISTRATION = 'form-registration';
 export const FORM_REGISTRATION_LABEL = `${FORM_REGISTRATION}__label`;
@@ -44,7 +46,6 @@ export const FORM_REGISTRATION_iCON_COMPLETED = `${FORM_REGISTRATION}__icon-comp
 export const FORM_REGISTRATION_CHECKBOX_FIELD = `${FORM_REGISTRATION}__checkbox-field`;
 export const FORM_REGISTRATION_CHECKBOX_LABEL = `${FORM_REGISTRATION}__checkbox-label`;
 export const FORM_REGISTRATION_SHIPPING_ADDRESS = `${FORM_REGISTRATION}__shipping-address`;
-export const LOGIN_LINK_TEXT = `Already have an account? `;
 
 const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   const { className, ...restProps } = props;
@@ -56,6 +57,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
     fixedCacheKey: 'register-customer',
   });
 
+  const locale = useAppSelector(selectLocale);
   const dispatch = useAppDispatch();
 
   const formik = useFormik({
@@ -278,13 +280,12 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
           <span className={FORM_REGISTRATION_iCON_COMPLETED}>
             <FaCheckCircle />
           </span>
-          Registration has been completed!
+          {`${localizedAppStrings[locale][AppStrings.RegistrationHasBeenCompleted]}!`}
         </p>
       ) : (
         <>
-          {' '}
           <label className={FORM_REGISTRATION_LABEL} htmlFor="email">
-            Email
+            {localizedAppStrings[locale][AppStrings.Email]}
           </label>
           <ValidationField errorMsg={emailError}>
             <InputField
@@ -300,7 +301,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             />
           </ValidationField>
           <label className={FORM_REGISTRATION_LABEL} htmlFor="password">
-            Password
+            {localizedAppStrings[locale][AppStrings.Password]}
           </label>
           <ValidationField errorMsg={passwordError}>
             <PasswordField
@@ -318,7 +319,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             />
           </ValidationField>
           <label className={FORM_REGISTRATION_LABEL} htmlFor="firstName">
-            First name
+            {localizedAppStrings[locale][AppStrings.FirstName]}
           </label>
           <ValidationField errorMsg={firstNameError}>
             <InputField
@@ -334,7 +335,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             />
           </ValidationField>
           <label className={FORM_REGISTRATION_LABEL} htmlFor="lastName">
-            Last name
+            {localizedAppStrings[locale][AppStrings.LastName]}
           </label>
           <ValidationField errorMsg={lastNameError}>
             <InputField
@@ -350,7 +351,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             />
           </ValidationField>
           <label className={FORM_REGISTRATION_LABEL} htmlFor="dateOfBirth">
-            Date of birth
+            {localizedAppStrings[locale][AppStrings.DateOfBirth]}
           </label>
           <ValidationField errorMsg={dateOfBirthError}>
             <InputField
@@ -366,7 +367,9 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               invalid={!!dateOfBirthError}
             />
           </ValidationField>
-          <Fieldset className={FORM_REGISTRATION_SHIPPING_ADDRESS} title="Shipping address">
+          <Fieldset
+            className={FORM_REGISTRATION_SHIPPING_ADDRESS}
+            title={localizedAppStrings[locale][AppStrings.ShippingAddress]}>
             <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
               <Checkbox
                 theme="primary"
@@ -383,11 +386,11 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               <label
                 className={FORM_REGISTRATION_CHECKBOX_LABEL}
                 htmlFor="isDefaultShippingAddress">
-                Set as default shipping address
+                {localizedAppStrings[locale][AppStrings.SetAsDefaultShippingAddress]}
               </label>
             </div>
             <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingStreetName">
-              Street
+              {localizedAppStrings[locale][AppStrings.Street]}
             </label>
 
             <ValidationField errorMsg={shippingStreetNameError}>
@@ -404,7 +407,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               />
             </ValidationField>
             <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingCity">
-              City
+              {localizedAppStrings[locale][AppStrings.City]}
             </label>
             <ValidationField errorMsg={shippingCityError}>
               <InputField
@@ -420,7 +423,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               />
             </ValidationField>
             <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingPostalCode">
-              Postal code
+              {localizedAppStrings[locale][AppStrings.PostalCode]}
             </label>
             <ValidationField errorMsg={shippingPostalCodeError}>
               <InputField
@@ -436,7 +439,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               />
             </ValidationField>
             <label className={FORM_REGISTRATION_LABEL} htmlFor="shippingCountry">
-              Country
+              {localizedAppStrings[locale][AppStrings.Country]}
             </label>
             <ValidationField errorMsg={shippingCountryError}>
               <Select
@@ -453,7 +456,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               />
             </ValidationField>
           </Fieldset>
-          <Fieldset title="Billing address">
+          <Fieldset title={localizedAppStrings[locale][AppStrings.BillingAddress]}>
             <div className={FORM_REGISTRATION_CHECKBOX_FIELD}>
               <Checkbox
                 theme="primary"
@@ -470,7 +473,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
               <label
                 className={FORM_REGISTRATION_CHECKBOX_LABEL}
                 htmlFor="isTheSameAddressAsShipping">
-                The same as shipping address
+                {localizedAppStrings[locale][AppStrings.TheSameAsShippingAddress]}
               </label>
             </div>
 
@@ -488,12 +491,12 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
                 }}
               />
               <label className={FORM_REGISTRATION_CHECKBOX_LABEL} htmlFor="isDefaultBillingAddress">
-                Set as default billing address
+                {localizedAppStrings[locale][AppStrings.SetAsDefaultBillingAddress]}
               </label>
             </div>
 
             <label className={FORM_REGISTRATION_LABEL} htmlFor="billingStreetName">
-              Street
+              {localizedAppStrings[locale][AppStrings.Street]}
             </label>
             <ValidationField errorMsg={billingStreetNameError}>
               <InputField
@@ -511,7 +514,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             </ValidationField>
 
             <label className={FORM_REGISTRATION_LABEL} htmlFor="billingCity">
-              City
+              {localizedAppStrings[locale][AppStrings.City]}
             </label>
             <ValidationField errorMsg={billingCityError}>
               <InputField
@@ -529,7 +532,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             </ValidationField>
 
             <label className={FORM_REGISTRATION_LABEL} htmlFor="billingPostalCode">
-              Postal code
+              {localizedAppStrings[locale][AppStrings.PostalCode]}
             </label>
             <ValidationField errorMsg={billingPostalCodeError}>
               <InputField
@@ -547,7 +550,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             </ValidationField>
 
             <label className={FORM_REGISTRATION_LABEL} htmlFor="billingCountry">
-              Country
+              {localizedAppStrings[locale][AppStrings.Country]}
             </label>
             <ValidationField errorMsg={billingCountryError}>
               <Select
@@ -573,12 +576,12 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
             el="button"
             type="submit"
             disabled={isSubmitting}>
-            Register
+            {localizedAppStrings[locale][AppStrings.Register]}
           </Button>
           <p className={FORM_REGISTRATION_QUESTION}>
-            {LOGIN_LINK_TEXT}
+            {localizedAppStrings[locale][AppStrings.QAlreadyHaveAnAccount]}{' '}
             <Link relative="path" className={FORM_REGISTRATION_LINK} to={getFullPath(VIEW_LOGIN)}>
-              Log in
+              {localizedAppStrings[locale][AppStrings.LogIn]}
             </Link>
           </p>
         </>

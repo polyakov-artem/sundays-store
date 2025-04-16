@@ -9,8 +9,7 @@ import * as Yup from 'yup';
 import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { inputErrors } from '../../../constants/constants';
 import { useFormik } from 'formik';
-import './FormLogin.scss';
-import { useAppDispatch } from '../../../hooks/store-hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import {
   mutex,
   tokenLoadingEnded,
@@ -22,8 +21,12 @@ import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_REGISTER } from '../../../routes';
+import { selectLocale } from '../../../store/settingsSlice';
+import { AppStrings } from '../../../constants/appStrings';
+import { localizedAppStrings } from '../../../constants/localizedAppStrings';
+import './FormLogin.scss';
 
-type TFormLoginProps = TIntrinsicForm;
+export type TFormLoginProps = TIntrinsicForm;
 
 export const FORM_LOGIN = 'form-login';
 export const FORM_LOGIN_LABEL = `${FORM_LOGIN}__label`;
@@ -31,7 +34,6 @@ export const FORM_LOGIN_BTN = `${FORM_LOGIN}__btn`;
 export const FORM_LOGIN_ERROR_MESSAGE = `${FORM_LOGIN}__error-message`;
 export const FORM_LOGIN_QUESTION = `${FORM_LOGIN}__question`;
 export const FORM_LOGIN_LINK = `${FORM_LOGIN}__link`;
-export const REGISTER_LINK_TEXT = `Don't have an account yet? `;
 
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 30;
@@ -60,7 +62,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
   const classes = classNames(FORM_LOGIN, className);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
-
+  const locale = useAppSelector(selectLocale);
   const dispatch = useAppDispatch();
 
   const formik = useFormik({
@@ -107,7 +109,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
   return (
     <form className={classes} {...restProps} onSubmit={formik.handleSubmit}>
       <label className={FORM_LOGIN_LABEL} htmlFor="email">
-        Email
+        {localizedAppStrings[locale][AppStrings.Email]}
       </label>
       <ValidationField errorMsg={emailError}>
         <InputField
@@ -122,7 +124,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         />
       </ValidationField>
       <label className={FORM_LOGIN_LABEL} htmlFor="password">
-        Password
+        {localizedAppStrings[locale][AppStrings.Password]}
       </label>
       <ValidationField errorMsg={passwordError}>
         <PasswordField
@@ -146,12 +148,12 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         el="button"
         type="submit"
         disabled={isSubmitting}>
-        Login
+        {localizedAppStrings[locale][AppStrings.LogIn]}
       </Button>
       <p className={FORM_LOGIN_QUESTION}>
-        {REGISTER_LINK_TEXT}
+        {localizedAppStrings[locale][AppStrings.QDontHaveAnAccountYet]}{' '}
         <Link relative="path" className={FORM_LOGIN_LINK} to={getFullPath(VIEW_REGISTER)}>
-          Register
+          {localizedAppStrings[locale][AppStrings.Register]}
         </Link>
       </p>
     </form>

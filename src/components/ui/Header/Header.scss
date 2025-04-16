@@ -39,6 +39,10 @@
     display: none;
   }
 
+  &__country-selector {
+    width: auto;
+  }
+
   @media (min-width: 992px) {
     &__menu {
       height: auto !important;
