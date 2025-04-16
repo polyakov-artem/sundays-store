@@ -36,7 +36,10 @@ const HeaderLinks: FC<THeaderLinksProps> = (props) => {
   const links = useMemo(() => {
     return categories.map(({ id, name }) => (
       <li className={HEADER_LINKS_ITEM} key={id}>
-        <NavLink to={getFullPath(VIEW_CATALOG, id)} className={linkClassNameHandler}>
+        <NavLink
+          to={getFullPath(VIEW_CATALOG, id)}
+          className={linkClassNameHandler}
+          relative="path">
           <span className={HEADER_LINKS_TEXT}>{name[locale]}</span>
         </NavLink>
       </li>

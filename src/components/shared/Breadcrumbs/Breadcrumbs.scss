@@ -4,13 +4,14 @@
   @include mixins.list;
   display: flex;
   flex-wrap: wrap;
+  font-size: 0.9rem;
 
   &__item {
     display: flex;
     align-items: center;
 
-    &:not(:last-child) {
-      &::after {
+    &:not(:first-child) {
+      &::before {
         content: '\00a0>\00a0';
       }
     }
