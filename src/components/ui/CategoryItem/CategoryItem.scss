@@ -1,0 +1,28 @@
+@use './../../../scss/abstracts/mixins';
+
+.category-item {
+  &__link {
+    text-align: center;
+    box-shadow: var(--g-black-10-box-shadow);
+    padding: var(--g-md-gap);
+    text-decoration: none;
+    display: block;
+    border-radius: var(--g-border-radius);
+    color: var(--black-1);
+    transition-property: color, box-shadow;
+    transition-duration: 0.2s;
+
+    &:hover {
+      color: var(--green-1);
+      box-shadow: var(--g-black-20-box-shadow);
+    }
+  }
+
+  &__img-wrap {
+    aspect-ratio: 4/3;
+  }
+
+  &__img {
+    border-radius: var(--g-border-radius);
+  }
+}

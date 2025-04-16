@@ -1,0 +1,9 @@
+.auth-window {
+  background-color: var(--white-1);
+  padding: var(--g-md-gap);
+  border-radius: var(--g-block-border-radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-md-gap);
+  box-shadow: var(--g-block-box-shadow);
+}

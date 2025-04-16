@@ -1,0 +1,29 @@
+@use './../../../scss/abstracts/mixins';
+
+.breadcrumbs {
+  @include mixins.list;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+
+    &:not(:first-child) {
+      &::before {
+        content: '\00a0>\00a0';
+      }
+    }
+  }
+
+  &__link {
+    color: var(--black-1);
+    transition-property: color;
+    transition-duration: 0.2s;
+
+    &:hover {
+      color: var(--green-1);
+    }
+  }
+}

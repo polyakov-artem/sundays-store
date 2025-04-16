@@ -1,5 +1,18 @@
 # Sundays store
 
+## Deploy
+
+The website is currently being developed. Current version - https://sundays-store.netlify.app/
+
+## Requirements
+
+The website is also designed according to the requirements listed below.:
+
+1. [Sprint 1](tasks/Sprints/Sprint_1.md)
+2. [Sprint 2](tasks/Sprints/Sprint_2.md)
+3. [Sprint 3](tasks/Sprints/Sprint_3.md)
+4. [Sprint 4](tasks/Sprints/Sprint_4.md)
+
 ## Description
 
 This website is an online store selling decor, furniture, and kitchen accessories. The database is filled with data provided by commercetools. This project was created for educational purposes in order to gain practical experience in web development, e-commerce, and working with APIs.

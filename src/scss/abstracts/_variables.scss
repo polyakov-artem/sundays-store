@@ -1,23 +1,51 @@
 :root {
   --white-1: rgb(255, 255, 255);
+  --white-1-10: rgb(255, 255, 255, 0.1);
+  --white-2: rgb(250, 250, 250);
+  --white-3: rgb(243, 243, 240);
   --black-1: rgb(0, 0, 0);
+  --black-1-10: rgba(0, 0, 0, 0.1);
+  --black-1-20: rgba(0, 0, 0, 0.2);
+  --black-1-30: rgba(0, 0, 0, 0.3);
+  --black-1-50: rgba(0, 0, 0, 0.5);
+  --green-1: rgb(104, 115, 92);
+  --green-1-50: rgb(104, 115, 92, 0.5);
+  --green-2: rgb(179, 185, 173);
+  --green-3: rgb(179, 185, 173);
+  --green-4: rgb(106, 212, 0);
+  --gray-1: rgb(204, 204, 204);
+  --gray-1-50: rgb(204, 204, 204, 0.5);
+  --red-1: rgb(255, 0, 0);
+  --red-1-20: rgb(255, 0, 0, 0.2);
 
   --g-page-bg-color: var(--white-1);
   --g-page-text-color: var(--black-1);
+  --g-black-10-box-shadow: 0 0 10px 0 var(--black-1-10);
+  --g-black-20-box-shadow: 0 0 10px 0 var(--black-1-20);
+  --g-border-radius: 5px;
 }
 
 :root {
-  --g-ff-sans-serif: 'Roboto', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
-    'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --g-ff-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
+  --g-ff-sans-serif:
+    'Roboto', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans',
+    'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --g-ff-monospace:
+    SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
 :root {
+  --g-min-header-height: 5rem;
   --g-page-min-width: 320px;
   --g-container-max-width: 1320px;
-  --g-default-padding: 20px;
+  --g-block-border-radius: 10px;
+  --g-block-box-shadow: 0 0 1.25rem 0 var(--black-1-10);
+  --g-xlg-gap: 1.875rem;
+  --g-lg-gap: 1.5625rem;
+  --g-md-gap: 1.25rem;
+  --g-sm-gap: 0.9375rem;
+  --g-xs-gap: 0.625rem;
+  --g-xxs-gap: 0.3125rem;
 }
 
 $breakpoint-sm: 575.98px;
