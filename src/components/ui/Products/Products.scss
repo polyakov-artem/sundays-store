@@ -1,0 +1,26 @@
+.products {
+  display: grid;
+  gap: var(--g-md-gap);
+  grid-template-areas:
+    'filter header'
+    'filter list'
+    'filter breadcrumbs';
+
+  grid-template-columns: 300px 1fr;
+
+  &__header {
+    grid-area: header;
+  }
+
+  &__list {
+    grid-area: list;
+  }
+
+  &__filter {
+    grid-area: filter;
+  }
+
+  &__spinner {
+    grid-area: 1 / 1 / -1 / -1;
+  }
+}

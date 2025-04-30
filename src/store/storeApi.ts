@@ -7,7 +7,12 @@ import {
   TCategory,
   TCustomer,
   TCustomerSignInResult,
+  TGetProductDiscountsParams,
   TMyCustomerDraft,
+  TProductDiscount,
+  TProductDiscountPagedQueryResponse,
+  TProductProjectionPagedSearchRequest,
+  TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
 } from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
@@ -61,13 +66,11 @@ const axiosBaseQuery = ({
     }
   };
 };
-const categoriesAdapter = createEntityAdapter<TCategory>();
-export const categoriesAdapterInitialState = categoriesAdapter.getInitialState();
 
 export const storeApi = createApi({
   reducerPath: 'storeApi',
   baseQuery: axiosBaseQuery({ httpService }),
-  tagTypes: ['Customer', 'Category'],
+  tagTypes: ['Customer', 'Category', 'Product'],
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
@@ -96,8 +99,40 @@ export const storeApi = createApi({
           ? [...result.map(({ id }) => ({ type: 'Category' as const, id })), 'Category']
           : ['Category'],
     }),
+
+    searchProductProjections: builder.query<
+      TProductProjectionPagedSearchResponse,
+      TProductProjectionPagedSearchRequest | void
+    >({
+      query: (params?: TProductProjectionPagedSearchRequest) => {
+        const data = params ? new URLSearchParams(params).toString() : undefined;
+
+        return {
+          url: `${projectKey}/product-projections/search`,
+          data,
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        };
+      },
+    }),
+
+    getProductDiscounts: builder.query<TProductDiscount[], TGetProductDiscountsParams | void>({
+      query: (params: TGetProductDiscountsParams = { limit: 500 }) => {
+        return {
+          url: `${projectKey}/product-discounts`,
+          params,
+          method: 'GET',
+        };
+      },
+      transformResponse: (response: TProductDiscountPagedQueryResponse) => {
+        return response.results;
+      },
+    }),
   }),
 });
+
+const categoriesAdapter = createEntityAdapter<TCategory>();
+export const categoriesAdapterInitialState = categoriesAdapter.getInitialState();
 
 export const selectQueryCategoriesResult = storeApi.endpoints.queryCategories.select();
 
@@ -107,6 +142,20 @@ export const selectCategoriesAdapterState = createSelector(
     return !result.data
       ? categoriesAdapterInitialState
       : categoriesAdapter.setAll(categoriesAdapterInitialState, result.data);
+  }
+);
+
+const discountsAdapter = createEntityAdapter<TProductDiscount>();
+export const discountsAdapterInitialState = discountsAdapter.getInitialState();
+
+export const selectGetProductDiscountsResult = storeApi.endpoints.getProductDiscounts.select();
+
+export const selectGetProductDiscountsAdapterState = createSelector(
+  [selectGetProductDiscountsResult],
+  (result) => {
+    return !result.data
+      ? discountsAdapterInitialState
+      : discountsAdapter.setAll(discountsAdapterInitialState, result.data);
   }
 );
 
@@ -121,4 +170,10 @@ export const selectMainCategories = createSelector([selectAllCategories], (categ
   categories.filter((category) => category.ancestors.length === 0)
 );
 
-export const { useGetMeQuery, useSignUpMutation, useQueryCategoriesQuery } = storeApi;
+export const {
+  useGetMeQuery,
+  useSignUpMutation,
+  useQueryCategoriesQuery,
+  useSearchProductProjectionsQuery,
+  useGetProductDiscountsQuery,
+} = storeApi;
