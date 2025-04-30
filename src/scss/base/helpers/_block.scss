@@ -1,0 +1,16 @@
+.block {
+  background-color: var(--white-1);
+  padding: var(--g-md-gap);
+  border-radius: var(--g-border-radius);
+  box-shadow: var(--g-black-10-box-shadow);
+  transition-property: box-shadow;
+  transition-duration: 0.2s;
+
+  &_with-hover {
+    @media (hover: hover) {
+      &:hover {
+        box-shadow: var(--g-black-20-box-shadow);
+      }
+    }
+  }
+}

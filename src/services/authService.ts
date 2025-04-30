@@ -56,6 +56,7 @@ export const LS_USER_REFRESH_TOKEN_KEY = 'refresh_token';
 export const BASIC_SCOPE_KEYS = [
   'view_categories',
   'view_published_products',
+  'view_products',
   'create_anonymous_token',
   'manage_my_profile',
 ];
@@ -63,6 +64,7 @@ export const BASIC_SCOPE_KEYS = [
 export const ANONYMOUS_SCOPE_KEYS = [
   'view_categories',
   'view_published_products',
+  'view_products',
   'manage_my_orders',
   'manage_my_profile',
 ];
@@ -70,6 +72,7 @@ export const ANONYMOUS_SCOPE_KEYS = [
 export const USER_SCOPE_KEYS = [
   'view_categories',
   'view_published_products',
+  'view_products',
   'manage_my_business_units',
   'manage_my_orders',
   'manage_my_payments',

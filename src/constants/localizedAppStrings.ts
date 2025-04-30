@@ -3,7 +3,7 @@ import { AppStrings } from './appStrings';
 import { dictionary } from './dictionary';
 
 export const localizeString = (locale: CountryLocale, str: string) => {
-  const result = dictionary[str][locale];
+  const result = dictionary[str]?.[locale];
   return result ? result : str;
 };
 

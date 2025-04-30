@@ -15,9 +15,10 @@ import { H1, WRAPPER } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import Spinner from '../../shared/Spinner/Spinner';
-import './ViewCatalog.scss';
 import { useCrumbs } from '../../../hooks/useCrumbs';
 import { useCurrentCategory } from '../../../hooks/useCurrentCategory';
+import Products from '../Products/Products';
+import './ViewCatalog.scss';
 
 export const VIEW_CATALOG = 'view-catalog';
 export const VIEW_CATALOG_TITLE = `${VIEW_CATALOG}__title`;
@@ -43,7 +44,11 @@ const ViewCatalog: FC = () => {
   } else if (isError) {
     content = <p>Error: {(error as TCustomError).data}</p>;
   } else if (currentCategory || id === undefined) {
-    content = <CategoryList ids={childCategoriesIds} />;
+    if (childCategoriesIds.length) {
+      content = <CategoryList ids={childCategoriesIds} />;
+    } else {
+      content = <Products />;
+    }
   } else {
     content = <Navigate to={getFullPath(VIEW_NOT_FOUND)} relative="path" replace />;
   }

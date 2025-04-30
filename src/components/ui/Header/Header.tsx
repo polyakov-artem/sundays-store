@@ -91,7 +91,7 @@ const Header: FC = () => {
         className={HEADER_LINK}
         to={getFullPath(VIEW_PROFILE)}
         relative="path">
-        <p className={HEADER_LINK_TEXT}></p>
+        <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.Profile]}</p>
       </Link>,
       <Link key={PUBLIC_PATH} className={HEADER_LINK} to={PUBLIC_PATH} relative="path">
         <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.LogOut]}</p>

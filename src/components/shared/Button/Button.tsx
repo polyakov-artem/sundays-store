@@ -21,6 +21,7 @@ export type TButtonCustomProps = {
   selected?: boolean;
   bold?: boolean;
   disabled?: boolean;
+  iconBefore?: boolean;
 };
 
 export type TButtonProps = (
@@ -44,6 +45,7 @@ const Button: FC<TButtonProps> = (props) => {
     bold,
     el = 'button',
     size,
+    iconBefore,
     ...restProps
   } = props;
   const classes = getClasses(BTN, className, {
@@ -56,6 +58,7 @@ const Button: FC<TButtonProps> = (props) => {
     selected,
     disabled: props.disabled,
     size,
+    iconBefore,
   });
 
   const inner = (
