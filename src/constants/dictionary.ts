@@ -74,4 +74,19 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.RegistrationHasBeenCompleted]: {
     [CountryLocale.DE]: 'Die Registrierung wurde abgeschlossen',
   },
+  [AppStrings.IsOnStock]: {
+    [CountryLocale.DE]: 'Ist auf Lager',
+  },
+  [AppStrings.Yes]: {
+    [CountryLocale.DE]: 'Ja',
+  },
+  [AppStrings.No]: {
+    [CountryLocale.DE]: 'Nein',
+  },
+  [AppStrings.Details]: {
+    [CountryLocale.DE]: 'Hinweise',
+  },
+  [AppStrings.Buy]: {
+    [CountryLocale.DE]: 'Kaufen',
+  },
 };

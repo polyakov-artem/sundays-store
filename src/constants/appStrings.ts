@@ -23,4 +23,9 @@ export enum AppStrings {
   QDontHaveAnAccountYet = `Don't have an account yet?`,
   User = 'User',
   RegistrationHasBeenCompleted = 'Registration has been completed',
+  IsOnStock = 'Is on stock',
+  Yes = 'Yes',
+  No = 'No',
+  Details = 'Details',
+  Buy = 'Buy',
 }
