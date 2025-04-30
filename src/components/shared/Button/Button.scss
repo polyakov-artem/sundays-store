@@ -53,6 +53,10 @@
     position: relative;
   }
 
+  &__icon {
+    display: inline-flex;
+  }
+
   &_full-width {
     width: 100%;
   }
@@ -67,6 +71,12 @@
 
   &_bold {
     font-weight: bold;
+  }
+
+  &_icon-before {
+    .btn__inner {
+      flex-direction: row-reverse;
+    }
   }
 }
 
@@ -85,6 +95,10 @@
     font-size: 1rem;
     padding: 0.5rem 1rem;
     border-radius: 1.2rem;
+
+    .btn__inner {
+      gap: 0.5rem;
+    }
   }
 }
 
@@ -124,6 +138,7 @@
 
   .btn__icon {
     font-size: 1.4rem;
+    margin-bottom: 0.4rem;
   }
 }
 
