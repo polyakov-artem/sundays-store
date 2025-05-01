@@ -1,0 +1,11 @@
+.products-header {
+  container: header / inline-size;
+
+  &__view-mods {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--g-xs-gap);
+    justify-content: end;
+  }
+}

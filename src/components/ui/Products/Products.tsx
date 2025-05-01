@@ -9,10 +9,12 @@ import {
 } from '../../../store/storeApi';
 import Spinner from '../../shared/Spinner/Spinner';
 import { useParams } from 'react-router';
+import ProductsHeader from '../ProductsHeader/ProductsHeader';
 import './Products.scss';
 
 export const PRODUCTS = 'products';
 export const PRODUCTS_LIST = `${PRODUCTS}__list`;
+export const PRODUCTS_HEADER = `${PRODUCTS}__header`;
 export const PRODUCTS_SPINNER = `${PRODUCTS}__spinner`;
 
 export type TProductsProps = TIntrinsicSection;
@@ -39,7 +41,12 @@ const Products: FC<TProductsProps> = (props) => {
   } else if (isProjectionsError) {
     content = <p>Error: {(projectionsError as TCustomError).data}</p>;
   } else {
-    content = <ProductList className={PRODUCTS_LIST} products={projectionsData?.results} />;
+    content = (
+      <>
+        <ProductsHeader className={PRODUCTS_HEADER} />
+        <ProductList className={PRODUCTS_LIST} products={projectionsData?.results} />
+      </>
+    );
   }
 
   return (

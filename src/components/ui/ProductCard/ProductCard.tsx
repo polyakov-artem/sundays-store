@@ -18,6 +18,7 @@ import { selectGetProductDiscountsAdapterState } from '../../../store/storeApi';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
+export const PRODUCT_CARD_MODE_LIST = `${PRODUCT_CARD}_mode_list`;
 export const PRODUCT_CARD_NOT_AVAILABLE = `${PRODUCT_CARD}_not-available`;
 export const PRODUCT_CARD_LINK = `${PRODUCT_CARD}__link`;
 export const PRODUCT_CARD_HEADER = `${PRODUCT_CARD}__header`;
@@ -43,10 +44,11 @@ export const DESCRIPTION_MAX_LENGTH = 120;
 
 export type TProductCardProps = {
   product: TProductProjection;
+  isListMode: boolean;
 } & TIntrinsicArticle;
 
 const ProductCard: FC<TProductCardProps> = (props) => {
-  const { className, product, ...rest } = props;
+  const { className, product, isListMode, ...rest } = props;
   const {
     id,
     name,
@@ -59,7 +61,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     BLOCK,
     BLOCK_WITH_HOVER,
     PRODUCT_CARD,
-    { [PRODUCT_CARD_NOT_AVAILABLE]: !isAvailable },
+    { [PRODUCT_CARD_NOT_AVAILABLE]: !isAvailable, [PRODUCT_CARD_MODE_LIST]: isListMode },
     className
   );
 
