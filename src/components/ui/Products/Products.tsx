@@ -7,7 +7,7 @@ import {
   useGetProductDiscountsQuery,
   useSearchProductProjectionsQuery,
 } from '../../../store/storeApi';
-import Spinner from '../../shared/Spinner/Spinner';
+import ScreenLoader from '../../shared/ScreenLoader/ScreenLoader';
 import { useParams } from 'react-router';
 import ProductsHeader from '../ProductsHeader/ProductsHeader';
 import './Products.scss';
@@ -37,7 +37,7 @@ const Products: FC<TProductsProps> = (props) => {
   let content;
 
   if (areProjectionsFetching || areDiscountsFetching) {
-    content = <Spinner fullSpace size="lg" theme="primary" className={PRODUCTS_SPINNER} />;
+    content = content = <ScreenLoader type="linear" fullSpace className={PRODUCTS_SPINNER} />;
   } else if (isProjectionsError) {
     content = <p>Error: {(projectionsError as TCustomError).data}</p>;
   } else {

@@ -21,6 +21,7 @@
   }
 
   &__spinner {
-    grid-area: 1 / 1 / -1 / -1;
+    grid-area: list;
+    min-height: 300px;
   }
 }

@@ -14,7 +14,7 @@ import CategoryList from '../CategoryList/CategoryList.';
 import { H1, WRAPPER } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import Spinner from '../../shared/Spinner/Spinner';
+import ScreenLoader from '../../shared/ScreenLoader/ScreenLoader';
 import { useCrumbs } from '../../../hooks/useCrumbs';
 import { useCurrentCategory } from '../../../hooks/useCurrentCategory';
 import Products from '../Products/Products';
@@ -40,7 +40,7 @@ const ViewCatalog: FC = () => {
   let content;
 
   if (isFetching) {
-    content = <Spinner fullSpace size="lg" theme="primary" />;
+    content = <ScreenLoader type="linear" fullSpace />;
   } else if (isError) {
     content = <p>Error: {(error as TCustomError).data}</p>;
   } else if (currentCategory || id === undefined) {
