@@ -89,4 +89,28 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.Buy]: {
     [CountryLocale.DE]: 'Kaufen',
   },
+  [AppStrings.SortBy]: {
+    [CountryLocale.DE]: 'Sortieren nach',
+  },
+  [AppStrings.PriceAscending]: {
+    [CountryLocale.DE]: 'Preis (aufsteigend)',
+  },
+  [AppStrings.PriceDescending]: {
+    [CountryLocale.DE]: 'Preis (absteigend)',
+  },
+  [AppStrings.SearchForProduct]: {
+    [CountryLocale.DE]: 'Suche nach Produkt',
+  },
+  [AppStrings.Search]: {
+    [CountryLocale.DE]: 'Suche',
+  },
+  [AppStrings.NameInReverseOrder]: {
+    [CountryLocale.DE]: 'Name (in umgekehrter Reihenfolge)',
+  },
+  [AppStrings.NameAlphabetical]: {
+    [CountryLocale.DE]: 'Name (alphabetisch)',
+  },
+  [AppStrings.Default]: {
+    [CountryLocale.DE]: 'Standard',
+  },
 };

@@ -8,4 +8,27 @@
     gap: var(--g-xs-gap);
     justify-content: end;
   }
+
+  &__form {
+    display: flex;
+    gap: var(--g-md-gap);
+    flex-direction: column;
+    margin-bottom: var(--g-xs-gap);
+  }
+
+  &__search {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--g-xs-gap);
+  }
+
+  &__sorting {
+    display: flex;
+    align-items: center;
+    gap: var(--g-xs-gap);
+  }
+
+  &__sorting-select {
+    flex: 0 1 fit-content;
+  }
 }

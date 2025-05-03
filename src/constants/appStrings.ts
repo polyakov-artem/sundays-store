@@ -28,4 +28,12 @@ export enum AppStrings {
   No = 'No',
   Details = 'Details',
   Buy = 'Buy',
+  Search = 'Search',
+  SortBy = 'Sort by',
+  PriceAscending = 'Price (ascending)',
+  PriceDescending = 'Price (descending)',
+  SearchForProduct = 'Search for product',
+  NameInReverseOrder = 'Name (in reverse order)',
+  NameAlphabetical = 'Name (alphabetical)',
+  Default = 'Default',
 }

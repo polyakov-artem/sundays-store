@@ -384,26 +384,26 @@ export type TWarningObject = {
   message: string;
 };
 
-export type TProductProjectionPagedSearchRequest = {
+export type TProductProjectionPagedSearchParams = {
   markMatchingVariants?: string;
-  'text.<locale>'?: string;
-  fuzzy?: string;
-  fuzzyLevel?: string;
-  'filter.query'?: string;
-  filter?: string;
-  facet?: string;
-  'filter.facets'?: string;
-  sort?: string;
-  expand?: string;
-  limit?: string;
-  offset?: string;
-  staged?: string;
+  [key: `text.${string}`]: string | string[];
+  fuzzy?: boolean;
+  fuzzyLevel?: number;
+  'filter.query'?: string | string[];
+  filter?: string | string[];
+  facet?: string | string[];
+  'filter.facets'?: string | string[];
+  sort?: string | string[];
+  expand?: string | string[];
+  limit?: number;
+  offset?: number;
+  staged?: boolean;
   priceCurrency?: string;
   priceCountry?: string;
   priceCustomerGroup?: string;
-  priceCustomerGroupAssignments?: string;
+  priceCustomerGroupAssignments?: string | string[];
   priceChannel?: string;
-  localeProjection?: CountryLocale;
+  localeProjection?: CountryLocale | CountryLocale[];
   storeProjection?: string;
 };
 

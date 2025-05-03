@@ -11,12 +11,13 @@ import {
   TMyCustomerDraft,
   TProductDiscount,
   TProductDiscountPagedQueryResponse,
-  TProductProjectionPagedSearchRequest,
+  TProductProjectionPagedSearchParams,
   TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
 } from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+import { getQueryString } from '../utils/getQueryString';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -102,14 +103,12 @@ export const storeApi = createApi({
 
     searchProductProjections: builder.query<
       TProductProjectionPagedSearchResponse,
-      TProductProjectionPagedSearchRequest | void
+      TProductProjectionPagedSearchParams | void
     >({
-      query: (params?: TProductProjectionPagedSearchRequest) => {
-        const data = params ? new URLSearchParams(params).toString() : undefined;
-
+      query: (params?: TProductProjectionPagedSearchParams) => {
         return {
           url: `${projectKey}/product-projections/search`,
-          data,
+          data: getQueryString(params),
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         };
