@@ -113,4 +113,7 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.Default]: {
     [CountryLocale.DE]: 'Standard',
   },
+  [AppStrings.SomethingWentWrong]: {
+    [CountryLocale.DE]: 'Etwas ist schief gelaufen',
+  },
 };

@@ -36,4 +36,5 @@ export enum AppStrings {
   NameInReverseOrder = 'Name (in reverse order)',
   NameAlphabetical = 'Name (alphabetical)',
   Default = 'Default',
+  SomethingWentWrong = 'Something went wrong',
 }
