@@ -135,6 +135,24 @@ export enum CountryLocale {
   DE = 'de-DE',
 }
 
+export enum CurrencyCode {
+  EUR = 'EUR',
+  GBP = 'GBP',
+  USD = 'USD',
+}
+
+export enum CurrencyChar {
+  EUR = '€',
+  GBP = '£',
+  USD = '$',
+}
+
+export enum CountryCurrency {
+  GB = 'GBP',
+  US = 'USD',
+  DE = 'EUR',
+}
+
 export enum CountryCode {
   'GB' = 'GB',
   'DE' = 'DE',
@@ -385,7 +403,7 @@ export type TWarningObject = {
 };
 
 export type TProductProjectionPagedSearchParams = {
-  markMatchingVariants?: string;
+  markMatchingVariants?: boolean;
   [key: `text.${string}`]: string | string[];
   fuzzy?: boolean;
   fuzzyLevel?: number;
@@ -439,6 +457,10 @@ export type TProductProjection = {
   priceMode?: unknown;
   createdAt: string;
   lastModifiedAt: string;
+};
+
+export type TExtendedProductProjection = TProductProjection & {
+  currentVariant: TProductVariant;
 };
 
 export type TProductVariant = {
@@ -522,18 +544,6 @@ export type TReference = {
   typeId: ReferenceTypeId;
 };
 
-export enum CurrencyCode {
-  EUR = 'EUR',
-  GBP = 'GBP',
-  USD = 'USD',
-}
-
-export enum CurrencyChar {
-  EUR = '€',
-  GBP = '£',
-  USD = '$',
-}
-
 export type TProductVariantAvailability = {
   id?: string;
   version?: number;
@@ -586,6 +596,11 @@ export type TProductDiscountPagedQueryResponse = {
   total?: number;
   results: TProductDiscount[];
 };
+
+export enum Order {
+  asc = 'asc',
+  desc = 'desc',
+}
 
 export enum ReferenceTypeId {
   'approval-flow' = 'approval-flow',

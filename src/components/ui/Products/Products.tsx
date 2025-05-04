@@ -1,5 +1,9 @@
 import { FC, useMemo } from 'react';
-import { TIntrinsicSection, TProductProjectionPagedSearchParams } from '../../../types/types';
+import {
+  CountryCurrency,
+  TIntrinsicSection,
+  TProductProjectionPagedSearchParams,
+} from '../../../types/types';
 import classNames from 'classnames';
 import ProductList from '../ProductList/ProductList';
 import {
@@ -9,7 +13,7 @@ import {
 import { useParams, useSearchParams } from 'react-router';
 import ProductsHeader, { SEARCH_TEXT, SORTING } from '../ProductsHeader/ProductsHeader';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
+import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';
 import './Products.scss';
@@ -29,10 +33,14 @@ const Products: FC<TProductsProps> = (props) => {
   const locale = useAppSelector(selectLocale);
   const searchText = searchParams.get(SEARCH_TEXT);
   const sorting = searchParams.get(SORTING);
+  const countryCode = useAppSelector(selectCountryCode);
 
   const projectionsQueryParams = useMemo(() => {
     const params: TProductProjectionPagedSearchParams = {
       'filter.query': [`categories.id:"${categoryId}"`],
+      markMatchingVariants: true,
+      priceCurrency: CountryCurrency[countryCode],
+      priceCountry: countryCode,
     };
 
     if (searchText) {
@@ -42,16 +50,18 @@ const Products: FC<TProductsProps> = (props) => {
 
     if (sorting) {
       const [key, direction] = sorting.split('_');
+
       if (key === 'name') {
         params.sort = `${key}.${locale} ${direction}`;
       }
+
       if (key === 'price') {
-        params.sort = `${key} ${direction}`;
+        params.sort = `variants.scopedPrice.currentValue.centAmount ${direction}`;
       }
     }
 
     return params;
-  }, [categoryId, searchText, locale, sorting]);
+  }, [categoryId, searchText, locale, sorting, countryCode]);
 
   const {
     data: projectionsData,
@@ -70,7 +80,11 @@ const Products: FC<TProductsProps> = (props) => {
   } else {
     content = (
       <>
-        <ProductList className={PRODUCTS_LIST} products={projectionsData?.results} />
+        <ProductList
+          key={JSON.stringify(projectionsQueryParams)}
+          className={PRODUCTS_LIST}
+          productProjections={projectionsData?.results}
+        />
       </>
     );
   }

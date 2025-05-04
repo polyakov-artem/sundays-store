@@ -1,18 +1,22 @@
-import { FC, useCallback, useMemo } from 'react';
-import { TIntrinsicArticle, TProductProjection } from '../../../types/types';
+import { FC, useCallback, useMemo, useState } from 'react';
+import {
+  CountryCode,
+  CountryLocale,
+  Order,
+  TIntrinsicArticle,
+  TProductProjection,
+} from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK, BLOCK_WITH_HOVER, H3, H4, MEDIA_CONTAIN } from '../../../constants/cssHelpers';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_LOGIN, VIEW_PRODUCT } from '../../../routes';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, Location, useNavigate } from 'react-router';
 import { getLocalizedPriceData } from '../../../utils/getLocalizedPriceData';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import Button from '../../shared/Button/Button';
 import { FaShoppingCart } from 'react-icons/fa';
-import { selectUserRole } from '../../../store/authSlice';
 import { TokenRole } from '../../../services/authService';
 import { selectGetProductDiscountsAdapterState } from '../../../store/storeApi';
 import './ProductCard.scss';
@@ -39,24 +43,92 @@ export const PRODUCT_CARD_DISCOUNT_VALUE = `${PRODUCT_CARD}__discount-value`;
 export const PRODUCT_CARD_AVAILABILITY = `${PRODUCT_CARD}__availability`;
 export const PRODUCT_CARD_AVAILABILITY_VALUE = `${PRODUCT_CARD}__availability-value`;
 export const PRODUCT_CARD_DISCOUNT_BADGE = `${PRODUCT_CARD}__discount-badge`;
+export const PRODUCT_CARD_TABS = `${PRODUCT_CARD}__tabs`;
 
 export const DESCRIPTION_MAX_LENGTH = 120;
 
 export type TProductCardProps = {
-  product: TProductProjection;
+  productProjection: TProductProjection;
   isListMode: boolean;
+  priceSorting?: Order;
+  countryCode: CountryCode;
+  locale: CountryLocale;
+  location: Location;
+  role: TokenRole;
 } & TIntrinsicArticle;
 
 const ProductCard: FC<TProductCardProps> = (props) => {
-  const { className, product, isListMode, ...rest } = props;
   const {
-    id,
-    name,
-    description,
-    masterVariant: { images, availability, prices },
-  } = product;
+    className,
+    productProjection,
+    priceSorting,
+    isListMode,
+    locale,
+    location,
+    role,
+    countryCode,
+    ...rest
+  } = props;
 
+  const navigate = useNavigate();
+  const discounts = useAppSelector(selectGetProductDiscountsAdapterState);
+  const { id, name, description } = productProjection;
+
+  const variants = useMemo(() => {
+    const matchingVariants = [];
+    if (productProjection.masterVariant.isMatchingVariant) {
+      matchingVariants.push({
+        ...productProjection.masterVariant,
+        localizedPriceData: getLocalizedPriceData(
+          countryCode,
+          productProjection.masterVariant.prices
+        ),
+      });
+    }
+
+    productProjection.variants.forEach((variant) => {
+      if (variant.isMatchingVariant) {
+        matchingVariants.push({
+          ...variant,
+          localizedPriceData: getLocalizedPriceData(countryCode, variant.prices),
+        });
+      }
+    });
+
+    return matchingVariants;
+  }, [productProjection, countryCode]);
+
+  const defaultVariantIndex = useMemo(() => {
+    let index = 0;
+
+    if (priceSorting) {
+      variants.forEach((variant, i) => {
+        const foundValue = variants[index].localizedPriceData?.currentValue;
+        const variantValue = variant.localizedPriceData?.currentValue;
+
+        if (foundValue && variantValue) {
+          if (priceSorting === Order.asc) {
+            if (foundValue > variantValue) {
+              index = i;
+            }
+          } else {
+            if (foundValue < variantValue) {
+              index = i;
+            }
+          }
+        }
+      });
+    }
+
+    return index;
+  }, [variants, priceSorting]);
+
+  const [currentVariantIndex, setCurrentVariantIndex] = useState(defaultVariantIndex);
+  const currentVariant = variants[currentVariantIndex];
+
+  const { images, availability, localizedPriceData } = currentVariant;
   const isAvailable = availability?.isOnStock;
+
   const classes = classNames(
     BLOCK,
     BLOCK_WITH_HOVER,
@@ -65,17 +137,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     className
   );
 
-  const locale = useAppSelector(selectLocale);
-  const countryCode = useAppSelector(selectCountryCode);
-  const discounts = useAppSelector(selectGetProductDiscountsAdapterState);
   const localizedName = name[locale];
-  const role = useAppSelector(selectUserRole);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const localizedPriceData = useMemo(() => {
-    return getLocalizedPriceData(countryCode, prices);
-  }, [prices, countryCode]);
 
   const truncatedDescription = useMemo(() => {
     if (!description) return;
@@ -86,18 +148,15 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     return `${localized.slice(0, DESCRIPTION_MAX_LENGTH)}...`;
   }, [locale, description]);
 
-  const linkURL = getFullPath(VIEW_PRODUCT, id);
-
   let pricesContent;
 
   if (localizedPriceData) {
-    const { discountedValue, discountDifference, value, currencyChar } = localizedPriceData;
-
-    const actualPriceValue = discountedValue ? discountedValue : value;
+    const { discountedValue, discountDifference, value, currencyChar, currentValue } =
+      localizedPriceData;
 
     const actualPrice = (
       <div className={classNames(H3, PRODUCT_CARD_ACTUAL_PRICE)}>
-        <span className={PRODUCT_CARD_PRICE}>{actualPriceValue}</span>
+        <span className={PRODUCT_CARD_PRICE}>{currentValue}</span>
         <span className={PRODUCT_CARD_CURRENCY_CHAR}>{` ${currencyChar}`}</span>
       </div>
     );
@@ -140,25 +199,41 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     }
   }, [role, location, navigate, isAvailable]);
 
+  const linkURL = getFullPath(VIEW_PRODUCT, `${id}-${currentVariant.id}`);
+
+  const tabsContent = useMemo(() => {
+    return variants.map((variant, i) => (
+      <Button
+        el="button"
+        key={variant.id}
+        theme="primary"
+        view="tab"
+        size="sm"
+        onClick={() => setCurrentVariantIndex(i)}
+        selected={i === currentVariantIndex}>
+        {variant.sku}
+      </Button>
+    ));
+  }, [variants, currentVariantIndex]);
+
   return (
     <article className={classes} {...rest}>
       <header className={PRODUCT_CARD_HEADER}>
-        <Link className={PRODUCT_CARD_LINK} to={linkURL}>
-          <div className={PRODUCT_CARD_IMG_WRAP}>
-            <img
-              className={classNames(MEDIA_CONTAIN, PRODUCT_CARD_IMG)}
-              src={images?.[0].url}
-              alt={localizedName}
-            />
-            {discountBadge}
-          </div>
-        </Link>
+        <div className={PRODUCT_CARD_IMG_WRAP}>
+          <img
+            className={classNames(MEDIA_CONTAIN, PRODUCT_CARD_IMG)}
+            src={images?.[0].url}
+            alt={localizedName}
+          />
+          {discountBadge}
+        </div>
       </header>
       <div className={PRODUCT_CARD_BODY}>
         <Link className={PRODUCT_CARD_LINK} to={linkURL}>
           <h4 className={classNames(H4, PRODUCT_CARD_TITLE)}> {localizedName}</h4>
         </Link>
         <p className={PRODUCT_CARD_DESCRIPTION}>{truncatedDescription}</p>
+        <div className={PRODUCT_CARD_TABS}>{tabsContent.length > 1 && tabsContent}</div>
         <div className={PRODUCT_CARD_PRICES}>{pricesContent}</div>
         <div className={PRODUCT_CARD_ACTIONS}>
           <Button

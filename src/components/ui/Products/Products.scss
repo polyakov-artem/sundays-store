@@ -16,12 +16,7 @@
     grid-area: list;
   }
 
-  &__filter {
+  &__filter-wrap {
     grid-area: filter;
-  }
-
-  &__spinner {
-    grid-area: list;
-    min-height: 300px;
   }
 }

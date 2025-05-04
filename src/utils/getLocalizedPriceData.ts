@@ -27,7 +27,10 @@ export const getLocalizedPriceData = (countryCode: CountryCode, prices?: TPrice[
       : undefined
     : undefined;
 
+  const currentValue = discountedValue ? discountedValue : value;
+
   return {
+    currentValue,
     discountId: discounted?.discount.id,
     discountedValue,
     discountDifference,

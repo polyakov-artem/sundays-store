@@ -93,25 +93,27 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
     (e: FormEvent<CustomForm>) => {
       e.preventDefault();
 
-      const trimmedSearchText = searchText?.trim();
+      if (searchText !== searchTextParamValue || sorting !== sortingParamValue) {
+        const trimmedSearchText = searchText?.trim();
 
-      setParams((params) => {
-        if (trimmedSearchText) {
-          params.set(SEARCH_TEXT, trimmedSearchText);
-        } else {
-          params.delete(SEARCH_TEXT);
-        }
+        setParams((params) => {
+          if (trimmedSearchText) {
+            params.set(SEARCH_TEXT, trimmedSearchText);
+          } else {
+            params.delete(SEARCH_TEXT);
+          }
 
-        if (sorting) {
-          params.set(SORTING, sorting);
-        } else {
-          params.delete(SORTING);
-        }
+          if (sorting) {
+            params.set(SORTING, sorting);
+          } else {
+            params.delete(SORTING);
+          }
 
-        return params;
-      });
+          return params;
+        });
+      }
     },
-    [setParams, searchText, sorting]
+    [setParams, searchText, sorting, searchTextParamValue, sortingParamValue]
   );
 
   const handleSearchTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
