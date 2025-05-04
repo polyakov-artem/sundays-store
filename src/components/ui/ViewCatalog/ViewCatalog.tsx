@@ -10,12 +10,12 @@ import CategoryList from '../CategoryList/CategoryList.';
 import { H1, WRAPPER } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import ScreenLoader from '../../shared/ScreenLoader/ScreenLoader';
 import { useCrumbs } from '../../../hooks/useCrumbs';
 import { useCurrentCategory } from '../../../hooks/useCurrentCategory';
 import Products from '../Products/Products';
-import './ViewCatalog.scss';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
+import LoaderBlock from '../LoaderBlock/LoaderBlock';
+import './ViewCatalog.scss';
 
 export const VIEW_CATALOG = 'view-catalog';
 export const VIEW_CATALOG_TITLE = `${VIEW_CATALOG}__title`;
@@ -37,9 +37,9 @@ const ViewCatalog: FC = () => {
   let content;
 
   if (isFetching) {
-    content = <ScreenLoader type="linear" fullSpace />;
+    content = <LoaderBlock />;
   } else if (isError) {
-    content = <ErrorBlock />;
+    content = <ErrorBlock isBlock />;
   } else if (currentCategory || id === undefined) {
     if (childCategoriesIds.length) {
       content = <CategoryList ids={childCategoriesIds} />;

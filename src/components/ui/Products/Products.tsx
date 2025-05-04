@@ -74,9 +74,9 @@ const Products: FC<TProductsProps> = (props) => {
   let content;
 
   if (areProjectionsFetching || areDiscountsFetching) {
-    content = <LoaderBlock className={PRODUCTS_LIST} />;
+    content = <LoaderBlock className={PRODUCTS_LIST} isBlock />;
   } else if (isProjectionsError) {
-    content = <ErrorBlock className={PRODUCTS_LIST} />;
+    content = <ErrorBlock className={PRODUCTS_LIST} isBlock />;
   } else {
     content = (
       <>
