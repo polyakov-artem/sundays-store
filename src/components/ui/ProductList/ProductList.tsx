@@ -4,14 +4,14 @@ import classNames from 'classnames';
 import ProductCard from '../ProductCard/ProductCard';
 import { useLocation, useSearchParams } from 'react-router';
 import { SORTING, VIEW_MODE, VIEW_MODE_LIST } from '../ProductsHeader/ProductsHeader';
-import './ProductList.scss';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
 import { selectUserRole } from '../../../store/authSlice';
+import './ProductList.scss';
 
 export const PRODUCT_LIST = 'product-list';
 export const PRODUCT_LIST_MODE_LIST = `${PRODUCT_LIST}_mode_list`;
-export const PRODUCTS_LIST_CARD = `${PRODUCT_LIST}__card`;
+export const PRODUCT_LIST_CARD = `${PRODUCT_LIST}__card`;
 
 export type TProductListProps = {
   productProjections?: TProductProjection[];
@@ -42,7 +42,7 @@ const ProductList: FC<TProductListProps> = (props) => {
     () =>
       productProjections?.map((productProjection) => (
         <ProductCard
-          className={PRODUCTS_LIST_CARD}
+          className={PRODUCT_LIST_CARD}
           key={productProjection.id}
           productProjection={productProjection}
           isListMode={isListMode}

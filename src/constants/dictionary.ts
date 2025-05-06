@@ -116,4 +116,19 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.SomethingWentWrong]: {
     [CountryLocale.DE]: 'Etwas ist schief gelaufen',
   },
+  [AppStrings.Availability]: {
+    [CountryLocale.DE]: 'Verfügbarkeit',
+  },
+  [AppStrings.OnlyProductsThatAreInStock]: {
+    [CountryLocale.DE]: 'Nur Produkte, die auf Lager sind',
+  },
+  [AppStrings.Apply]: {
+    [CountryLocale.DE]: 'Gelten',
+  },
+  [AppStrings.Reset]: {
+    [CountryLocale.DE]: 'Zurücksetzen',
+  },
+  [AppStrings.Colors]: {
+    [CountryLocale.DE]: 'Farbe',
+  },
 };

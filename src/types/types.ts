@@ -468,7 +468,7 @@ export type TProductVariant = {
   key?: string;
   sku?: string;
   prices?: TPrice[];
-  attributes?: unknown[];
+  attributes?: TAttribute[];
   price?: TPrice;
   images?: TImage[];
   assets?: TAsset[];
@@ -476,6 +476,11 @@ export type TProductVariant = {
   isMatchingVariant?: boolean;
   scopedPrice?: unknown;
   scopedPriceDiscounted?: boolean;
+};
+
+export type TAttribute = {
+  name: string;
+  value: TLocalizedString;
 };
 
 export type TPrice = {

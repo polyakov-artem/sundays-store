@@ -16,12 +16,17 @@ import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';
+import ProductFilter, {
+  COLOR_FILTER_NAME,
+  STOCK_FILTER_NAME,
+} from '../ProductFilter/ProductFilter';
 import './Products.scss';
 
 export const PRODUCTS = 'products';
 export const PRODUCTS_LIST = `${PRODUCTS}__list`;
 export const PRODUCTS_HEADER = `${PRODUCTS}__header`;
 export const PRODUCTS_FILTER_WRAP = `${PRODUCTS}__filter-wrap`;
+export const PRODUCTS_FILTER = `${PRODUCTS}__filter`;
 
 export type TProductsProps = TIntrinsicSection;
 
@@ -33,6 +38,8 @@ const Products: FC<TProductsProps> = (props) => {
   const locale = useAppSelector(selectLocale);
   const searchText = searchParams.get(SEARCH_TEXT);
   const sorting = searchParams.get(SORTING);
+  const stockFilterValue = searchParams.get(STOCK_FILTER_NAME);
+  const colorFilterValue = searchParams.get(COLOR_FILTER_NAME);
   const countryCode = useAppSelector(selectCountryCode);
 
   const projectionsQueryParams = useMemo(() => {
@@ -60,8 +67,18 @@ const Products: FC<TProductsProps> = (props) => {
       }
     }
 
+    if (stockFilterValue) {
+      (params['filter.query'] as string[]).push('variants.availability.isOnStock:true');
+    }
+
+    if (colorFilterValue) {
+      (params['filter.query'] as string[]).push(
+        `variants.attributes.color.${locale}:${colorFilterValue}`
+      );
+    }
+
     return params;
-  }, [categoryId, searchText, locale, sorting, countryCode]);
+  }, [categoryId, searchText, locale, sorting, countryCode, stockFilterValue, colorFilterValue]);
 
   const {
     data: projectionsData,
@@ -92,7 +109,9 @@ const Products: FC<TProductsProps> = (props) => {
   return (
     <section className={classes} {...rest}>
       <ProductsHeader className={PRODUCTS_HEADER} />
-      <div className={PRODUCTS_FILTER_WRAP}></div>
+      <div className={PRODUCTS_FILTER_WRAP}>
+        <ProductFilter className={PRODUCTS_FILTER} />
+      </div>
       {content}
     </section>
   );

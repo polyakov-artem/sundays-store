@@ -37,4 +37,9 @@ export enum AppStrings {
   NameAlphabetical = 'Name (alphabetical)',
   Default = 'Default',
   SomethingWentWrong = 'Something went wrong',
+  Availability = 'Availability',
+  OnlyProductsThatAreInStock = 'Only products that are in stock',
+  Apply = 'Apply',
+  Reset = 'Reset',
+  Colors = 'Colors',
 }
