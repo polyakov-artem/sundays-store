@@ -11,9 +11,10 @@ import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
 import ColorPalette from '../ColorPalette/ColorPalette';
-import './ProductFilter.scss';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
+import CheckboxList from '../CheckboxList/CheckboxList';
+import './ProductFilter.scss';
 
 export const PRODUCT_FILTER = 'product-filter';
 export const PRODUCT_FILTER_FORM = `${PRODUCT_FILTER}__form`;
@@ -23,17 +24,9 @@ export const PRODUCT_FILTER_BLOCK_TITLE = `${PRODUCT_FILTER}__block-title`;
 export const STOCK_FILTER_NAME = 'stock';
 export const STOCK_FILTER_VALUE = 'true';
 export const COLOR_FILTER_NAME = 'color';
+export const SIZE_FILTER_NAME = 'size';
 
 export type TProductFilterProps = TIntrinsicDiv;
-
-export interface CustomElements extends HTMLFormControlsCollection {
-  [STOCK_FILTER_NAME]: HTMLInputElement;
-  [COLOR_FILTER_NAME]?: HTMLInputElement | NodeListOf<HTMLInputElement>;
-}
-
-export interface CustomForm extends HTMLFormElement {
-  readonly elements: CustomElements;
-}
 
 const ProductFilter: FC<TProductFilterProps> = (props) => {
   const { className, ...rest } = props;
@@ -42,10 +35,14 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   const [params, setParams] = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
   const { id: categoryId } = useParams();
+
   const stockFilterParamValue = params.get(STOCK_FILTER_NAME);
-  const colorFilterParamValue = params.get(COLOR_FILTER_NAME);
   const [isStockFilterChecked, setIsStockFilterChecked] = useState(false);
+  const colorFilterParamValue = params.get(COLOR_FILTER_NAME);
   const [checkedColors, setCheckedColors] = useState<Record<string, boolean>>({});
+
+  const sizeFilterParamValue = params.get(SIZE_FILTER_NAME);
+  const [checkedSizes, setCheckedSizes] = useState<Record<string, boolean>>({});
 
   const projectionsQueryParams = useMemo(() => {
     const params: TProductProjectionPagedSearchParams = {
@@ -64,21 +61,25 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
 
   const attributes = useMemo(() => {
     const colorsData = new Set<string>();
+    const sizesData = new Set<string>();
 
     projectionsData?.results.forEach(({ masterVariant, variants }) => {
       [masterVariant, ...variants].forEach(({ attributes }) => {
         attributes?.forEach(({ name, value }) => {
-          if (name === COLOR_FILTER_NAME && value[locale]) {
-            colorsData.add(value[locale]);
+          const localizedValue = value[locale];
+          if (name === COLOR_FILTER_NAME && localizedValue) {
+            colorsData.add(localizedValue);
+          } else if (name === SIZE_FILTER_NAME && localizedValue) {
+            sizesData.add(localizedValue);
           }
         });
       });
     });
 
-    return { colorsData };
+    return { colorsData, sizesData };
   }, [locale, projectionsData]);
 
-  const { colorsData } = attributes;
+  const { colorsData, sizesData } = attributes;
 
   useEffect(() => {
     const result: Record<string, boolean> = {};
@@ -86,20 +87,30 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
       ?.replaceAll('"', '')
       .split(',')
       .forEach((paramValue) => {
-        if (colorsData.has(paramValue)) {
-          result[paramValue] = true;
-        }
+        result[paramValue] = true;
       });
 
     setCheckedColors(result);
-  }, [colorFilterParamValue, colorsData]);
+  }, [colorFilterParamValue]);
+
+  useEffect(() => {
+    const result: Record<string, boolean> = {};
+    sizeFilterParamValue
+      ?.replaceAll('"', '')
+      .split(',')
+      .forEach((paramValue) => {
+        result[paramValue] = true;
+      });
+
+    setCheckedSizes(result);
+  }, [sizeFilterParamValue]);
 
   useEffect(() => {
     setIsStockFilterChecked(!!stockFilterParamValue);
   }, [stockFilterParamValue]);
 
   const handleSubmit = useCallback(
-    (e: FormEvent<CustomForm>) => {
+    (e: FormEvent) => {
       e.preventDefault();
 
       const colorFilterValue = Object.keys(checkedColors).reduce((result, checkboxValue) => {
@@ -110,10 +121,23 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
         }
       }, '');
 
+      const sizeFilterValue = Object.keys(checkedSizes).reduce((result, checkboxValue) => {
+        if (!result) {
+          return `"${checkboxValue}"`;
+        } else {
+          return `${result},"${checkboxValue}"`;
+        }
+      }, '');
+
       const stockFilterParamValueDiffers = !!stockFilterParamValue !== isStockFilterChecked;
       const colorFilterParamValueDiffers = (colorFilterParamValue || '') !== colorFilterValue;
+      const sizeFilterParamValueDiffers = (sizeFilterParamValue || '') !== sizeFilterValue;
 
-      if (colorFilterParamValueDiffers || stockFilterParamValueDiffers) {
+      if (
+        colorFilterParamValueDiffers ||
+        stockFilterParamValueDiffers ||
+        sizeFilterParamValueDiffers
+      ) {
         setParams((prev) => {
           if (isStockFilterChecked) {
             prev.set(STOCK_FILTER_NAME, STOCK_FILTER_VALUE);
@@ -127,15 +151,41 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
             prev.delete(COLOR_FILTER_NAME);
           }
 
+          if (sizeFilterValue) {
+            prev.set(SIZE_FILTER_NAME, sizeFilterValue);
+          } else {
+            prev.delete(SIZE_FILTER_NAME);
+          }
+
           return prev;
         });
       }
     },
-    [setParams, isStockFilterChecked, checkedColors, colorFilterParamValue, stockFilterParamValue]
+    [
+      setParams,
+      isStockFilterChecked,
+      checkedColors,
+      colorFilterParamValue,
+      stockFilterParamValue,
+      checkedSizes,
+      sizeFilterParamValue,
+    ]
   );
 
   const handleColorChange = useCallback((key: string) => {
     setCheckedColors((prev) => {
+      const nextState = { ...prev };
+      if (nextState[key]) {
+        delete nextState[key];
+      } else {
+        nextState[key] = true;
+      }
+      return nextState;
+    });
+  }, []);
+
+  const handleSizeChange = useCallback((key: string) => {
+    setCheckedSizes((prev) => {
       const nextState = { ...prev };
       if (nextState[key]) {
         delete nextState[key];
@@ -168,6 +218,17 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
             />
           </div>
         )}
+        {!!sizesData.size && (
+          <div className={PRODUCT_FILTER_BLOCK}>
+            <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>Sizes</h4>
+            <CheckboxList
+              name={SIZE_FILTER_NAME}
+              checkboxesData={sizesData}
+              selectedCheckbox={checkedSizes}
+              onCheckboxChange={handleSizeChange}
+            />
+          </div>
+        )}
       </>
     );
   }
@@ -177,14 +238,15 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   }, []);
 
   const handleResetBtnClick = useCallback(() => {
-    if (colorFilterParamValue || stockFilterParamValue) {
+    if (colorFilterParamValue || stockFilterParamValue || sizeFilterParamValue) {
       setParams((prev) => {
         prev.delete(STOCK_FILTER_NAME);
         prev.delete(COLOR_FILTER_NAME);
+        prev.delete(SIZE_FILTER_NAME);
         return prev;
       });
     }
-  }, [setParams, colorFilterParamValue, stockFilterParamValue]);
+  }, [setParams, colorFilterParamValue, stockFilterParamValue, sizeFilterParamValue]);
 
   return (
     <div className={classes} {...rest}>
