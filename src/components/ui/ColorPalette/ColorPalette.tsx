@@ -1,25 +1,20 @@
 import { FC, useMemo } from 'react';
-import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import ColorCheckbox from '../../shared/ColorCheckbox/ColorCheckbox';
+import { TCheckboxListProps } from '../CheckboxList/CheckboxList';
 import './ColorPalette.scss';
 
 export const COLOR_PALETTE = 'color-palette';
-export const COLOR_PALETTE_COLOR = `${COLOR_PALETTE}_color`;
+export const COLOR_PALETTE_COLOR = `${COLOR_PALETTE}__color`;
 
-export type TColorPaletteProps = {
-  name: string;
-  colorsData: Set<string>;
-  checkedColors: Record<string, boolean>;
-  onColorChange: (key: string) => void;
-} & TIntrinsicDiv;
+export type TColorPaletteProps = TCheckboxListProps;
 
 const ColorPalette: FC<TColorPaletteProps> = (props) => {
-  const { className, colorsData, checkedColors, onColorChange, name } = props;
+  const { className, state, onStateChange, name } = props;
   const classes = classNames(COLOR_PALETTE, className);
 
   const content = useMemo(() => {
-    return [...colorsData].map((value) => {
+    return Object.entries(state).map(([value, checked]) => {
       const [title, color] = value.split(':#');
 
       return (
@@ -31,13 +26,13 @@ const ColorPalette: FC<TColorPaletteProps> = (props) => {
           controlProps={{
             name,
             value,
-            checked: !!checkedColors[value],
-            onChange: () => onColorChange(value),
+            checked,
+            onChange: onStateChange,
           }}
         />
       );
     });
-  }, [colorsData, checkedColors, name, onColorChange]);
+  }, [state, name, onStateChange]);
 
   return <div className={classes}>{content}</div>;
 };

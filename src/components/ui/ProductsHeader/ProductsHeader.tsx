@@ -1,14 +1,4 @@
-import {
-  ChangeEvent,
-  FC,
-  FormEvent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { FC, FormEvent, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { TIntrinsicHeader } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK } from '../../../constants/cssHelpers';
@@ -22,6 +12,13 @@ import { BsGrid3X2Gap, BsListTask } from 'react-icons/bs';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { useSearchParams } from 'react-router';
 import { getSelectOptions } from './getSelectOptions';
+import { useSynchronizedValue } from '../../../hooks/useSynchronizedValue';
+import { EMPTY_INPUT_VALUE } from '../../../constants/constants';
+import {
+  defaultInputConvertToParamFn,
+  defaultInputConvertToStateFn,
+  defaultInputUpdateStateFn,
+} from '../../../utils/useSynchronizedValueFns';
 import './ProductsHeader.scss';
 
 export const PRODUCTS_HEADER = 'products-header';
@@ -41,35 +38,39 @@ export const VIEW_MODE_TILE = 'tile';
 
 export type TProductsHeaderProps = TIntrinsicHeader;
 
-export interface CustomElements extends HTMLFormControlsCollection {
-  searchText: HTMLInputElement;
-  sorting: HTMLSelectElement;
-}
-
-export interface CustomForm extends HTMLFormElement {
-  readonly elements: CustomElements;
-}
-
 const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
   const { className, ...rest } = props;
   const classes = classNames(BLOCK, PRODUCTS_HEADER, className);
   const [params, setParams] = useSearchParams();
   const isListMode = params.get(VIEW_MODE) === VIEW_MODE_LIST;
   const formRef = useRef<HTMLFormElement>(null);
-  const searchTextParamValue = params.get(SEARCH_TEXT);
-  const sortingParamValue = params.get(SORTING);
-  const [searchText, setSearchText] = useState(searchTextParamValue);
-  const [sorting, setSorting] = useState(sortingParamValue);
+  const {
+    state: searchText,
+    nextUrlValue: searchTextNextURLValue,
+    handleChange: handleSearchTextChange,
+  } = useSynchronizedValue({
+    defaultState: EMPTY_INPUT_VALUE,
+    params,
+    urlParamName: SEARCH_TEXT,
+    updateStateFn: defaultInputUpdateStateFn,
+    convertToStateFn: defaultInputConvertToStateFn,
+    convertToParamFn: defaultInputConvertToParamFn,
+  });
+
+  const {
+    state: sorting,
+    nextUrlValue: sortingNextURLValue,
+    handleChange: handleSortingChange,
+  } = useSynchronizedValue({
+    params,
+    urlParamName: SORTING,
+    defaultState: EMPTY_INPUT_VALUE,
+    updateStateFn: defaultInputUpdateStateFn,
+    convertToStateFn: defaultInputConvertToStateFn,
+    convertToParamFn: defaultInputConvertToParamFn,
+  });
 
   const locale = useAppSelector(selectLocale);
-
-  useEffect(() => {
-    setSearchText(searchTextParamValue);
-  }, [searchTextParamValue]);
-
-  useEffect(() => {
-    setSorting(sortingParamValue);
-  }, [sortingParamValue]);
 
   useEffect(() => {
     formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
@@ -85,40 +86,30 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
     [setParams]
   );
 
-  const handleSortingChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-    setSorting(e.target.value);
-  }, []);
-
   const handleSubmit = useCallback(
-    (e: FormEvent<CustomForm>) => {
+    (e: FormEvent) => {
       e.preventDefault();
 
-      if (searchText !== searchTextParamValue || sorting !== sortingParamValue) {
-        const trimmedSearchText = searchText?.trim();
+      const filters = [
+        [SORTING, sortingNextURLValue],
+        [SEARCH_TEXT, searchTextNextURLValue],
+      ] as const;
 
+      if (filters.some(([_key, value]) => value !== undefined)) {
         setParams((params) => {
-          if (trimmedSearchText) {
-            params.set(SEARCH_TEXT, trimmedSearchText);
-          } else {
-            params.delete(SEARCH_TEXT);
-          }
-
-          if (sorting) {
-            params.set(SORTING, sorting);
-          } else {
-            params.delete(SORTING);
-          }
-
+          filters.forEach(([key, nextUrlValue]) => {
+            if (nextUrlValue) {
+              params.set(key, nextUrlValue);
+            } else if (nextUrlValue === null) {
+              params.delete(key);
+            }
+          });
           return params;
         });
       }
     },
-    [setParams, searchText, sorting, searchTextParamValue, sortingParamValue]
+    [setParams, sortingNextURLValue, searchTextNextURLValue]
   );
-
-  const handleSearchTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.currentTarget.value);
-  }, []);
 
   const selectOptions = useMemo(() => getSelectOptions(locale), [locale]);
 
@@ -133,7 +124,7 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
             name="searchText"
             type="search"
             placeholder={localizedAppStrings[locale][AppStrings.SearchForProduct]}
-            value={searchText || ''}
+            value={searchText}
             onChange={handleSearchTextChange}
           />
           <Button
@@ -157,7 +148,7 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
             id="sorting"
             name="sorting"
             options={selectOptions}
-            value={sorting || ''}
+            value={sorting}
             onChange={handleSortingChange}
           />
         </div>

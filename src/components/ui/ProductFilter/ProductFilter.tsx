@@ -1,4 +1,4 @@
-import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, FormEvent, useCallback, useMemo, useRef } from 'react';
 import { TIntrinsicDiv, TProductProjectionPagedSearchParams } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK, H4 } from '../../../constants/cssHelpers';
@@ -15,6 +15,13 @@ import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import CheckboxList from '../CheckboxList/CheckboxList';
 import './ProductFilter.scss';
+import {
+  defaultCheckboxConvertToParamFn,
+  defaultCheckboxConvertToStateFn,
+  defaultCheckboxUpdateStateFn,
+  TCheckboxState,
+} from '../../../utils/useSynchronizedValueFns';
+import { useSynchronizedValue } from '../../../hooks/useSynchronizedValue';
 
 export const PRODUCT_FILTER = 'product-filter';
 export const PRODUCT_FILTER_FORM = `${PRODUCT_FILTER}__form`;
@@ -26,6 +33,10 @@ export const STOCK_FILTER_VALUE = 'true';
 export const COLOR_FILTER_NAME = 'color';
 export const SIZE_FILTER_NAME = 'size';
 
+const defaultStockFilterState = {
+  [STOCK_FILTER_VALUE]: false,
+};
+
 export type TProductFilterProps = TIntrinsicDiv;
 
 const ProductFilter: FC<TProductFilterProps> = (props) => {
@@ -35,14 +46,6 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   const [params, setParams] = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
   const { id: categoryId } = useParams();
-
-  const stockFilterParamValue = params.get(STOCK_FILTER_NAME);
-  const [isStockFilterChecked, setIsStockFilterChecked] = useState(false);
-  const colorFilterParamValue = params.get(COLOR_FILTER_NAME);
-  const [checkedColors, setCheckedColors] = useState<Record<string, boolean>>({});
-
-  const sizeFilterParamValue = params.get(SIZE_FILTER_NAME);
-  const [checkedSizes, setCheckedSizes] = useState<Record<string, boolean>>({});
 
   const projectionsQueryParams = useMemo(() => {
     const params: TProductProjectionPagedSearchParams = {
@@ -59,142 +62,92 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
     isError: isProjectionsError,
   } = useSearchProductProjectionsQuery(projectionsQueryParams);
 
-  const attributes = useMemo(() => {
-    const colorsData = new Set<string>();
-    const sizesData = new Set<string>();
+  const checkboxesDefaultState = useMemo(() => {
+    const defaultColorFilterState = {} as TCheckboxState;
+    const defaultSizeFilterState = {} as TCheckboxState;
 
     projectionsData?.results.forEach(({ masterVariant, variants }) => {
       [masterVariant, ...variants].forEach(({ attributes }) => {
         attributes?.forEach(({ name, value }) => {
           const localizedValue = value[locale];
           if (name === COLOR_FILTER_NAME && localizedValue) {
-            colorsData.add(localizedValue);
+            defaultColorFilterState[localizedValue] = false;
           } else if (name === SIZE_FILTER_NAME && localizedValue) {
-            sizesData.add(localizedValue);
+            defaultSizeFilterState[localizedValue] = false;
           }
         });
       });
     });
 
-    return { colorsData, sizesData };
+    return { defaultColorFilterState, defaultSizeFilterState };
   }, [locale, projectionsData]);
 
-  const { colorsData, sizesData } = attributes;
+  const { defaultColorFilterState, defaultSizeFilterState } = checkboxesDefaultState;
 
-  useEffect(() => {
-    const result: Record<string, boolean> = {};
-    colorFilterParamValue
-      ?.replaceAll('"', '')
-      .split(',')
-      .forEach((paramValue) => {
-        result[paramValue] = true;
-      });
+  const {
+    state: stockFilterState,
+    nextUrlValue: stockFilterNextURLValue,
+    handleChange: handleStockFilterChange,
+  } = useSynchronizedValue({
+    params,
+    defaultState: defaultStockFilterState,
+    urlParamName: STOCK_FILTER_NAME,
+    updateStateFn: defaultCheckboxUpdateStateFn,
+    convertToStateFn: defaultCheckboxConvertToStateFn,
+    convertToParamFn: defaultCheckboxConvertToParamFn,
+  });
 
-    setCheckedColors(result);
-  }, [colorFilterParamValue]);
+  const {
+    state: colorFilterState,
+    nextUrlValue: colorFilterNextURLValue,
+    handleChange: handleColorFilterChange,
+  } = useSynchronizedValue({
+    params,
+    defaultState: defaultColorFilterState,
+    urlParamName: COLOR_FILTER_NAME,
+    updateStateFn: defaultCheckboxUpdateStateFn,
+    convertToStateFn: defaultCheckboxConvertToStateFn,
+    convertToParamFn: defaultCheckboxConvertToParamFn,
+  });
 
-  useEffect(() => {
-    const result: Record<string, boolean> = {};
-    sizeFilterParamValue
-      ?.replaceAll('"', '')
-      .split(',')
-      .forEach((paramValue) => {
-        result[paramValue] = true;
-      });
-
-    setCheckedSizes(result);
-  }, [sizeFilterParamValue]);
-
-  useEffect(() => {
-    setIsStockFilterChecked(!!stockFilterParamValue);
-  }, [stockFilterParamValue]);
+  const {
+    state: sizeFilterState,
+    nextUrlValue: sizeFilterNextURLValue,
+    handleChange: handleSizeFilterChange,
+  } = useSynchronizedValue({
+    params,
+    defaultState: defaultSizeFilterState,
+    urlParamName: SIZE_FILTER_NAME,
+    updateStateFn: defaultCheckboxUpdateStateFn,
+    convertToStateFn: defaultCheckboxConvertToStateFn,
+    convertToParamFn: defaultCheckboxConvertToParamFn,
+  });
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
 
-      const colorFilterValue = Object.keys(checkedColors).reduce((result, checkboxValue) => {
-        if (!result) {
-          return `"${checkboxValue}"`;
-        } else {
-          return `${result},"${checkboxValue}"`;
-        }
-      }, '');
+      const filters = [
+        [STOCK_FILTER_NAME, stockFilterNextURLValue],
+        [COLOR_FILTER_NAME, colorFilterNextURLValue],
+        [SIZE_FILTER_NAME, sizeFilterNextURLValue],
+      ] as const;
 
-      const sizeFilterValue = Object.keys(checkedSizes).reduce((result, checkboxValue) => {
-        if (!result) {
-          return `"${checkboxValue}"`;
-        } else {
-          return `${result},"${checkboxValue}"`;
-        }
-      }, '');
-
-      const stockFilterParamValueDiffers = !!stockFilterParamValue !== isStockFilterChecked;
-      const colorFilterParamValueDiffers = (colorFilterParamValue || '') !== colorFilterValue;
-      const sizeFilterParamValueDiffers = (sizeFilterParamValue || '') !== sizeFilterValue;
-
-      if (
-        colorFilterParamValueDiffers ||
-        stockFilterParamValueDiffers ||
-        sizeFilterParamValueDiffers
-      ) {
-        setParams((prev) => {
-          if (isStockFilterChecked) {
-            prev.set(STOCK_FILTER_NAME, STOCK_FILTER_VALUE);
-          } else {
-            prev.delete(STOCK_FILTER_NAME);
-          }
-
-          if (colorFilterValue) {
-            prev.set(COLOR_FILTER_NAME, colorFilterValue);
-          } else {
-            prev.delete(COLOR_FILTER_NAME);
-          }
-
-          if (sizeFilterValue) {
-            prev.set(SIZE_FILTER_NAME, sizeFilterValue);
-          } else {
-            prev.delete(SIZE_FILTER_NAME);
-          }
-
-          return prev;
+      if (filters.some(([_key, value]) => value !== undefined)) {
+        setParams((params) => {
+          filters.forEach(([key, nextUrlValue]) => {
+            if (nextUrlValue) {
+              params.set(key, nextUrlValue);
+            } else if (nextUrlValue === null) {
+              params.delete(key);
+            }
+          });
+          return params;
         });
       }
     },
-    [
-      setParams,
-      isStockFilterChecked,
-      checkedColors,
-      colorFilterParamValue,
-      stockFilterParamValue,
-      checkedSizes,
-      sizeFilterParamValue,
-    ]
+    [setParams, stockFilterNextURLValue, colorFilterNextURLValue, sizeFilterNextURLValue]
   );
-
-  const handleColorChange = useCallback((key: string) => {
-    setCheckedColors((prev) => {
-      const nextState = { ...prev };
-      if (nextState[key]) {
-        delete nextState[key];
-      } else {
-        nextState[key] = true;
-      }
-      return nextState;
-    });
-  }, []);
-
-  const handleSizeChange = useCallback((key: string) => {
-    setCheckedSizes((prev) => {
-      const nextState = { ...prev };
-      if (nextState[key]) {
-        delete nextState[key];
-      } else {
-        nextState[key] = true;
-      }
-      return nextState;
-    });
-  }, []);
 
   let dynamicFilters;
 
@@ -205,27 +158,25 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   } else {
     dynamicFilters = (
       <>
-        {!!colorsData.size && (
+        {!!Object.keys(defaultColorFilterState).length && (
           <div className={PRODUCT_FILTER_BLOCK}>
             <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>
               {localizedAppStrings[locale][AppStrings.Colors]}
             </h4>
             <ColorPalette
-              colorsData={colorsData}
-              checkedColors={checkedColors}
+              state={colorFilterState}
               name={COLOR_FILTER_NAME}
-              onColorChange={handleColorChange}
+              onStateChange={handleColorFilterChange}
             />
           </div>
         )}
-        {!!sizesData.size && (
+        {!!Object.keys(defaultSizeFilterState).length && (
           <div className={PRODUCT_FILTER_BLOCK}>
             <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>Sizes</h4>
             <CheckboxList
               name={SIZE_FILTER_NAME}
-              checkboxesData={sizesData}
-              selectedCheckbox={checkedSizes}
-              onCheckboxChange={handleSizeChange}
+              state={sizeFilterState}
+              onStateChange={handleSizeFilterChange}
             />
           </div>
         )}
@@ -233,20 +184,18 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
     );
   }
 
-  const handleStockFilterChange = useCallback(() => {
-    setIsStockFilterChecked((prev) => !prev);
-  }, []);
-
   const handleResetBtnClick = useCallback(() => {
-    if (colorFilterParamValue || stockFilterParamValue || sizeFilterParamValue) {
+    const filterKeys = [STOCK_FILTER_NAME, COLOR_FILTER_NAME, SIZE_FILTER_NAME];
+
+    const filterIsSet = filterKeys.some((key) => params.get(key));
+
+    if (filterIsSet) {
       setParams((prev) => {
-        prev.delete(STOCK_FILTER_NAME);
-        prev.delete(COLOR_FILTER_NAME);
-        prev.delete(SIZE_FILTER_NAME);
+        filterKeys.forEach((key) => prev.delete(key));
         return prev;
       });
     }
-  }, [setParams, colorFilterParamValue, stockFilterParamValue, sizeFilterParamValue]);
+  }, [setParams, params]);
 
   return (
     <div className={classes} {...rest}>
@@ -264,7 +213,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
                 name: STOCK_FILTER_NAME,
                 id: STOCK_FILTER_NAME,
                 value: STOCK_FILTER_VALUE,
-                checked: isStockFilterChecked,
+                checked: stockFilterState[STOCK_FILTER_VALUE],
                 onChange: handleStockFilterChange,
               },
             }}
