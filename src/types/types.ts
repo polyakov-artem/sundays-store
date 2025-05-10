@@ -433,6 +433,11 @@ export type TProductProjectionPagedSearchResponse = {
   results: TProductProjection[];
 };
 
+export type TExtProductProjectionPagedSearchResponse = Omit<
+  TProductProjectionPagedSearchResponse,
+  'results'
+> & { results: TExtProductProjection[] };
+
 export type TProductProjection = {
   id: string;
   version: number;
@@ -459,8 +464,9 @@ export type TProductProjection = {
   lastModifiedAt: string;
 };
 
-export type TExtendedProductProjection = TProductProjection & {
-  currentVariant: TProductVariant;
+export type TExtProductProjection = Omit<TProductProjection, 'masterVariant' | 'variants'> & {
+  masterVariant: TExtProductVariant;
+  variants: TExtProductVariant[];
 };
 
 export type TProductVariant = {
@@ -474,8 +480,32 @@ export type TProductVariant = {
   assets?: TAsset[];
   availability?: TProductVariantAvailability;
   isMatchingVariant?: boolean;
-  scopedPrice?: unknown;
-  scopedPriceDiscounted?: boolean;
+  scopedPrice: TScopedPrice;
+  scopedPriceDiscounted: boolean;
+};
+
+export type TExtProductVariant = TProductVariant & { priceData?: TPriceData };
+
+export type TPriceData = {
+  originalPrice: number;
+  currentPrice: number;
+  discountDifference: number;
+  discountId?: string;
+  currencyChar: string;
+  isDiscounted: boolean;
+};
+
+export type TScopedPrice = {
+  id: string;
+  value: TTypedMoney;
+  currentValue: TTypedMoney;
+  country?: CountryCode;
+  customerGroup?: unknown;
+  channel?: unknown;
+  validFrom?: string;
+  validUntil?: string;
+  discounted?: TDiscountedPrice;
+  custom?: unknown;
 };
 
 export type TAttribute = {
