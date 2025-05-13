@@ -62,7 +62,7 @@ const IntervalSlider: FC<TIntervalSliderProps> = (props) => {
         maxValueControlName={maxValueControlName}
         className={INTERVAL_SLIDER_SLIDER}
       />
-      <form className={INTERVAL_SLIDER_WRAP}>
+      <div className={INTERVAL_SLIDER_WRAP}>
         <InputField
           name={minValueInputName}
           className={INTERVAL_SLIDER_INPUT}
@@ -88,7 +88,7 @@ const IntervalSlider: FC<TIntervalSliderProps> = (props) => {
           onBlur={onStateChange}
         />
         <input type="submit" value="" style={{ display: 'none' }} />
-      </form>
+      </div>
     </div>
   );
 };
