@@ -7,16 +7,20 @@ import {
   TCategory,
   TCustomer,
   TCustomerSignInResult,
+  TExtProductProjectionPagedSearchResponse,
+  TExtProductVariant,
   TGetProductDiscountsParams,
   TMyCustomerDraft,
   TProductDiscount,
   TProductDiscountPagedQueryResponse,
-  TProductProjectionPagedSearchRequest,
+  TProductProjectionPagedSearchParams,
   TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
 } from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+import { getQueryString } from '../utils/getQueryString';
+import { getPriceData } from '../utils/getPriceData';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -101,18 +105,31 @@ export const storeApi = createApi({
     }),
 
     searchProductProjections: builder.query<
-      TProductProjectionPagedSearchResponse,
-      TProductProjectionPagedSearchRequest | void
+      TExtProductProjectionPagedSearchResponse,
+      TProductProjectionPagedSearchParams | void
     >({
-      query: (params?: TProductProjectionPagedSearchRequest) => {
-        const data = params ? new URLSearchParams(params).toString() : undefined;
-
+      query: (params?: TProductProjectionPagedSearchParams) => {
         return {
           url: `${projectKey}/product-projections/search`,
-          data,
+          data: getQueryString(params),
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         };
+      },
+      transformResponse: (response: TProductProjectionPagedSearchResponse) => {
+        response.results.forEach((projection) => {
+          const { masterVariant, variants } = projection;
+          [masterVariant, ...variants].forEach((variant) => {
+            if (variant.isMatchingVariant) {
+              const {
+                scopedPrice: { value, discounted },
+              } = variant;
+              (variant as TExtProductVariant).priceData = getPriceData(value, discounted);
+            }
+          });
+        });
+
+        return response;
       },
     }),
 

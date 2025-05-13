@@ -1,0 +1,7 @@
+.product-filter {
+  &__wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-md-gap);
+  }
+}

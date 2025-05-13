@@ -1,0 +1,35 @@
+.color-checkbox {
+  position: relative;
+  display: inline-flex;
+
+  &__box {
+    cursor: pointer;
+    border-color: var(--gray-1);
+    height: 1.5rem;
+    width: 1.5rem;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+  }
+
+  &__control {
+    position: absolute;
+    z-index: -1;
+    margin: 0;
+    opacity: 0;
+
+    &:checked {
+      ~ .color-checkbox__box {
+        border-width: 2px;
+        border-color: var(--black-1);
+        box-shadow: 0 0 0 0.1rem var(--white-1) inset;
+      }
+    }
+
+    &:focus-visible {
+      ~ .color-checkbox__box {
+        box-shadow: 0 0 0 0.2rem var(--black-1-20);
+      }
+    }
+  }
+}

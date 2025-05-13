@@ -135,6 +135,24 @@ export enum CountryLocale {
   DE = 'de-DE',
 }
 
+export enum CurrencyCode {
+  EUR = 'EUR',
+  GBP = 'GBP',
+  USD = 'USD',
+}
+
+export enum CurrencyChar {
+  EUR = '€',
+  GBP = '£',
+  USD = '$',
+}
+
+export enum CountryCurrency {
+  GB = 'GBP',
+  US = 'USD',
+  DE = 'EUR',
+}
+
 export enum CountryCode {
   'GB' = 'GB',
   'DE' = 'DE',
@@ -384,26 +402,26 @@ export type TWarningObject = {
   message: string;
 };
 
-export type TProductProjectionPagedSearchRequest = {
-  markMatchingVariants?: string;
-  'text.<locale>'?: string;
-  fuzzy?: string;
-  fuzzyLevel?: string;
-  'filter.query'?: string;
-  filter?: string;
-  facet?: string;
-  'filter.facets'?: string;
-  sort?: string;
-  expand?: string;
-  limit?: string;
-  offset?: string;
-  staged?: string;
+export type TProductProjectionPagedSearchParams = {
+  markMatchingVariants?: boolean;
+  [key: `text.${string}`]: string | string[];
+  fuzzy?: boolean;
+  fuzzyLevel?: number;
+  'filter.query'?: string | string[];
+  filter?: string | string[];
+  facet?: string | string[];
+  'filter.facets'?: string | string[];
+  sort?: string | string[];
+  expand?: string | string[];
+  limit?: number;
+  offset?: number;
+  staged?: boolean;
   priceCurrency?: string;
   priceCountry?: string;
   priceCustomerGroup?: string;
-  priceCustomerGroupAssignments?: string;
+  priceCustomerGroupAssignments?: string | string[];
   priceChannel?: string;
-  localeProjection?: CountryLocale;
+  localeProjection?: CountryLocale | CountryLocale[];
   storeProjection?: string;
 };
 
@@ -414,6 +432,11 @@ export type TProductProjectionPagedSearchResponse = {
   facets?: unknown;
   results: TProductProjection[];
 };
+
+export type TExtProductProjectionPagedSearchResponse = Omit<
+  TProductProjectionPagedSearchResponse,
+  'results'
+> & { results: TExtProductProjection[] };
 
 export type TProductProjection = {
   id: string;
@@ -441,19 +464,53 @@ export type TProductProjection = {
   lastModifiedAt: string;
 };
 
+export type TExtProductProjection = Omit<TProductProjection, 'masterVariant' | 'variants'> & {
+  masterVariant: TExtProductVariant;
+  variants: TExtProductVariant[];
+};
+
 export type TProductVariant = {
   id: number;
   key?: string;
   sku?: string;
   prices?: TPrice[];
-  attributes?: unknown[];
+  attributes?: TAttribute[];
   price?: TPrice;
   images?: TImage[];
   assets?: TAsset[];
   availability?: TProductVariantAvailability;
   isMatchingVariant?: boolean;
-  scopedPrice?: unknown;
-  scopedPriceDiscounted?: boolean;
+  scopedPrice: TScopedPrice;
+  scopedPriceDiscounted: boolean;
+};
+
+export type TExtProductVariant = TProductVariant & { priceData?: TPriceData };
+
+export type TPriceData = {
+  originalPrice: number;
+  currentPrice: number;
+  discountDifference: number;
+  discountId?: string;
+  currencyChar: string;
+  isDiscounted: boolean;
+};
+
+export type TScopedPrice = {
+  id: string;
+  value: TTypedMoney;
+  currentValue: TTypedMoney;
+  country?: CountryCode;
+  customerGroup?: unknown;
+  channel?: unknown;
+  validFrom?: string;
+  validUntil?: string;
+  discounted?: TDiscountedPrice;
+  custom?: unknown;
+};
+
+export type TAttribute = {
+  name: string;
+  value: TLocalizedString;
 };
 
 export type TPrice = {
@@ -522,18 +579,6 @@ export type TReference = {
   typeId: ReferenceTypeId;
 };
 
-export enum CurrencyCode {
-  EUR = 'EUR',
-  GBP = 'GBP',
-  USD = 'USD',
-}
-
-export enum CurrencyChar {
-  EUR = '€',
-  GBP = '£',
-  USD = '$',
-}
-
 export type TProductVariantAvailability = {
   id?: string;
   version?: number;
@@ -586,6 +631,11 @@ export type TProductDiscountPagedQueryResponse = {
   total?: number;
   results: TProductDiscount[];
 };
+
+export enum Order {
+  asc = 'asc',
+  desc = 'desc',
+}
 
 export enum ReferenceTypeId {
   'approval-flow' = 'approval-flow',

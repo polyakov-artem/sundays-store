@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import HeaderLinks from '../HeaderLinks/HeaderLinks';
 import { FaRegUserCircle, FaShoppingCart } from 'react-icons/fa';
 import classNames from 'classnames';
@@ -44,12 +44,14 @@ const Header: FC = () => {
   const countryCode = useAppSelector(selectCountryCode);
   const dispatch = useAppDispatch();
   const locale = useAppSelector(selectLocale);
+  const [_, setParams] = useSearchParams();
 
   const handleCountryCodeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       dispatch(countryChanged(e.target.value as CountryCode));
+      setParams([], { replace: true });
     },
-    [dispatch]
+    [dispatch, setParams]
   );
 
   useEffect(() => {
