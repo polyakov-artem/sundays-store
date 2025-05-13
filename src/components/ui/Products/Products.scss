@@ -19,4 +19,9 @@
   &__filter-wrap {
     grid-area: filter;
   }
+
+  @media (max-width: 650px) {
+    display: flex;
+    flex-direction: column;
+  }
 }

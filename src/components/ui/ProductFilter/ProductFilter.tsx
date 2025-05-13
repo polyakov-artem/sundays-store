@@ -36,6 +36,8 @@ export const PRODUCT_FILTER = 'product-filter';
 export const PRODUCT_FILTER_WRAP = `${PRODUCT_FILTER}__wrap`;
 export const PRODUCT_FILTER_BLOCK = `${PRODUCT_FILTER}__block`;
 export const PRODUCT_FILTER_BLOCK_TITLE = `${PRODUCT_FILTER}__block-title`;
+export const PRODUCT_FILTER_BUTTONS = `${PRODUCT_FILTER}__buttons`;
+export const PRODUCT_FILTER_BUTTON = `${PRODUCT_FILTER}__button`;
 
 export const STOCK_FILTER_NAME = 'stock';
 export const STOCK_FILTER_VALUE = 'true';
@@ -320,24 +322,28 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
           </div>
         </div>
         {dynamicFilters}
-        <Button
-          type="button"
-          el="button"
-          theme="primary"
-          view="primary"
-          size="sm"
-          onClick={handleApplyBtnClick}>
-          {localizedAppStrings[locale][AppStrings.Apply]}
-        </Button>
-        <Button
-          type="button"
-          el="button"
-          theme="primary"
-          view="primary"
-          size="sm"
-          onClick={handleResetBtnClick}>
-          {localizedAppStrings[locale][AppStrings.Reset]}
-        </Button>
+        <div className={PRODUCT_FILTER_BUTTONS}>
+          <Button
+            type="button"
+            el="button"
+            theme="primary"
+            view="primary"
+            size="sm"
+            onClick={handleApplyBtnClick}
+            className={PRODUCT_FILTER_BUTTON}>
+            {localizedAppStrings[locale][AppStrings.Apply]}
+          </Button>
+          <Button
+            type="button"
+            el="button"
+            theme="primary"
+            view="primary"
+            size="sm"
+            onClick={handleResetBtnClick}
+            className={PRODUCT_FILTER_BUTTON}>
+            {localizedAppStrings[locale][AppStrings.Reset]}
+          </Button>
+        </div>
       </div>
     </div>
   );
