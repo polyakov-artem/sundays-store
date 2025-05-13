@@ -22,6 +22,9 @@ import ProductFilter, {
   SIZE_FILTER_NAME,
   STOCK_FILTER_NAME,
 } from '../ProductFilter/ProductFilter';
+import { BLOCK } from '../../../constants/cssHelpers';
+import { localizedAppStrings } from '../../../constants/localizedAppStrings';
+import { AppStrings } from '../../../constants/appStrings';
 import './Products.scss';
 
 export const PRODUCTS = 'products';
@@ -122,15 +125,19 @@ const Products: FC<TProductsProps> = (props) => {
     content = <LoaderBlock className={PRODUCTS_LIST} isBlock />;
   } else if (isProjectionsError) {
     content = <ErrorBlock className={PRODUCTS_LIST} isBlock />;
+  } else if (projectionsData?.results.length) {
+    content = (
+      <ProductList
+        key={JSON.stringify(projectionsQueryParams)}
+        className={PRODUCTS_LIST}
+        productProjections={projectionsData?.results}
+      />
+    );
   } else {
     content = (
-      <>
-        <ProductList
-          key={JSON.stringify(projectionsQueryParams)}
-          className={PRODUCTS_LIST}
-          productProjections={projectionsData?.results}
-        />
-      </>
+      <div className={classNames(BLOCK, PRODUCTS_LIST)}>
+        {localizedAppStrings[locale][AppStrings.NothingWasFound]} :(
+      </div>
     );
   }
 

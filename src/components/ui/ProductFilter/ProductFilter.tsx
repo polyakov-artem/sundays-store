@@ -329,9 +329,9 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
             theme="primary"
             view="primary"
             size="sm"
-            onClick={handleApplyBtnClick}
+            onClick={handleResetBtnClick}
             className={PRODUCT_FILTER_BUTTON}>
-            {localizedAppStrings[locale][AppStrings.Apply]}
+            {localizedAppStrings[locale][AppStrings.Reset]}
           </Button>
           <Button
             type="button"
@@ -339,9 +339,9 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
             theme="primary"
             view="primary"
             size="sm"
-            onClick={handleResetBtnClick}
+            onClick={handleApplyBtnClick}
             className={PRODUCT_FILTER_BUTTON}>
-            {localizedAppStrings[locale][AppStrings.Reset]}
+            {localizedAppStrings[locale][AppStrings.Apply]}
           </Button>
         </div>
       </div>
