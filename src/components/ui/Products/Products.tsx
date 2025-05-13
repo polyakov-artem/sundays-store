@@ -18,6 +18,7 @@ import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';
 import ProductFilter, {
   COLOR_FILTER_NAME,
+  PRICE_FILTER_NAME,
   SIZE_FILTER_NAME,
   STOCK_FILTER_NAME,
 } from '../ProductFilter/ProductFilter';
@@ -42,6 +43,7 @@ const Products: FC<TProductsProps> = (props) => {
   const stockFilterValue = searchParams.get(STOCK_FILTER_NAME);
   const colorFilterValue = searchParams.get(COLOR_FILTER_NAME);
   const sizeFilterValue = searchParams.get(SIZE_FILTER_NAME);
+  const priceFilterValue = searchParams.get(PRICE_FILTER_NAME);
   const countryCode = useAppSelector(selectCountryCode);
 
   const projectionsQueryParams = useMemo(() => {
@@ -85,6 +87,14 @@ const Products: FC<TProductsProps> = (props) => {
       );
     }
 
+    if (priceFilterValue) {
+      const [minPrice, maxPrice] = priceFilterValue.split(';');
+
+      (params['filter.query'] as string[]).push(
+        `variants.scopedPrice.currentValue.centAmount:range (${minPrice} to ${maxPrice})`
+      );
+    }
+
     return params;
   }, [
     categoryId,
@@ -95,6 +105,7 @@ const Products: FC<TProductsProps> = (props) => {
     stockFilterValue,
     colorFilterValue,
     sizeFilterValue,
+    priceFilterValue,
   ]);
 
   const {

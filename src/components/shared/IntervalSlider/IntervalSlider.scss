@@ -1,0 +1,9 @@
+.interval-slider {
+  &__slider {
+    margin-bottom: var(--g-md-gap);
+  }
+  &__wrap {
+    display: flex;
+    gap: var(--g-xs-gap);
+  }
+}

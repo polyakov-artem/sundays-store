@@ -1,19 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+export type TOnChangeFn<T, E> = (event: E, prevState: T, defaultState: T) => T;
+
+export type TConvertToStateFn<T> = (value: string | null | undefined, defaultState: T) => T;
+
+export type TConvertToParamFn<T> = (state: T) => string;
+
 export type TUseSynchronizedValueParams<T, E> = {
   defaultState: T;
   params: URLSearchParams;
   urlParamName: string;
-  updateStateFn: (event: E, defaultState: T, prevState: T) => T;
-  convertToStateFn: (urlValue: string | null, defaultState: T) => T;
-  convertToParamFn: (state: T) => string;
+  onChangeFn: TOnChangeFn<T, E>;
+  convertToStateFn: TConvertToStateFn<T>;
+  convertToParamFn: TConvertToParamFn<T>;
 };
 
 export const useSynchronizedValue = <T, E>({
   defaultState,
   params,
   urlParamName,
-  updateStateFn,
+  onChangeFn,
   convertToStateFn,
   convertToParamFn,
 }: TUseSynchronizedValueParams<T, E>) => {
@@ -26,9 +32,9 @@ export const useSynchronizedValue = <T, E>({
 
   const handleChange = useCallback(
     (e: E) => {
-      setState((prevState) => updateStateFn(e, defaultState, prevState));
+      setState((prevState) => onChangeFn(e, prevState, defaultState));
     },
-    [updateStateFn, defaultState]
+    [onChangeFn, defaultState]
   );
 
   // nextUrlValue is undefined if the current converted state is equal to the URL value,
