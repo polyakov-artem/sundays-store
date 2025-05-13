@@ -159,7 +159,9 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             <span className={PRODUCT_CARD_PRICE}>{originalPrice}</span>
             <span className={PRODUCT_CARD_CURRENCY_CHAR}>{` ${currencyChar}`}</span>
           </span>
-          <span className={PRODUCT_CARD_DISCOUNT_VALUE}>{discountDifference}</span>
+          <span className={PRODUCT_CARD_DISCOUNT_VALUE}>
+            -{discountDifference} {currencyChar}
+          </span>
         </div>
         {actualPrice}
       </>

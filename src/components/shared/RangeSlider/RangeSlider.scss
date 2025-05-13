@@ -1,0 +1,107 @@
+@mixin track-styles {
+  appearance: none;
+  background: transparent;
+  border: transparent;
+}
+
+@mixin thumb-styles {
+  appearance: none;
+  pointer-events: all;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 0px;
+  border: 0 none;
+  cursor: grab;
+  background-color: var(--thumb-bg-color);
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.range-slider {
+  --thumb-size: 16px;
+  --rail-height: 6px;
+  --rail-bg-color: var(--gray-1);
+  --inner-rail-bg-color: var(--green-1);
+  --thumb-bg-color: var(--green-1);
+  --thumb-focus-box-shadow: 0 0 0 0.2rem var(--green-1-50);
+}
+
+.range-slider {
+  position: relative;
+
+  &__inner-wrap {
+    width: calc(100% - var(--thumb-size));
+    position: relative;
+    height: var(--thumb-size);
+  }
+
+  &__control {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    appearance: none;
+    opacity: 0;
+    z-index: 3;
+    padding: 0;
+
+    &::-ms-track {
+      @include track-styles;
+    }
+
+    &::-moz-range-track {
+      @include track-styles;
+    }
+
+    &:focus::-webkit-slider-runnable-track {
+      @include track-styles;
+    }
+
+    &::-ms-thumb {
+      @include thumb-styles;
+    }
+
+    &::-moz-range-thumb {
+      @include thumb-styles;
+    }
+
+    &::-webkit-slider-thumb {
+      @include thumb-styles;
+    }
+  }
+
+  &__rail {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    height: var(--rail-height);
+    border-radius: calc(var(--rail-height) / 2);
+    background: var(--rail-bg-color);
+  }
+
+  &__inner-rail {
+    position: absolute;
+    top: 50%;
+    transform: translate(calc(var(--thumb-size) / 2), -50%);
+    height: var(--rail-height);
+    background: var(--inner-rail-bg-color);
+  }
+
+  &__thumb {
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 50%;
+    position: absolute;
+    background: var(--inner-rail-bg-color);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+
+    &_focused {
+      box-shadow: var(--thumb-focus-box-shadow);
+    }
+  }
+}

@@ -42,4 +42,5 @@ export enum AppStrings {
   Apply = 'Apply',
   Reset = 'Reset',
   Colors = 'Colors',
+  Price = 'Price',
 }

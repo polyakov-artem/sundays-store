@@ -17,7 +17,7 @@ import { EMPTY_INPUT_VALUE } from '../../../constants/constants';
 import {
   defaultInputConvertToParamFn,
   defaultInputConvertToStateFn,
-  defaultInputUpdateStateFn,
+  defaultInputOnChangeFn,
 } from '../../../utils/useSynchronizedValueFns';
 import './ProductsHeader.scss';
 
@@ -52,7 +52,7 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
     defaultState: EMPTY_INPUT_VALUE,
     params,
     urlParamName: SEARCH_TEXT,
-    updateStateFn: defaultInputUpdateStateFn,
+    onChangeFn: defaultInputOnChangeFn,
     convertToStateFn: defaultInputConvertToStateFn,
     convertToParamFn: defaultInputConvertToParamFn,
   });
@@ -65,7 +65,7 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
     params,
     urlParamName: SORTING,
     defaultState: EMPTY_INPUT_VALUE,
-    updateStateFn: defaultInputUpdateStateFn,
+    onChangeFn: defaultInputOnChangeFn,
     convertToStateFn: defaultInputConvertToStateFn,
     convertToParamFn: defaultInputConvertToParamFn,
   });

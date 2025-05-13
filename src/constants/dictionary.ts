@@ -131,4 +131,7 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.Colors]: {
     [CountryLocale.DE]: 'Farbe',
   },
+  [AppStrings.Price]: {
+    [CountryLocale.DE]: 'Preis',
+  },
 };
