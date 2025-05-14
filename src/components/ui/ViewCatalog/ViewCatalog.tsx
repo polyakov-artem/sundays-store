@@ -25,7 +25,7 @@ const ViewCatalog: FC = () => {
   const locale = useAppSelector(selectLocale);
   const { isFetching, isError } = useQueryCategoriesQuery();
   const { currentCategory, categoryId } = useCurrentCategory();
-  const crumbs = useCrumbs(currentCategory);
+  const crumbs = useCrumbs();
   const allCategories = useAppSelector(selectAllCategories);
 
   const childCategoriesIds = useMemo(() => {
