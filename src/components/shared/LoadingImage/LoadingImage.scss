@@ -1,0 +1,15 @@
+.loading-image {
+  position: relative;
+
+  &__image {
+    &_is-loading {
+      opacity: 0;
+    }
+  }
+
+  &__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import {
   CountryCode,
   CountryLocale,
@@ -7,7 +7,7 @@ import {
   TIntrinsicArticle,
 } from '../../../types/types';
 import classNames from 'classnames';
-import { BLOCK, BLOCK_WITH_HOVER, H3, H4, MEDIA_CONTAIN } from '../../../constants/cssHelpers';
+import { BLOCK, BLOCK_WITH_HOVER, H3, H4 } from '../../../constants/cssHelpers';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_LOGIN, VIEW_PRODUCT } from '../../../routes';
@@ -18,7 +18,7 @@ import Button from '../../shared/Button/Button';
 import { FaShoppingCart } from 'react-icons/fa';
 import { TokenRole } from '../../../services/authService';
 import { selectGetProductDiscountsAdapterState } from '../../../store/storeApi';
-import ScreenLoader from '../../shared/ScreenLoader/ScreenLoader';
+import LoadingImage from '../../shared/LoadingImage/LoadingImage';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
@@ -44,8 +44,6 @@ export const PRODUCT_CARD_AVAILABILITY = `${PRODUCT_CARD}__availability`;
 export const PRODUCT_CARD_AVAILABILITY_VALUE = `${PRODUCT_CARD}__availability-value`;
 export const PRODUCT_CARD_DISCOUNT_BADGE = `${PRODUCT_CARD}__discount-badge`;
 export const PRODUCT_CARD_TABS = `${PRODUCT_CARD}__tabs`;
-export const PRODUCT_CARD_IMG_IS_LOADING = `${PRODUCT_CARD}__img_is-loading`;
-export const PRODUCT_CARD_IMG_LOADER = `${PRODUCT_CARD}__img-loader`;
 
 export const DESCRIPTION_MAX_LENGTH = 120;
 export const VARIANT_PARAM_NAME = 'var-id';
@@ -78,8 +76,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
   const navigate = useNavigate();
   const discounts = useAppSelector(selectGetProductDiscountsAdapterState);
   const { id, name, description, masterVariant, variants } = productProjection;
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [imgIsLoading, setImgIsLoading] = useState(true);
 
   const matchedVariants = useMemo(() => {
     return [masterVariant, ...variants].filter((variant) => variant.isMatchingVariant);
@@ -206,7 +202,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
         size="sm"
         onClick={() => {
           setCurrentVariantIndex(i);
-          setImgIsLoading(true);
         }}
         selected={i === currentVariantIndex}>
         {variant.sku}
@@ -214,33 +209,16 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     ));
   }, [matchedVariants, currentVariantIndex]);
 
-  useEffect(() => {
-    const imgElem = imgRef.current;
-    const handleImgLoading = () => {
-      setImgIsLoading(false);
-    };
-    imgElem?.addEventListener('load', handleImgLoading);
-
-    return () => imgElem?.removeEventListener('load', handleImgLoading);
-  }, []);
-
   return (
     <article className={classes} {...rest}>
       <header className={PRODUCT_CARD_HEADER}>
-        <div className={PRODUCT_CARD_IMG_WRAP}>
-          {imgIsLoading && (
-            <ScreenLoader className={PRODUCT_CARD_IMG_LOADER} type="linear" fullSpace />
-          )}
-          <img
-            ref={imgRef}
-            className={classNames(MEDIA_CONTAIN, PRODUCT_CARD_IMG, {
-              [PRODUCT_CARD_IMG_IS_LOADING]: imgIsLoading,
-            })}
-            src={images?.[0].url}
-            alt={localizedName}
-          />
+        <LoadingImage
+          src={images?.[0].url}
+          alt={localizedName}
+          className={PRODUCT_CARD_IMG}
+          contain>
           {discountBadge}
-        </div>
+        </LoadingImage>
       </header>
       <div className={PRODUCT_CARD_BODY}>
         <Link className={PRODUCT_CARD_LINK} to={linkURL}>
