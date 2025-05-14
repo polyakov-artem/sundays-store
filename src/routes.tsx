@@ -38,7 +38,7 @@ const routes: RouteObject[] = [
         element: <ViewHome />,
       },
       {
-        path: `${VIEW_CATALOG}/:id?`,
+        path: `${VIEW_CATALOG}/:categoryId?`,
         element: <ViewCategories />,
       },
       {
@@ -46,7 +46,7 @@ const routes: RouteObject[] = [
         element: 'Cart data',
       },
       {
-        path: `${VIEW_PRODUCT}/:id`,
+        path: `${VIEW_PRODUCT}/:categoryId/:productId`,
         element: 'Product data',
       },
       {

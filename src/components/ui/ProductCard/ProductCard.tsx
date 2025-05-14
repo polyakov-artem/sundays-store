@@ -48,6 +48,7 @@ export const PRODUCT_CARD_IMG_IS_LOADING = `${PRODUCT_CARD}__img_is-loading`;
 export const PRODUCT_CARD_IMG_LOADER = `${PRODUCT_CARD}__img-loader`;
 
 export const DESCRIPTION_MAX_LENGTH = 120;
+export const VARIANT_PARAM_NAME = 'var-id';
 
 export type TProductCardProps = {
   productProjection: TExtProductProjection;
@@ -57,6 +58,7 @@ export type TProductCardProps = {
   locale: CountryLocale;
   location: Location;
   role: TokenRole;
+  categoryId?: string;
 } & TIntrinsicArticle;
 
 const ProductCard: FC<TProductCardProps> = (props) => {
@@ -69,6 +71,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     location,
     role,
     countryCode,
+    categoryId,
     ...rest
   } = props;
 
@@ -188,7 +191,10 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     }
   }, [role, location, navigate, isAvailable, hasIncorrectPrice]);
 
-  const linkURL = getFullPath(VIEW_PRODUCT, `${id}-${currentVariant.id}`);
+  const linkURL = getFullPath(
+    VIEW_PRODUCT,
+    `${categoryId}/${id}/?${VARIANT_PARAM_NAME}=${currentVariant.id}`
+  );
 
   const tabsContent = useMemo(() => {
     return matchedVariants.map((variant, i) => (

@@ -38,7 +38,7 @@ export type TProductsProps = TIntrinsicSection;
 const Products: FC<TProductsProps> = (props) => {
   const { className, ...rest } = props;
   const classes = classNames(PRODUCTS, className);
-  const { id: categoryId } = useParams();
+  const { categoryId } = useParams();
   const [searchParams] = useSearchParams();
   const locale = useAppSelector(selectLocale);
   const searchText = searchParams.get(SEARCH_TEXT);

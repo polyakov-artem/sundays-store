@@ -61,7 +61,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   const classes = classNames(BLOCK, PRODUCT_FILTER, className);
   const locale = useAppSelector(selectLocale);
   const [params, setParams] = useSearchParams();
-  const { id: categoryId } = useParams();
+  const { categoryId } = useParams();
   const countryCode = useAppSelector(selectCountryCode);
 
   const projectionsQueryParams = useMemo(() => {

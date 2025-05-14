@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import { Order, TIntrinsicDiv, TProductProjection } from '../../../types/types';
 import classNames from 'classnames';
 import ProductCard from '../ProductCard/ProductCard';
-import { useLocation, useSearchParams } from 'react-router';
+import { useLocation, useParams, useSearchParams } from 'react-router';
 import { SORTING, VIEW_MODE, VIEW_MODE_LIST } from '../ProductsHeader/ProductsHeader';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
@@ -27,6 +27,7 @@ const ProductList: FC<TProductListProps> = (props) => {
   const isListMode = params.get(VIEW_MODE) === VIEW_MODE_LIST;
   const classes = classNames(PRODUCT_LIST, className, { [PRODUCT_LIST_MODE_LIST]: isListMode });
   const sorting = params.get(SORTING);
+  const { categoryId } = useParams();
   const priceSorting = useMemo(() => {
     if (sorting) {
       const [key, direction] = sorting.split('_');
@@ -51,9 +52,10 @@ const ProductList: FC<TProductListProps> = (props) => {
           location={location}
           role={role}
           locale={locale}
+          categoryId={categoryId}
         />
       )),
-    [productProjections, isListMode, priceSorting, countryCode, location, role, locale]
+    [productProjections, isListMode, priceSorting, countryCode, location, role, locale, categoryId]
   );
 
   return <div className={classes}>{content}</div>;

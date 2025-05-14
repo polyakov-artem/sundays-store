@@ -24,7 +24,7 @@ export const VIEW_CATALOG_BREADCRUMBS = `${VIEW_CATALOG}__breadcrumbs`;
 const ViewCatalog: FC = () => {
   const locale = useAppSelector(selectLocale);
   const { isFetching, isError } = useQueryCategoriesQuery();
-  const { currentCategory, id } = useCurrentCategory();
+  const { currentCategory, categoryId } = useCurrentCategory();
   const crumbs = useCrumbs(currentCategory);
   const allCategories = useAppSelector(selectAllCategories);
 
@@ -40,7 +40,7 @@ const ViewCatalog: FC = () => {
     content = <LoaderBlock />;
   } else if (isError) {
     content = <ErrorBlock isBlock />;
-  } else if (currentCategory || id === undefined) {
+  } else if (currentCategory || categoryId === undefined) {
     if (childCategoriesIds.length) {
       content = <CategoryList ids={childCategoriesIds} />;
     } else {
