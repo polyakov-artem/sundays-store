@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { CountryLocale } from '../../../types/types';
 import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_CATALOG } from '../../../routes';
+import { VIEW_CATALOG } from '../../../constants/constants';
 import classNames from 'classnames';
 import { MEDIA_COVER } from '../../../constants/cssHelpers';
 import { useAppSelector } from '../../../hooks/store-hooks';

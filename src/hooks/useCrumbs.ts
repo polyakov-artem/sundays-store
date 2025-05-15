@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { TCrumb } from '../components/shared/Breadcrumbs/Breadcrumbs';
 import { getFullPath } from '../utils/getFullPath';
-import { VIEW_CATALOG } from '../routes';
+import { VIEW_CATALOG } from '../constants/constants';
 import { localizedAppStrings } from '../constants/localizedAppStrings';
 import { useAppSelector } from './store-hooks';
 import {

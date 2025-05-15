@@ -1,5 +1,13 @@
 export const PUBLIC_PATH = '/';
 
+export const VIEW_NOT_FOUND = 'not-found';
+export const VIEW_LOGIN = 'login';
+export const VIEW_PROFILE = 'profile';
+export const VIEW_REGISTER = 'register';
+export const VIEW_CATALOG = 'catalog';
+export const VIEW_PRODUCT = 'product';
+export const VIEW_CART = 'cart';
+
 export const inputErrors = {
   whitespaces: 'Must not contain whitespaces',
   emailSeparator: `Must contain an '@' symbol`,

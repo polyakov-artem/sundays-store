@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { selectAllCategories, useQueryCategoriesQuery } from '../../../store/storeApi';
 import { Navigate } from 'react-router';
-import { VIEW_NOT_FOUND } from '../../../routes';
+import { VIEW_NOT_FOUND } from '../../../constants/constants';
 import { getFullPath } from '../../../utils/getFullPath';
 import Breadcrumbs from '../../shared/Breadcrumbs/Breadcrumbs';
 import { useAppSelector } from '../../../hooks/store-hooks';
