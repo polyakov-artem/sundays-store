@@ -4,6 +4,10 @@ import { selectIsLoggedIn } from '../store/authSlice';
 import { useLoginRedirectionProps } from './useLoginRedirectionProps';
 import { useNavigate } from 'react-router';
 
+export type TRedirectUnauthorized = ReturnType<
+  typeof useRedirectionOfUnauthorized
+>['redirectUnauthorized'];
+
 export const useRedirectionOfUnauthorized = () => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
 

@@ -1,26 +1,28 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useMemo } from 'react';
 import {
-  CountryCode,
   CountryLocale,
   Order,
   TExtProductProjection,
   TIntrinsicArticle,
+  TProductDiscount,
 } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK, BLOCK_WITH_HOVER, H4 } from '../../../constants/cssHelpers';
-import { useAppSelector } from '../../../hooks/store-hooks';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_PRODUCT } from '../../../constants/constants';
-import { Link, Location } from 'react-router';
+import { Link } from 'react-router';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import Button from '../../shared/Button/Button';
 import { FaShoppingCart } from 'react-icons/fa';
-import { TokenRole } from '../../../services/authService';
-import { selectGetProductDiscountsAdapterState } from '../../../store/storeApi';
 import LoadingImage from '../../shared/LoadingImage/LoadingImage';
 import ProductPrice from '../ProductPrice/ProductPrice';
-import { useRedirectionOfUnauthorized } from '../../../hooks/useRedirectionOfUnauthorized';
+import { TRedirectUnauthorized } from '../../../hooks/useRedirectionOfUnauthorized';
+import TabButtons from '../../shared/TabButtons/TabButtons';
+import ProductAvailability from '../ProductAvailability/ProductAvailability';
+import { EntityState } from '@reduxjs/toolkit';
+import { useProductVariant } from '../../../hooks/useProductVariant';
+import ProductBadge from '../ProductBadge/ProductBadge';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
@@ -35,8 +37,6 @@ export const PRODUCT_CARD_DESCRIPTION = `${PRODUCT_CARD}__description`;
 export const PRODUCT_CARD_PRICE = `${PRODUCT_CARD}__price`;
 export const PRODUCT_CARD_ACTIONS = `${PRODUCT_CARD}__actions`;
 export const PRODUCT_CARD_ACTION_BTN = `${PRODUCT_CARD}__action-btn`;
-export const PRODUCT_CARD_AVAILABILITY = `${PRODUCT_CARD}__availability`;
-export const PRODUCT_CARD_AVAILABILITY_VALUE = `${PRODUCT_CARD}__availability-value`;
 export const PRODUCT_CARD_DISCOUNT_BADGE = `${PRODUCT_CARD}__discount-badge`;
 export const PRODUCT_CARD_TABS = `${PRODUCT_CARD}__tabs`;
 
@@ -47,11 +47,10 @@ export type TProductCardProps = {
   productProjection: TExtProductProjection;
   isListMode: boolean;
   priceSorting?: Order;
-  countryCode: CountryCode;
   locale: CountryLocale;
-  location: Location;
-  role: TokenRole;
   categoryId?: string;
+  discounts: EntityState<TProductDiscount, string>;
+  redirectUnauthorized: TRedirectUnauthorized;
 } & TIntrinsicArticle;
 
 const ProductCard: FC<TProductCardProps> = (props) => {
@@ -61,51 +60,42 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     priceSorting,
     isListMode,
     locale,
-    location,
-    role,
-    countryCode,
     categoryId,
+    discounts,
+    redirectUnauthorized,
     ...rest
   } = props;
 
-  const discounts = useAppSelector(selectGetProductDiscountsAdapterState);
-  const { id, name, description, masterVariant, variants } = productProjection;
-  const { redirectUnauthorized } = useRedirectionOfUnauthorized();
+  const { id, masterVariant, variants, name, description } = productProjection;
 
-  const matchedVariants = useMemo(() => {
-    return [masterVariant, ...variants].filter((variant) => variant.isMatchingVariant);
-  }, [masterVariant, variants]);
+  const matchedVariants = useMemo(
+    () => [masterVariant, ...variants].filter((variant) => variant.isMatchingVariant),
+    [masterVariant, variants]
+  );
 
-  const defaultVariantIndex = useMemo(() => {
-    let index = 0;
-
-    if (priceSorting) {
-      matchedVariants.forEach((variant, i) => {
-        const foundValue = matchedVariants[index].scopedPrice.currentValue.centAmount;
-        const variantValue = variant.scopedPrice.currentValue.centAmount;
-
-        if (foundValue && variantValue) {
-          if (priceSorting === Order.asc) {
-            if (foundValue > variantValue) {
-              index = i;
-            }
-          } else {
-            if (foundValue < variantValue) {
-              index = i;
-            }
-          }
-        }
-      });
-    }
-
-    return index;
-  }, [matchedVariants, priceSorting]);
-
-  const [currentVariantIndex, setCurrentVariantIndex] = useState(defaultVariantIndex);
-  const currentVariant = matchedVariants[currentVariantIndex];
-
-  const { images, availability, priceData } = currentVariant;
-  const isAvailable = availability?.isOnStock;
+  const {
+    images,
+    isAvailable,
+    localizedName,
+    localizedDescription,
+    currentPrice,
+    discountDifference,
+    currencyChar,
+    isDiscounted,
+    originalPrice,
+    discountName,
+    currentVariantId,
+    handleBuyBtnClick,
+    handleVariantIdSetting,
+  } = useProductVariant({
+    variants: matchedVariants,
+    name,
+    description,
+    priceSorting,
+    locale,
+    discounts,
+    redirectUnauthorized,
+  });
 
   const classes = classNames(
     BLOCK,
@@ -115,59 +105,16 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     className
   );
 
-  const localizedName = name[locale];
-
   const truncatedDescription = useMemo(() => {
-    if (!description) return;
+    if (localizedDescription.length <= DESCRIPTION_MAX_LENGTH) return localizedDescription;
 
-    const localized = description[locale];
-    if (localized.length <= DESCRIPTION_MAX_LENGTH) return localized;
-
-    return `${localized.slice(0, DESCRIPTION_MAX_LENGTH)}...`;
-  }, [locale, description]);
-
-  const {
-    currentPrice,
-    discountDifference,
-    discountId,
-    currencyChar,
-    isDiscounted,
-    originalPrice,
-  } = priceData || {};
-  const hasIncorrectPrice = !currentPrice;
-
-  const discountBadgeText = discountId ? discounts.entities[discountId]?.name[locale] : '';
-
-  const discountBadge = discountBadgeText ? (
-    <p className={PRODUCT_CARD_DISCOUNT_BADGE}>{discountBadgeText}</p>
-  ) : null;
-
-  const handleBuyBtnClick = useCallback(() => {
-    if (!isAvailable || hasIncorrectPrice) return;
-    void redirectUnauthorized();
-  }, [redirectUnauthorized, isAvailable, hasIncorrectPrice]);
+    return `${localizedDescription.slice(0, DESCRIPTION_MAX_LENGTH)}...`;
+  }, [localizedDescription]);
 
   const linkURL = getFullPath(
     VIEW_PRODUCT,
-    `${categoryId}/${id}/?${VARIANT_PARAM_NAME}=${currentVariant.id}`
+    `${categoryId}/${id}/?${VARIANT_PARAM_NAME}=${currentVariantId}`
   );
-
-  const tabsContent = useMemo(() => {
-    return matchedVariants.map((variant, i) => (
-      <Button
-        el="button"
-        key={variant.id}
-        theme="primary"
-        view="tab"
-        size="sm"
-        onClick={() => {
-          setCurrentVariantIndex(i);
-        }}
-        selected={i === currentVariantIndex}>
-        {variant.sku}
-      </Button>
-    ));
-  }, [matchedVariants, currentVariantIndex]);
 
   return (
     <article className={classes} {...rest}>
@@ -177,7 +124,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
           alt={localizedName}
           className={PRODUCT_CARD_IMG}
           contain>
-          {discountBadge}
+          <ProductBadge text={discountName} className={PRODUCT_CARD_DISCOUNT_BADGE} />
         </LoadingImage>
       </header>
       <div className={PRODUCT_CARD_BODY}>
@@ -185,7 +132,16 @@ const ProductCard: FC<TProductCardProps> = (props) => {
           <h4 className={classNames(H4, PRODUCT_CARD_TITLE)}> {localizedName}</h4>
         </Link>
         <p className={PRODUCT_CARD_DESCRIPTION}>{truncatedDescription}</p>
-        <div className={PRODUCT_CARD_TABS}>{tabsContent.length > 1 && tabsContent}</div>
+        {matchedVariants.length > 1 && (
+          <TabButtons
+            className={PRODUCT_CARD_TABS}
+            items={matchedVariants}
+            nameProp="sku"
+            valueProp="id"
+            selectedValue={currentVariantId}
+            onTabBtnClick={handleVariantIdSetting}
+          />
+        )}
         <ProductPrice
           className={PRODUCT_CARD_PRICE}
           originalPrice={originalPrice}
@@ -218,14 +174,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             disabled={!isAvailable}
           />
         </div>
-
-        <p className={PRODUCT_CARD_AVAILABILITY}>
-          {localizedAppStrings[locale][AppStrings.IsOnStock]}:{' '}
-          <span
-            className={
-              PRODUCT_CARD_AVAILABILITY_VALUE
-            }>{`${isAvailable ? localizedAppStrings[locale][AppStrings.Yes] : localizedAppStrings[locale][AppStrings.No]}`}</span>
-        </p>
+        <ProductAvailability isAvailable={isAvailable} locale={locale} />
       </div>
     </article>
   );

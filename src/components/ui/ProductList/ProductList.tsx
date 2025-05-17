@@ -1,33 +1,34 @@
 import { FC, useMemo } from 'react';
-import { Order, TIntrinsicDiv, TProductProjection } from '../../../types/types';
+import { Order, TExtProductProjection, TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import ProductCard from '../ProductCard/ProductCard';
-import { useLocation, useParams, useSearchParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { SORTING, VIEW_MODE, VIEW_MODE_LIST } from '../ProductsHeader/ProductsHeader';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
-import { selectUserRole } from '../../../store/authSlice';
+import { selectLocale } from '../../../store/settingsSlice';
 import './ProductList.scss';
+import { selectGetProductDiscountsAdapterState } from '../../../store/storeApi';
+import { useRedirectionOfUnauthorized } from '../../../hooks/useRedirectionOfUnauthorized';
 
 export const PRODUCT_LIST = 'product-list';
 export const PRODUCT_LIST_MODE_LIST = `${PRODUCT_LIST}_mode_list`;
 export const PRODUCT_LIST_CARD = `${PRODUCT_LIST}__card`;
 
 export type TProductListProps = {
-  productProjections?: TProductProjection[];
+  productProjections?: TExtProductProjection[];
 } & TIntrinsicDiv;
 
 const ProductList: FC<TProductListProps> = (props) => {
   const { className, productProjections } = props;
   const [params] = useSearchParams();
-  const countryCode = useAppSelector(selectCountryCode);
   const locale = useAppSelector(selectLocale);
-  const location = useLocation();
-  const role = useAppSelector(selectUserRole);
   const isListMode = params.get(VIEW_MODE) === VIEW_MODE_LIST;
   const classes = classNames(PRODUCT_LIST, className, { [PRODUCT_LIST_MODE_LIST]: isListMode });
   const sorting = params.get(SORTING);
   const { categoryId } = useParams();
+  const discounts = useAppSelector(selectGetProductDiscountsAdapterState);
+  const { redirectUnauthorized } = useRedirectionOfUnauthorized();
+
   const priceSorting = useMemo(() => {
     if (sorting) {
       const [key, direction] = sorting.split('_');
@@ -48,14 +49,21 @@ const ProductList: FC<TProductListProps> = (props) => {
           productProjection={productProjection}
           isListMode={isListMode}
           priceSorting={priceSorting}
-          countryCode={countryCode}
-          location={location}
-          role={role}
           locale={locale}
           categoryId={categoryId}
+          discounts={discounts}
+          redirectUnauthorized={redirectUnauthorized}
         />
       )),
-    [productProjections, isListMode, priceSorting, countryCode, location, role, locale, categoryId]
+    [
+      productProjections,
+      isListMode,
+      priceSorting,
+      locale,
+      categoryId,
+      discounts,
+      redirectUnauthorized,
+    ]
   );
 
   return <div className={classes}>{content}</div>;

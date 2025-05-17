@@ -4,6 +4,8 @@ export type TAuthProps = {
   type: 'login' | 'register';
 };
 
+export type TObjKey = string | number | symbol;
+
 export type TBaseAddress = {
   id?: string;
   key?: string;
@@ -154,9 +156,9 @@ export enum CountryCurrency {
 }
 
 export enum CountryCode {
-  'GB' = 'GB',
-  'DE' = 'DE',
-  'US' = 'US',
+  GB = 'GB',
+  DE = 'DE',
+  US = 'US',
 }
 
 export type TCategoryReference = {
@@ -358,37 +360,6 @@ export type TProductSearchResult = {
   productProjection?: unknown;
 };
 
-export type TGetProductByIdParams = {
-  id: string;
-  params?: TGetProductByIdQueryParams;
-};
-
-export type TGetProductByIdQueryParams = {
-  expand?: string;
-  priceCurrency?: string;
-  priceCountry?: string;
-  priceCustomerGroup?: string;
-  priceCustomerGroupAssignments?: string;
-  priceChannel?: string;
-};
-
-export type TProduct = {
-  id: string;
-  version: number;
-  key?: string;
-  productType: unknown;
-  masterData: unknown;
-  taxCategory?: unknown;
-  state?: unknown;
-  reviewRatingStatistics?: TReviewRatingStatistics;
-  priceMode?: unknown;
-  createdAt: string;
-  createdBy?: unknown;
-  lastModifiedAt: string;
-  lastModifiedBy?: unknown;
-  warnings?: TWarningObject[];
-};
-
 export type TReviewRatingStatistics = {
   averageRating: number;
   highestRating: number;
@@ -484,7 +455,7 @@ export type TProductVariant = {
   scopedPriceDiscounted: boolean;
 };
 
-export type TExtProductVariant = TProductVariant & { priceData?: TPriceData };
+export type TExtProductVariant = TProductVariant & { priceData: TPriceData };
 
 export type TPriceData = {
   originalPrice: number;
@@ -705,3 +676,4 @@ export type TIntrinsicFieldset = ComponentProps<'fieldset'>;
 export type TIntrinsicSpan = ComponentProps<'span'>;
 export type TIntrinsicUl = ComponentProps<'ul'>;
 export type TIntrinsicImg = ComponentProps<'img'>;
+export type TIntrinsicP = ComponentProps<'p'>;

@@ -8,7 +8,6 @@ import {
   TCustomer,
   TCustomerSignInResult,
   TExtProductProjectionPagedSearchResponse,
-  TExtProductVariant,
   TGetProductDiscountsParams,
   TMyCustomerDraft,
   TProductDiscount,
@@ -117,19 +116,19 @@ export const storeApi = createApi({
         };
       },
       transformResponse: (response: TProductProjectionPagedSearchResponse) => {
-        response.results.forEach((projection) => {
+        const extResponse = { ...response } as TExtProductProjectionPagedSearchResponse;
+
+        extResponse.results.forEach((projection) => {
           const { masterVariant, variants } = projection;
           [masterVariant, ...variants].forEach((variant) => {
-            if (variant.isMatchingVariant) {
-              const {
-                scopedPrice: { value, discounted },
-              } = variant;
-              (variant as TExtProductVariant).priceData = getPriceData(value, discounted);
-            }
+            const {
+              scopedPrice: { value, discounted },
+            } = variant;
+            variant.priceData = getPriceData(value, discounted);
           });
         });
 
-        return response;
+        return extResponse;
       },
     }),
 

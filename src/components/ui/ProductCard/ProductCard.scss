@@ -38,43 +38,17 @@
     margin-top: auto;
   }
 
-  &__tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--g-xs-gap);
-  }
-
   &__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--g-xs-gap);
   }
 
-  &__availability {
-    margin: 0;
-  }
-
-  &__availability-value {
-    color: var(--green-4);
-    font-weight: bold;
-  }
-
-  &_not-available {
-    .product-card__availability-value {
-      color: var(--red-1);
-    }
-  }
-
   &__discount-badge {
     z-index: 1;
     position: absolute;
-    background-color: var(--green-4);
     right: 0px;
     top: 0px;
-    margin: 0;
-    color: white;
-    padding: 0 5px;
-    font-size: 0.8rem;
   }
 
   @container (min-width: 600px) {
