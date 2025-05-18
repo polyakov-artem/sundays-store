@@ -20,7 +20,7 @@ import { authService } from '../../../services/authService';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_REGISTER } from '../../../routes';
+import { VIEW_REGISTER } from '../../../constants/constants';
 import { selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';

@@ -18,7 +18,7 @@ import { authService } from '../../../services/authService';
 import Select from '../../shared/Select/Select';
 import { getFullPath } from '../../../utils/getFullPath';
 import { Link } from 'react-router';
-import { VIEW_LOGIN } from '../../../routes';
+import { VIEW_LOGIN } from '../../../constants/constants';
 import { useSignUpMutation } from '../../../store/storeApi';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 import { delay } from '../../../utils/delay';

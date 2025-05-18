@@ -1,21 +1,30 @@
 import { useMemo } from 'react';
 import { TCrumb } from '../components/shared/Breadcrumbs/Breadcrumbs';
 import { getFullPath } from '../utils/getFullPath';
-import { VIEW_CATALOG } from '../routes';
+import { VIEW_CATALOG } from '../constants/constants';
 import { localizedAppStrings } from '../constants/localizedAppStrings';
 import { useAppSelector } from './store-hooks';
-import { selectAllCategoriesEntities } from '../store/storeApi';
+import {
+  selectAllCategoriesEntities,
+  selectCategoryById,
+  useQueryCategoriesQuery,
+} from '../store/storeApi';
 import { selectLocale } from '../store/settingsSlice';
-import { TCategory } from '../types/types';
+import { useParams } from 'react-router';
 
-export const useCrumbs = (currentCategory?: TCategory) => {
+export const useCrumbs = () => {
+  const { categoryId } = useParams();
+  const { isFetching } = useQueryCategoriesQuery();
   const allCategoriesEntities = useAppSelector(selectAllCategoriesEntities);
   const locale = useAppSelector(selectLocale);
+  const currentCategory = useAppSelector((state) =>
+    !categoryId ? undefined : selectCategoryById(state, categoryId)
+  );
 
   const crumbs: TCrumb[] = useMemo(() => {
     const result = [{ name: localizedAppStrings[locale].Catalog, url: getFullPath(VIEW_CATALOG) }];
 
-    if (!currentCategory) {
+    if (!currentCategory || isFetching) {
       return result;
     }
 
@@ -32,7 +41,7 @@ export const useCrumbs = (currentCategory?: TCategory) => {
     });
 
     return result;
-  }, [allCategoriesEntities, locale, currentCategory]);
+  }, [allCategoriesEntities, locale, currentCategory, isFetching]);
 
   return crumbs;
 };

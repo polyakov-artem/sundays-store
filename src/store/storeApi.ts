@@ -7,12 +7,14 @@ import {
   TCategory,
   TCustomer,
   TCustomerSignInResult,
+  TExtProductProjection,
   TExtProductProjectionPagedSearchResponse,
-  TExtProductVariant,
   TGetProductDiscountsParams,
+  TGetProductProjectionByIdParams,
   TMyCustomerDraft,
   TProductDiscount,
   TProductDiscountPagedQueryResponse,
+  TProductProjection,
   TProductProjectionPagedSearchParams,
   TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
@@ -117,19 +119,19 @@ export const storeApi = createApi({
         };
       },
       transformResponse: (response: TProductProjectionPagedSearchResponse) => {
-        response.results.forEach((projection) => {
+        const extResponse = { ...response } as TExtProductProjectionPagedSearchResponse;
+
+        extResponse.results.forEach((projection) => {
           const { masterVariant, variants } = projection;
           [masterVariant, ...variants].forEach((variant) => {
-            if (variant.isMatchingVariant) {
-              const {
-                scopedPrice: { value, discounted },
-              } = variant;
-              (variant as TExtProductVariant).priceData = getPriceData(value, discounted);
-            }
+            const {
+              scopedPrice: { value, discounted },
+            } = variant;
+            variant.priceData = getPriceData(value, discounted);
           });
         });
 
-        return response;
+        return extResponse;
       },
     }),
 
@@ -145,6 +147,31 @@ export const storeApi = createApi({
         return response.results;
       },
     }),
+
+    getProductProjectionById: builder.query<TExtProductProjection, TGetProductProjectionByIdParams>(
+      {
+        query: ({ id, params }) => ({
+          url: `${projectKey}/product-projections/${id}`,
+          params,
+        }),
+
+        transformResponse: (response: TProductProjection) => {
+          const extResponse = { ...response } as TExtProductProjection;
+
+          const { masterVariant, variants } = extResponse;
+          [masterVariant, ...variants].forEach((variant) => {
+            const {
+              price: { value, discounted },
+            } = variant;
+            variant.priceData = getPriceData(value, discounted);
+          });
+          return extResponse;
+        },
+
+        providesTags: (result) =>
+          result ? [{ type: 'Product' as const, id: result.id }] : ['Product'],
+      }
+    ),
   }),
 });
 
@@ -193,4 +220,5 @@ export const {
   useQueryCategoriesQuery,
   useSearchProductProjectionsQuery,
   useGetProductDiscountsQuery,
+  useGetProductProjectionByIdQuery,
 } = storeApi;

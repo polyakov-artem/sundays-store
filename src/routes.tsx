@@ -4,16 +4,18 @@ import ViewAuth from './components/ui/ViewAuth/ViewAuth';
 import ViewCategories from './components/ui/ViewCatalog/ViewCatalog';
 import ViewHome from './components/ui/ViewHome/ViewHome';
 import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
-import { PUBLIC_PATH } from './constants/constants';
+import ViewProduct from './components/ui/ViewProduct/ViewProduct';
+import {
+  PUBLIC_PATH,
+  VIEW_CART,
+  VIEW_CATALOG,
+  VIEW_LOGIN,
+  VIEW_NOT_FOUND,
+  VIEW_PRODUCT,
+  VIEW_PROFILE,
+  VIEW_REGISTER,
+} from './constants/constants';
 import { RouteObject } from 'react-router';
-
-export const VIEW_NOT_FOUND = 'not-found';
-export const VIEW_LOGIN = 'login';
-export const VIEW_PROFILE = 'profile';
-export const VIEW_REGISTER = 'register';
-export const VIEW_CATALOG = 'catalog';
-export const VIEW_PRODUCT = 'product';
-export const VIEW_CART = 'cart';
 
 const routes: RouteObject[] = [
   {
@@ -38,7 +40,7 @@ const routes: RouteObject[] = [
         element: <ViewHome />,
       },
       {
-        path: `${VIEW_CATALOG}/:id?`,
+        path: `${VIEW_CATALOG}/:categoryId?`,
         element: <ViewCategories />,
       },
       {
@@ -46,8 +48,8 @@ const routes: RouteObject[] = [
         element: 'Cart data',
       },
       {
-        path: `${VIEW_PRODUCT}/:id`,
-        element: 'Product data',
+        path: `${VIEW_PRODUCT}/:categoryId/:productId`,
+        element: <ViewProduct />,
       },
       {
         path: VIEW_REGISTER,

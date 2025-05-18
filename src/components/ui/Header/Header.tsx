@@ -9,7 +9,7 @@ import { WRAPPER } from '../../../constants/cssHelpers';
 import { useGetMeQuery } from '../../../store/storeApi';
 import Button from '../../shared/Button/Button';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../routes';
+import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../constants/constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import { selectUserRole } from '../../../store/authSlice';
 import { TokenRole } from '../../../services/authService';

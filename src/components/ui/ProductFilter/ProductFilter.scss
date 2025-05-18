@@ -4,4 +4,17 @@
     flex-direction: column;
     gap: var(--g-md-gap);
   }
+
+  &__buttons {
+    display: flex;
+    gap: var(--g-xs-gap);
+    flex-wrap: wrap;
+    max-width: 400px;
+    align-self: center;
+    width: 100%;
+  }
+
+  &__button {
+    flex-grow: 1;
+  }
 }

@@ -1,0 +1,14 @@
+.product-availability {
+  margin: 0;
+
+  &__value {
+    color: var(--green-4);
+    font-weight: bold;
+  }
+
+  &_not-available {
+    .product-availability__value {
+      color: var(--red-1);
+    }
+  }
+}
