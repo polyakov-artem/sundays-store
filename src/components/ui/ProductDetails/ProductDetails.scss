@@ -1,0 +1,12 @@
+.product-details {
+  display: grid;
+  gap: var(--g-md-gap);
+
+  &__title {
+    text-align: center;
+  }
+
+  &__description {
+    margin: 0;
+  }
+}

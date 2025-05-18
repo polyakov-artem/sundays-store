@@ -4,6 +4,7 @@ import ViewAuth from './components/ui/ViewAuth/ViewAuth';
 import ViewCategories from './components/ui/ViewCatalog/ViewCatalog';
 import ViewHome from './components/ui/ViewHome/ViewHome';
 import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
+import ViewProduct from './components/ui/ViewProduct/ViewProduct';
 import {
   PUBLIC_PATH,
   VIEW_CART,
@@ -48,7 +49,7 @@ const routes: RouteObject[] = [
       },
       {
         path: `${VIEW_PRODUCT}/:categoryId/:productId`,
-        element: 'Product data',
+        element: <ViewProduct />,
       },
       {
         path: VIEW_REGISTER,

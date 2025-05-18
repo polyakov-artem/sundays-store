@@ -360,6 +360,23 @@ export type TProductSearchResult = {
   productProjection?: unknown;
 };
 
+export type TGetProductProjectionByIdParams = {
+  id: string;
+  params?: TGetProductProjectionByIdQueryParams;
+};
+
+export type TGetProductProjectionByIdQueryParams = {
+  expand?: unknown;
+  staged?: boolean;
+  priceCurrency?: string;
+  priceCountry?: CountryCode;
+  priceCustomerGroup?: string;
+  priceCustomerGroupAssignments?: string;
+  priceChannel?: string;
+  localeProjection?: string;
+  storeProjection?: string;
+};
+
 export type TReviewRatingStatistics = {
   averageRating: number;
   highestRating: number;
@@ -446,7 +463,7 @@ export type TProductVariant = {
   sku?: string;
   prices?: TPrice[];
   attributes?: TAttribute[];
-  price?: TPrice;
+  price: TPrice;
   images?: TImage[];
   assets?: TAsset[];
   availability?: TProductVariantAvailability;

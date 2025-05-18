@@ -1,0 +1,24 @@
+.product {
+  display: grid;
+  grid-template-areas: 'gallery details';
+  grid-template-columns: 40% 1fr;
+  gap: var(--g-md-gap);
+  align-items: flex-start;
+
+  &__details {
+    grid-area: details;
+  }
+
+  &__gallery {
+    grid-area: gallery;
+  }
+
+  @media (max-width: 650px) {
+    grid-template-areas:
+      'details'
+      'gallery';
+
+    grid-template-columns: 1fr;
+    gap: var(--g-xlg-gap);
+  }
+}
