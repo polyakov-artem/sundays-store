@@ -6,7 +6,8 @@ import { selectMainCategories, useQueryCategoriesQuery } from '../../../store/st
 import { selectLocale } from '../../../store/settingsSlice';
 import { TIntrinsicUl } from '../../../types/types';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_CATALOG } from '../../../routes';
+import { VIEW_CATALOG } from '../../../constants/constants';
+
 import './HeaderLinks.scss';
 
 export const HEADER_LINKS = 'header-links';

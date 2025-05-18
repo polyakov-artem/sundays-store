@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { selectAllCategories, useQueryCategoriesQuery } from '../../../store/storeApi';
 import { Navigate } from 'react-router';
-import { VIEW_NOT_FOUND } from '../../../routes';
+import { VIEW_NOT_FOUND } from '../../../constants/constants';
 import { getFullPath } from '../../../utils/getFullPath';
 import Breadcrumbs from '../../shared/Breadcrumbs/Breadcrumbs';
 import { useAppSelector } from '../../../hooks/store-hooks';
@@ -24,8 +24,8 @@ export const VIEW_CATALOG_BREADCRUMBS = `${VIEW_CATALOG}__breadcrumbs`;
 const ViewCatalog: FC = () => {
   const locale = useAppSelector(selectLocale);
   const { isFetching, isError } = useQueryCategoriesQuery();
-  const { currentCategory, id } = useCurrentCategory();
-  const crumbs = useCrumbs(currentCategory);
+  const { currentCategory, categoryId } = useCurrentCategory();
+  const crumbs = useCrumbs();
   const allCategories = useAppSelector(selectAllCategories);
 
   const childCategoriesIds = useMemo(() => {
@@ -40,7 +40,7 @@ const ViewCatalog: FC = () => {
     content = <LoaderBlock />;
   } else if (isError) {
     content = <ErrorBlock isBlock />;
-  } else if (currentCategory || id === undefined) {
+  } else if (currentCategory || categoryId === undefined) {
     if (childCategoriesIds.length) {
       content = <CategoryList ids={childCategoriesIds} />;
     } else {

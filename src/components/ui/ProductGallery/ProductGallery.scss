@@ -1,0 +1,33 @@
+.product-gallery {
+  &__view {
+    margin-bottom: var(--g-md-gap);
+    aspect-ratio: 4 / 3;
+    position: relative;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--g-xs-gap);
+  }
+
+  &__grid-item {
+    display: flex;
+    border: 1px solid var(--gray-1);
+    border-radius: 5px;
+    aspect-ratio: 4 / 3;
+    cursor: pointer;
+    padding: var(--g-xs-gap);
+
+    &_selected {
+      border: 2px solid var(--black-1-50);
+    }
+  }
+
+  &__discount-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+  }
+}

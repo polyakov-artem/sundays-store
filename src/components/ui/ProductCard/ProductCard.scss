@@ -8,22 +8,10 @@
     text-align: center;
   }
 
-  &__img-wrap {
-    position: relative;
-  }
-
   &__img {
     aspect-ratio: 4/3;
     max-width: 300px;
     margin: 0 auto;
-
-    &_is-loading {
-      opacity: 0;
-    }
-  }
-
-  &__img-loader {
-    position: absolute;
   }
 
   &__link {
@@ -46,40 +34,8 @@
     margin: 0;
   }
 
-  &__prices {
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  &__price {
     margin-top: auto;
-  }
-
-  &__old-price {
-    color: var(--gray-2);
-    margin: 0;
-    text-decoration: line-through;
-  }
-
-  &__discount-price {
-    display: inline-flex;
-    gap: 0.5rem;
-  }
-
-  &__discount-value {
-    background-color: var(--green-4);
-    display: inline-block;
-    padding: 0 var(--g-xs-gap);
-    color: var(--white-1);
-  }
-
-  &__actual-price {
-    line-height: 1;
-  }
-
-  &__tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--g-xs-gap);
   }
 
   &__actions {
@@ -88,31 +44,11 @@
     gap: var(--g-xs-gap);
   }
 
-  &__availability {
-    margin: 0;
-  }
-
-  &__availability-value {
-    color: var(--green-4);
-    font-weight: bold;
-  }
-
-  &_not-available {
-    .product-card__availability-value {
-      color: var(--red-1);
-    }
-  }
-
   &__discount-badge {
     z-index: 1;
     position: absolute;
-    background-color: var(--green-4);
     right: 0px;
     top: 0px;
-    margin: 0;
-    color: white;
-    padding: 0 5px;
-    font-size: 0.8rem;
   }
 
   @container (min-width: 600px) {

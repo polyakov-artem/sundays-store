@@ -117,6 +117,7 @@ export const loadInitialTokens = () => (dispatch: AppDispatch) => {
 };
 
 export const selectUserRole = (state: RootState) => state[SLICE_NAME].role;
+export const selectIsLoggedIn = (state: RootState) => state[SLICE_NAME].role === TokenRole.user;
 
 export const {
   tokenLoadingStarted,
