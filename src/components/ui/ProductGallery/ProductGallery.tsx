@@ -3,6 +3,9 @@ import { TImage, TIntrinsicDiv } from '../../../types/types';
 import { MEDIA_CONTAIN } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
 import ProductBadge from '../ProductBadge/ProductBadge';
+import ModalWindow from '../../shared/ModalWindow/ModalWindow';
+import { useModalWindow } from '../../../hooks/useModalWindow';
+import ImageGallery from '../../shared/ImageGallery/ImageGallery';
 import './ProductGallery.scss';
 
 const PRODUCT_GALLERY = 'product-gallery';
@@ -22,6 +25,8 @@ const ProductGallery: FC<TProductGalleryProps> = (props) => {
 
   const classes = classNames(PRODUCT_GALLERY, className);
   const [currentImgUrl, setCurrentImgUrl] = useState(sources?.[0]?.url || '');
+
+  const { modalIsOpen, openModal, closeModal } = useModalWindow();
 
   const handleImgClick = useCallback((url: string) => {
     setCurrentImgUrl(url);
@@ -53,13 +58,29 @@ const ProductGallery: FC<TProductGalleryProps> = (props) => {
     ));
   }, [imagesData, handleImgClick, currentImgUrl]);
 
+  const galleryImages = useMemo(() => {
+    return (sources || []).map(({ url }) => {
+      return {
+        originalUrl: url,
+        thumbnailUrl: url,
+      };
+    });
+  }, [sources]);
+
   return (
     <div className={classes} {...rest}>
-      <div className={PRODUCT_GALLERY_VIEW}>
+      <div className={PRODUCT_GALLERY_VIEW} onClick={openModal}>
         <ProductBadge text={discountName} className={PRODUCT_GALLERY_DISCOUNT_BADGE} />
         {currentImg}
       </div>
       <div className={PRODUCT_GALLERY_GRID}>{gridItems}</div>
+      <ModalWindow
+        isOpen={modalIsOpen}
+        shouldCloseOnOverlayClick={true}
+        shouldCloseOnEsc={true}
+        onRequestClose={closeModal}>
+        <ImageGallery sources={galleryImages} style={{ maxWidth: '850px' }} />
+      </ModalWindow>
     </div>
   );
 };
