@@ -168,6 +168,7 @@
   font-size: 1.5rem;
   padding: 0.5rem;
   border-radius: 5px;
+  aspect-ratio: 1 / 1;
 
   &__inner {
     align-items: center;
@@ -195,6 +196,41 @@
   --selected-border-color: var(--border-color);
 
   --focus-box-shadow: var(--black-1-10);
+  --selected-focus-box-shadow: var(--focus-box-shadow);
+}
+
+.btn_view_round {
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+
+  &__inner {
+    align-items: center;
+    justify-content: center;
+    gap: var(--g-xs-gap);
+  }
+}
+
+.btn_view_round.btn_theme_primary {
+  --color: var(--white-1);
+  --hover-color: var(--color);
+  --disabled-color: var(--color);
+  --selected-color: var(--color);
+
+  --bg-color: var(--green-1-50);
+  --hover-bg-color: color-mix(in oklab, var(--bg-color) 90%, rgb(255, 255, 255));
+  --active-bg-color: color-mix(in oklab, var(--bg-color) 95%, black);
+  --disabled-bg-color: var(--gray-1);
+  --selected-bg-color: var(--bg-color);
+
+  --border-color: var(--bg-color);
+  --hover-border-color: var(--border-color);
+  --active-border-color: var(--border-color);
+  --disabled-border-color: var(--disabled-bg-color);
+  --selected-border-color: var(--border-color);
+
+  --focus-box-shadow: var(--black-1-50);
   --selected-focus-box-shadow: var(--focus-box-shadow);
 }
 
