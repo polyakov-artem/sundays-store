@@ -12,7 +12,7 @@ export const BTN_ICON = `${BTN}__icon`;
 export type TButtonCustomProps = {
   size?: 'sm';
   theme?: 'primary';
-  view?: 'primary' | 'figure' | 'icon' | 'tab';
+  view?: 'primary' | 'figure' | 'icon' | 'tab' | 'round';
   icon?: ReactNode;
   text?: ReactNode;
   fullWidth?: boolean;
