@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { authService, TokenRole } from '../services/authService';
 import { Mutex } from 'async-mutex';
-import { AppDispatch, RootState } from './store';
+import { AppDispatch, AppGetState, RootState } from './store';
 
 type TAuthState = {
   role: TokenRole;
@@ -83,10 +83,22 @@ export const createAuthSlice = (initialState: TAuthState, sliceName: string) =>
         state.tokens[TokenRole.user] = action.payload.userToken;
         state.isLoading = false;
       },
+      userLoggedOut(state) {
+        state.role = TokenRole.basic;
+        state.tokens[TokenRole.user] = '';
+        state.refreshTokens[TokenRole.user] = '';
+      },
     },
   });
 
 export const slice = createAuthSlice(initialState, SLICE_NAME);
+
+export const logOut = () => (dispatch: AppDispatch, getState: AppGetState) => {
+  const userToken = getState().auth.tokens.user;
+  const userRefreshToken = getState().auth.refreshTokens[TokenRole.user];
+  authService.revokeToken(TokenRole.user, userToken, userRefreshToken);
+  dispatch(userLoggedOut());
+};
 
 export const loadInitialTokens = () => (dispatch: AppDispatch) => {
   dispatch(tokenLoadingStarted());
@@ -127,6 +139,7 @@ export const {
   userTokenRefreshed,
   userTokenLoaded,
   roleChangedToBasic,
+  userLoggedOut,
 } = slice.actions;
 
 export default slice.reducer;

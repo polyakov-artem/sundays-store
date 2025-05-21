@@ -231,26 +231,25 @@ export class AuthService {
     return validationResult;
   };
 
-  revokeToken = async (token: string, role: TokenRole): Promise<void> => {
-    const data = new URLSearchParams();
-    data.append('token', token);
+  revokeToken = (role: TokenRole, ...tokens: string[]): void => {
+    if (role === TokenRole.basic) {
+      this.removeLSBasicToken();
+    } else if (role === TokenRole.user) {
+      this.removeLSUserToken();
+      this.removeLSUserRefreshToken();
+    }
 
-    try {
-      const response = await this.authClient.post<void>('token/revoke', data, {
+    tokens.forEach((tokenString) => {
+      const data = new URLSearchParams();
+      data.append('token', tokenString);
+
+      void this.authClient.post<void>('token/revoke', data, {
         auth: {
           username: this.clientId,
           password: this.clientSecret,
         },
       });
-      return response.data;
-    } finally {
-      if (role === TokenRole.basic) {
-        this.removeLSBasicToken();
-      } else if (role === TokenRole.user) {
-        this.removeLSUserToken();
-        this.removeLSUserRefreshToken();
-      }
-    }
+    });
   };
 
   saveBasicTokenToLS = (token: string) =>
