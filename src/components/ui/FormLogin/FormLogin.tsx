@@ -10,14 +10,7 @@ import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { inputErrors } from '../../../constants/constants';
 import { useFormik } from 'formik';
 import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
-import {
-  mutex,
-  tokenLoadingEnded,
-  tokenLoadingStarted,
-  userTokenLoaded,
-} from '../../../store/authSlice';
-import { authService } from '../../../services/authService';
-import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
+import { logIn } from '../../../store/authSlice';
 import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_REGISTER } from '../../../constants/constants';
@@ -25,6 +18,7 @@ import { selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import './FormLogin.scss';
+import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 
 export type TFormLoginProps = TIntrinsicForm;
 
@@ -74,27 +68,13 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       setLoginError('');
-      if (mutex.isLocked()) {
-        await mutex.waitForUnlock();
-      }
-
-      const release = await mutex.acquire();
 
       try {
-        const tokenData = await authService.getUserTokenData(values);
-        dispatch(tokenLoadingStarted());
-        dispatch(
-          userTokenLoaded({
-            userToken: tokenData.access_token,
-            userRefreshToken: tokenData.refresh_token,
-          })
-        );
+        await dispatch(logIn(values));
       } catch (e) {
         setLoginError(getMsgFromAxiosError(e));
-        dispatch(tokenLoadingEnded());
       }
 
-      release();
       setIsSubmitting(false);
     },
   });
