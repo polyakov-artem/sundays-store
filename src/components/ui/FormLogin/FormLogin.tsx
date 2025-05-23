@@ -11,16 +11,13 @@ import { inputErrors } from '../../../constants/constants';
 import { useFormik } from 'formik';
 import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import { logIn } from '../../../store/authSlice';
-import { Link } from 'react-router';
-import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_REGISTER } from '../../../constants/constants';
 import { selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import './FormLogin.scss';
 import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
+import './FormLogin.scss';
 
-export type TFormLoginProps = TIntrinsicForm;
+export type TFormLoginProps = { onSuccess?: () => Promise<void> | void } & TIntrinsicForm;
 
 export const FORM_LOGIN = 'form-login';
 export const FORM_LOGIN_LABEL = `${FORM_LOGIN}__label`;
@@ -52,7 +49,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const FormLogin: FC<TFormLoginProps> = (props) => {
-  const { className, ...restProps } = props;
+  const { className, onSuccess, ...restProps } = props;
   const classes = classNames(FORM_LOGIN, className);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -71,6 +68,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
 
       try {
         await dispatch(logIn(values));
+        await onSuccess?.();
       } catch (e) {
         setLoginError(getMsgFromAxiosError(e));
       }
@@ -130,12 +128,6 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         disabled={isSubmitting}>
         {localizedAppStrings[locale][AppStrings.LogIn]}
       </Button>
-      <p className={FORM_LOGIN_QUESTION}>
-        {localizedAppStrings[locale][AppStrings.QDontHaveAnAccountYet]}{' '}
-        <Link relative="path" className={FORM_LOGIN_LINK} to={getFullPath(VIEW_REGISTER)}>
-          {localizedAppStrings[locale][AppStrings.Register]}
-        </Link>
-      </p>
     </form>
   );
 };

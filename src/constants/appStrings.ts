@@ -44,4 +44,6 @@ export enum AppStrings {
   Colors = 'Colors',
   Price = 'Price',
   NothingWasFound = 'Nothing was found',
+  CompletedSuccessfully = 'Completed successfully',
+  Send = 'Send',
 }

@@ -137,4 +137,10 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.NothingWasFound]: {
     [CountryLocale.DE]: 'Es wurde nichts gefunden',
   },
+  [AppStrings.CompletedSuccessfully]: {
+    [CountryLocale.DE]: 'Erfolgreich abgeschlossen',
+  },
+  [AppStrings.Send]: {
+    [CountryLocale.DE]: 'Senden',
+  },
 };
