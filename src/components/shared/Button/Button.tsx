@@ -63,10 +63,8 @@ const Button: FC<TButtonProps> = (props) => {
 
   const inner = (
     <span className={BTN_INNER}>
-      <span className={BTN_INNER}>
-        {text && <span className={BTN_TEXT}>{text}</span>}
-        {icon && <span className={BTN_ICON}>{icon}</span>}
-      </span>
+      {text && <span className={BTN_TEXT}>{text}</span>}
+      {icon && <span className={BTN_ICON}>{icon}</span>}
     </span>
   );
 
