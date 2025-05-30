@@ -44,4 +44,10 @@ export enum AppStrings {
   Colors = 'Colors',
   Price = 'Price',
   NothingWasFound = 'Nothing was found',
+  CompletedSuccessfully = 'Completed successfully',
+  Send = 'Send',
+  AddNewAddress = 'Add new address',
+  ShippingAddresses = 'Shipping addresses',
+  BillingAddresses = 'Billing addresses',
+  TheSameAsTheDefaultShippingAddress = 'The same as the default shipping address',
 }
