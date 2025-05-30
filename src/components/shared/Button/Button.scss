@@ -95,7 +95,8 @@
   }
 }
 
-.btn_view_primary.btn_theme_primary {
+.btn_view_primary.btn_theme_primary,
+.btn_view_icon.btn_theme_secondary {
   --color: var(--white-1);
   --hover-color: var(--color);
   --disabled-color: var(--color);

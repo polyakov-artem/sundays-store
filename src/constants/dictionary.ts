@@ -143,4 +143,16 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.Send]: {
     [CountryLocale.DE]: 'Senden',
   },
+  [AppStrings.AddNewAddress]: {
+    [CountryLocale.DE]: 'Neue Adresse hinzufügen',
+  },
+  [AppStrings.ShippingAddresses]: {
+    [CountryLocale.DE]: 'Lieferadressen',
+  },
+  [AppStrings.BillingAddresses]: {
+    [CountryLocale.DE]: 'Zahlungsadressen',
+  },
+  [AppStrings.TheSameAsTheDefaultShippingAddress]: {
+    [CountryLocale.DE]: 'Das gleiche wie die Standard-Versandadresse',
+  },
 };

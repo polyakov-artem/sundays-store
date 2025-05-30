@@ -11,7 +11,7 @@ export const BTN_ICON = `${BTN}__icon`;
 
 export type TButtonCustomProps = {
   size?: 'sm';
-  theme?: 'primary';
+  theme?: 'primary' | 'secondary';
   view?: 'primary' | 'figure' | 'icon' | 'tab' | 'round';
   icon?: ReactNode;
   text?: ReactNode;
