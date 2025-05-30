@@ -4,9 +4,9 @@ import { TIntrinsicForm } from '../../../types/types';
 import { useAppDispatch } from '../../../hooks/store-hooks';
 import { logIn } from '../../../store/authSlice';
 import { TBasicAuthData } from '../../../services/authService';
-import FormProfile from '../FormProfile/FormProfile';
 import { useSignUpMutation } from '../../../store/storeApi';
 import { delay } from '../../../utils/delay';
+import FormProfile from '../FormProfile/FormProfile';
 import './FormRegistration.scss';
 
 export type TFormRegistrationProps = { onSuccess?: VoidFunction } & TIntrinsicForm;

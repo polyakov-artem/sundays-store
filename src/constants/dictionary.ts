@@ -155,4 +155,13 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.TheSameAsTheDefaultShippingAddress]: {
     [CountryLocale.DE]: 'Das gleiche wie die Standard-Versandadresse',
   },
+  [AppStrings.DefaultShippingAddress]: {
+    [CountryLocale.DE]: 'Standard-Lieferadresse',
+  },
+  [AppStrings.DefaultBillingAddress]: {
+    [CountryLocale.DE]: 'Standard-Rechnungsadresse',
+  },
+  [AppStrings.Addresses]: {
+    [CountryLocale.DE]: 'Adressen',
+  },
 };
