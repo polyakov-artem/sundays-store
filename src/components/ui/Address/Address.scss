@@ -1,0 +1,32 @@
+.address {
+  border: 1px solid var(--gray-1-50);
+  padding: var(--g-xs-gap);
+  border-radius: 3px;
+  position: relative;
+
+  &__title {
+    margin-top: 0;
+    margin-bottom: var(--g-md-gap);
+  }
+
+  &__checkboxes {
+    margin-bottom: var(--g-md-gap);
+  }
+
+  &__fields {
+    padding: 0;
+    border: 0;
+  }
+
+  &__remove-btn {
+    position: absolute;
+    top: var(--g-xs-gap);
+    right: var(--g-xs-gap);
+  }
+
+  &__label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+}

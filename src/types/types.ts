@@ -5,6 +5,7 @@ export type TAuthProps = {
 };
 
 export type TObjKey = string | number | symbol;
+export type TObj = Record<TObjKey, unknown>;
 
 export type TBaseAddress = {
   id?: string;
