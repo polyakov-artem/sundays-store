@@ -5,6 +5,7 @@ import ViewCategories from './components/ui/ViewCatalog/ViewCatalog';
 import ViewHome from './components/ui/ViewHome/ViewHome';
 import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
 import ViewProduct from './components/ui/ViewProduct/ViewProduct';
+import ViewProfile from './components/ui/ViewProfile/ViewProfile';
 import {
   PUBLIC_PATH,
   VIEW_CART,
@@ -27,7 +28,7 @@ const routes: RouteObject[] = [
         children: [
           {
             path: VIEW_PROFILE,
-            element: 'Profile data',
+            element: <ViewProfile />,
           },
         ],
       },

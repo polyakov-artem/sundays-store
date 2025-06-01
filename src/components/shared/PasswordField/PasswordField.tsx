@@ -13,11 +13,12 @@ export const PASSWORD_FIELD_INPUT = `${PASSWORD_FIELD}__input`;
 export type TPasswordFieldProps = TIntrinsicDiv & {
   inputProps: Omit<TInputFieldProps, 'type' | 'className'>;
   textIsVisible?: boolean;
+  invalid?: boolean;
 };
 
 const PasswordField: FC<TPasswordFieldProps> = (props) => {
-  const { className, inputProps, textIsVisible, ...restProps } = props;
-  const { theme, invalid } = inputProps;
+  const { className, inputProps, invalid, textIsVisible, ...restProps } = props;
+  const { theme } = inputProps;
   const classes = getClasses(PASSWORD_FIELD, className, { theme, invalid });
   const [isShown, setIsShown] = useState(textIsVisible);
 
@@ -28,6 +29,7 @@ const PasswordField: FC<TPasswordFieldProps> = (props) => {
   return (
     <div className={classes} {...restProps}>
       <InputField
+        invalid={invalid}
         {...inputProps}
         type={isShown ? 'text' : 'password'}
         className={PASSWORD_FIELD_INPUT}

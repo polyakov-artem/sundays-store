@@ -1,32 +1,21 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
 import InputField from '../../shared/InputField/InputField';
 import { TIntrinsicForm } from '../../../types/types';
-import PasswordField from '../../shared/PasswordField/PasswordField';
 import * as Yup from 'yup';
-import { getFormikErrorMsg } from '../../../utils/getFormikErrorMsg';
 import { inputErrors } from '../../../constants/constants';
-import { useFormik } from 'formik';
+import { Form, Formik } from 'formik';
 import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
-import {
-  mutex,
-  tokenLoadingEnded,
-  tokenLoadingStarted,
-  userTokenLoaded,
-} from '../../../store/authSlice';
-import { authService } from '../../../services/authService';
-import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
-import { Link } from 'react-router';
-import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_REGISTER } from '../../../constants/constants';
+import { logIn } from '../../../store/authSlice';
 import { selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
+import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
 import './FormLogin.scss';
 
-export type TFormLoginProps = TIntrinsicForm;
+export type TFormLoginProps = { onSuccess?: () => Promise<void> | void } & TIntrinsicForm;
 
 export const FORM_LOGIN = 'form-login';
 export const FORM_LOGIN_LABEL = `${FORM_LOGIN}__label`;
@@ -39,14 +28,17 @@ export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 30;
 export const PASSWORD_SPECIAL_CHARS = '!@#$%^&*';
 
+export const KEY_EMAIL = 'email';
+export const KEY_PASSWORD = 'password';
+
 const validationSchema = Yup.object().shape({
-  email: Yup.string()
+  [KEY_EMAIL]: Yup.string()
     .matches(/^\S+$/, inputErrors.whitespaces)
     .matches(/@/, inputErrors.emailSeparator)
     .matches(/@\S+\.\S+/, inputErrors.domainName)
     .email(inputErrors.email)
     .required(inputErrors.required),
-  password: Yup.string()
+  [KEY_PASSWORD]: Yup.string()
     .min(PASSWORD_MIN_LENGTH, inputErrors.length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH))
     .max(PASSWORD_MAX_LENGTH, inputErrors.length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH))
     .matches(/^\S+$/, inputErrors.whitespaces)
@@ -58,105 +50,80 @@ const validationSchema = Yup.object().shape({
 });
 
 const FormLogin: FC<TFormLoginProps> = (props) => {
-  const { className, ...restProps } = props;
+  const { className, onSuccess, ...restProps } = props;
   const classes = classNames(FORM_LOGIN, className);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
   const locale = useAppSelector(selectLocale);
+  const formRef = useRef<HTMLFormElement>(null);
   const dispatch = useAppDispatch();
 
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      setIsSubmitting(true);
-      setLoginError('');
-      if (mutex.isLocked()) {
-        await mutex.waitForUnlock();
-      }
-
-      const release = await mutex.acquire();
-
-      try {
-        const tokenData = await authService.getUserTokenData(values);
-        dispatch(tokenLoadingStarted());
-        dispatch(
-          userTokenLoaded({
-            userToken: tokenData.access_token,
-            userRefreshToken: tokenData.refresh_token,
-          })
-        );
-      } catch (e) {
-        setLoginError(getMsgFromAxiosError(e));
-        dispatch(tokenLoadingEnded());
-      }
-
-      release();
-      setIsSubmitting(false);
-    },
+  useEffect(() => {
+    const form = formRef.current;
+    const handleFocus = () => setLoginError('');
+    form?.addEventListener('focusin', handleFocus);
+    return () => form?.removeEventListener('focusin', handleFocus);
   });
 
-  const handleInputFocus = useCallback(() => {
-    setLoginError('');
-  }, []);
-
-  const emailError = getFormikErrorMsg(formik, 'email');
-  const passwordError = getFormikErrorMsg(formik, 'password');
-
   return (
-    <form className={classes} {...restProps} onSubmit={formik.handleSubmit}>
-      <label className={FORM_LOGIN_LABEL} htmlFor="email">
-        {localizedAppStrings[locale][AppStrings.Email]}
-      </label>
-      <ValidationField errorMsg={emailError}>
-        <InputField
-          theme="primary"
-          view="primary"
-          name="email"
-          id="email"
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          onFocus={handleInputFocus}
-        />
-      </ValidationField>
-      <label className={FORM_LOGIN_LABEL} htmlFor="password">
-        {localizedAppStrings[locale][AppStrings.Password]}
-      </label>
-      <ValidationField errorMsg={passwordError}>
-        <PasswordField
-          inputProps={{
-            view: 'primary',
+    <Formik
+      initialValues={{
+        [KEY_EMAIL]: '',
+        [KEY_PASSWORD]: '',
+      }}
+      validationSchema={validationSchema}
+      onSubmit={async (values) => {
+        setIsSubmitting(true);
+        setLoginError('');
+
+        try {
+          await dispatch(logIn(values));
+          await onSuccess?.();
+        } catch (e) {
+          setLoginError(getMsgFromAxiosError(e));
+        }
+
+        setIsSubmitting(false);
+      }}>
+      <Form className={classes} {...restProps} ref={formRef}>
+        <label className={FORM_LOGIN_LABEL} htmlFor={KEY_EMAIL}>
+          {localizedAppStrings[locale][AppStrings.Email]}
+        </label>
+        <ValidationField
+          Component={InputField}
+          componentProps={{
             theme: 'primary',
-            name: 'password',
-            id: 'password',
-            value: formik.values.password,
-            onChange: formik.handleChange,
-            onBlur: formik.handleBlur,
-            onFocus: handleInputFocus,
+            view: 'primary',
+            name: KEY_EMAIL,
+            id: KEY_EMAIL,
           }}
         />
-      </ValidationField>
-      <p className={FORM_LOGIN_ERROR_MESSAGE}> {loginError}</p>
-      <Button
-        className={FORM_LOGIN_BTN}
-        theme="primary"
-        view="primary"
-        el="button"
-        type="submit"
-        disabled={isSubmitting}>
-        {localizedAppStrings[locale][AppStrings.LogIn]}
-      </Button>
-      <p className={FORM_LOGIN_QUESTION}>
-        {localizedAppStrings[locale][AppStrings.QDontHaveAnAccountYet]}{' '}
-        <Link relative="path" className={FORM_LOGIN_LINK} to={getFullPath(VIEW_REGISTER)}>
-          {localizedAppStrings[locale][AppStrings.Register]}
-        </Link>
-      </p>
-    </form>
+
+        <label className={FORM_LOGIN_LABEL} htmlFor={KEY_PASSWORD}>
+          {localizedAppStrings[locale][AppStrings.Password]}
+        </label>
+        <ValidationField
+          Component={InputField}
+          componentProps={{
+            theme: 'primary',
+            view: 'primary',
+            name: KEY_PASSWORD,
+            id: KEY_PASSWORD,
+          }}
+        />
+
+        <p className={FORM_LOGIN_ERROR_MESSAGE}> {loginError}</p>
+        <Button
+          className={FORM_LOGIN_BTN}
+          theme="primary"
+          view="primary"
+          el="button"
+          type="submit"
+          disabled={isSubmitting}>
+          {localizedAppStrings[locale][AppStrings.LogIn]}
+        </Button>
+      </Form>
+    </Formik>
   );
 };
 

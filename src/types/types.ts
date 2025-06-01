@@ -5,6 +5,7 @@ export type TAuthProps = {
 };
 
 export type TObjKey = string | number | symbol;
+export type TObj = Record<TObjKey, unknown>;
 
 export type TBaseAddress = {
   id?: string;
@@ -47,7 +48,7 @@ export type TCustomer = {
   lastName?: string;
   middleName?: string;
   title?: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
   companyName?: string;
   vatId?: string;
   addresses: TAddress[];
