@@ -1,18 +1,10 @@
 import axios, { AxiosInstance, HttpStatusCode, isAxiosError } from 'axios';
 import { AppDispatch, AppGetState } from '../store/store';
-import {
-  basicTokenLoaded,
-  tokenLoadingEnded,
-  tokenLoadingStarted,
-  userTokenRefreshed,
-  roleChangedToBasic,
-} from '../store/authSlice';
-import { AuthService, authService, TokenRole } from './authService';
+import { tryToLoadToken } from '../store/authSlice';
 import { Mutex } from 'async-mutex';
 
 export type THttpServiceParams = {
   apiURL: string;
-  authService: AuthService;
 };
 
 export const DISPATCH_IS_NOT_SET_MESSAGE = 'httpService.setDispatchFn method must be called first';
@@ -22,12 +14,11 @@ export const apiURL = import.meta.env.VITE_CTP_API_URL;
 export const mutex = new Mutex();
 
 export class HttpService {
-  private authService: AuthService;
   private dispatch?: AppDispatch;
   private getState?: AppGetState;
   private client: AxiosInstance;
 
-  constructor({ apiURL, authService }: THttpServiceParams) {
+  constructor({ apiURL }: THttpServiceParams) {
     this.client = axios.create({
       baseURL: `${apiURL}/`,
       headers: {
@@ -35,7 +26,6 @@ export class HttpService {
       },
     });
 
-    this.authService = authService;
     this.configure();
   }
 
@@ -55,56 +45,6 @@ export class HttpService {
     if (!this.getState) {
       this.getState = getState;
     }
-  }
-
-  private isIncorrectRefreshToken = (error: unknown) => {
-    if (isAxiosError(error)) {
-      const statusCode = error.response?.status || 0;
-      if (statusCode >= 400 && statusCode && statusCode < 500) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  private async tryToLoadToken() {
-    this.dispatch?.(tokenLoadingStarted());
-    const authState = this.getState!().auth;
-    const role = authState.role;
-    const userRefreshToken = authState.refreshTokens[TokenRole.user];
-    const basicToken = authState.tokens[TokenRole.basic];
-
-    if (role === TokenRole.user) {
-      try {
-        const tokenData = await this.authService.refreshToken(userRefreshToken);
-        this.dispatch?.(userTokenRefreshed({ userToken: tokenData.access_token }));
-        return;
-      } catch (e) {
-        if (this.isIncorrectRefreshToken(e)) {
-          this.dispatch?.(roleChangedToBasic());
-        } else {
-          this.dispatch?.(tokenLoadingEnded());
-          return;
-        }
-      }
-    }
-
-    try {
-      const validationResult = await this.authService.validateToken(basicToken, TokenRole.basic);
-
-      if (!validationResult.active) {
-        try {
-          const tokenData = await this.authService.getBasicTokenData();
-          this.dispatch?.(basicTokenLoaded({ basicToken: tokenData.access_token }));
-          return;
-        } catch {
-          // ignore
-        }
-      }
-    } catch {
-      // ignore
-    }
-    this.dispatch?.(tokenLoadingEnded());
   }
 
   private configure = () => {
@@ -146,7 +86,7 @@ export class HttpService {
             config.isRetry = true;
             if (!mutex.isLocked()) {
               const release = await mutex.acquire();
-              await self.tryToLoadToken();
+              await self.dispatch?.(tryToLoadToken());
               release();
             } else {
               await mutex.waitForUnlock();
@@ -163,5 +103,4 @@ export class HttpService {
 
 export const httpService = new HttpService({
   apiURL,
-  authService,
 });

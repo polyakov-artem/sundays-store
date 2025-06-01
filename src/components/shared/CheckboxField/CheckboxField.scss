@@ -1,4 +1,16 @@
 .checkbox-field {
   display: flex;
   gap: var(--g-xs-gap);
+
+  &_invalid {
+    .checkbox-field__label {
+      color: var(--red-1);
+    }
+  }
+
+  &_disabled {
+    .checkbox-field__label {
+      color: var(--gray-2);
+    }
+  }
 }

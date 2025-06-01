@@ -7,3 +7,4 @@ export const BLOCK = 'block';
 export const BLOCK_WITH_HOVER = 'block_with-hover';
 export const MEDIA_COVER = 'media-cover';
 export const MEDIA_CONTAIN = 'media-contain';
+export const FIELD_GROUP = 'field-group ';

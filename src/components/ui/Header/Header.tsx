@@ -11,7 +11,7 @@ import Button from '../../shared/Button/Button';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../constants/constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
-import { selectUserRole } from '../../../store/authSlice';
+import { logOut, selectUserRole } from '../../../store/authSlice';
 import { TokenRole } from '../../../services/authService';
 import { getClasses } from '../../../utils/getClasses';
 import { Collapse } from '../../shared/Collapse/Collapse';
@@ -86,6 +86,10 @@ const Header: FC = () => {
     return () => window.removeEventListener('resize', handleWindowResize);
   }, []);
 
+  const handleLogoutBtnClick = useCallback(() => {
+    dispatch(logOut());
+  }, [dispatch]);
+
   const menuItems = useMemo(
     () => [
       <Link
@@ -95,11 +99,16 @@ const Header: FC = () => {
         relative="path">
         <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.Profile]}</p>
       </Link>,
-      <Link key={PUBLIC_PATH} className={HEADER_LINK} to={PUBLIC_PATH} relative="path">
+      <Link
+        key={PUBLIC_PATH}
+        className={HEADER_LINK}
+        to={PUBLIC_PATH}
+        relative="path"
+        onClick={handleLogoutBtnClick}>
         <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.LogOut]}</p>
       </Link>,
     ],
-    [locale]
+    [locale, handleLogoutBtnClick]
   );
 
   const userButtonsContent =
