@@ -164,4 +164,16 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.Addresses]: {
     [CountryLocale.DE]: 'Adressen',
   },
+  [AppStrings.NewPassword]: {
+    [CountryLocale.DE]: 'Neues Passwort',
+  },
+  [AppStrings.CurrentPassword]: {
+    [CountryLocale.DE]: 'Aktuelles Passwort',
+  },
+  [AppStrings.Edit]: {
+    [CountryLocale.DE]: 'Bearbeiten',
+  },
+  [AppStrings.Cancel]: {
+    [CountryLocale.DE]: 'Stornieren',
+  },
 };

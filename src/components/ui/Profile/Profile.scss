@@ -1,0 +1,30 @@
+.profile {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: var(--g-md-gap);
+
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-md-gap);
+  }
+
+  &__btn {
+    min-width: 200px;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+
+    &__form {
+      order: 1;
+    }
+
+    &__buttons {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+}

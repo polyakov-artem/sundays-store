@@ -11,7 +11,6 @@ export enum AppStrings {
   DateOfBirth = 'Date of birth',
   ShippingAddress = 'Shipping address',
   SetAsDefaultShippingAddress = 'Set as default shipping address',
-
   Street = 'Street',
   City = 'City',
   Country = 'Country',
@@ -19,7 +18,6 @@ export enum AppStrings {
   BillingAddress = 'Billing address',
   TheSameAsShippingAddress = 'The same as shipping address',
   SetAsDefaultBillingAddress = 'Set as default billing address',
-
   Register = 'Register',
   QAlreadyHaveAnAccount = 'Already have an account?',
   QDontHaveAnAccountYet = `Don't have an account yet?`,
@@ -55,4 +53,8 @@ export enum AppStrings {
   DefaultShippingAddress = 'Default shipping address',
   DefaultBillingAddress = 'Default billing address',
   Addresses = 'Addresses',
+  NewPassword = 'New password',
+  CurrentPassword = 'Current password',
+  Edit = 'Edit',
+  Cancel = 'Cancel',
 }

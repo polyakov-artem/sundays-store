@@ -48,7 +48,7 @@ export type TCustomer = {
   lastName?: string;
   middleName?: string;
   title?: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
   companyName?: string;
   vatId?: string;
   addresses: TAddress[];

@@ -8,12 +8,14 @@ import {
 import { SELECT_OPTIONS } from './selectOptions';
 import {
   KEY_ADDRESSES,
+  KEY_CHANGE_PASSWORD,
   KEY_CITY,
   KEY_COUNTRY,
   KEY_DATE_OF_BIRTH,
   KEY_EMAIL,
   KEY_FIRST_NAME,
   KEY_LAST_NAME,
+  KEY_NEW_PASSWORD,
   KEY_PASSWORD,
   KEY_POSTAL_CODE,
   KEY_STREET,
@@ -63,9 +65,8 @@ export const addressValidator = Yup.object().shape({
   [KEY_COUNTRY]: countryValidator,
 });
 
-export const validationSchema = Yup.object().shape({
+export const basicValidationSchema = Yup.object().shape({
   [KEY_EMAIL]: emailValidator,
-  [KEY_PASSWORD]: passwordValidator,
   [KEY_FIRST_NAME]: Yup.string()
     .matches(regexps.charsWithoutNumbersAndSpecials, inputErrors.charsWithoutNumbersAndSpecials)
     .required(inputErrors.required),
@@ -97,3 +98,23 @@ export const validationSchema = Yup.object().shape({
     .required(inputErrors.required),
   [KEY_ADDRESSES]: Yup.array().of(addressValidator),
 });
+
+export const signUpValidationSchema = basicValidationSchema.shape({
+  [KEY_PASSWORD]: passwordValidator,
+});
+
+export const updateValidationSchema = basicValidationSchema.shape({
+  [KEY_CHANGE_PASSWORD]: Yup.boolean(),
+  [KEY_PASSWORD]: Yup.string().when(KEY_CHANGE_PASSWORD, {
+    is: true,
+    then: () => passwordValidator,
+    otherwise: () => Yup.string().notRequired(),
+  }),
+  [KEY_NEW_PASSWORD]: Yup.string().when(KEY_CHANGE_PASSWORD, {
+    is: true,
+    then: () => passwordValidator,
+    otherwise: () => Yup.string().notRequired(),
+  }),
+});
+
+export const emptyValidationSchema = Yup.object().shape({});

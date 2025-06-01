@@ -12,6 +12,14 @@
     margin-bottom: 0.5rem;
   }
 
+  &__change-password {
+    margin-bottom: var(--g-md-gap);
+  }
+
+  &__password-block {
+    margin-bottom: var(--g-md-gap);
+  }
+
   &__error-message {
     margin-bottom: 0;
     color: var(--red-1);
@@ -30,10 +38,7 @@
   }
 
   &__addresses {
-    display: flex;
-    flex-direction: column;
     gap: var(--g-md-gap);
-
     &:not(:last-child) {
       margin-bottom: var(--g-md-gap);
     }
