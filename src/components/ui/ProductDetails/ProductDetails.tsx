@@ -112,7 +112,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
           view="primary"
           theme="primary"
           icon={<FaShoppingCart />}
-          text={localizedAppStrings[locale][AppStrings.Buy]}
+          text={localizedAppStrings[locale][AppStrings.AddToCart]}
           size="sm"
           onClick={onBuyBtnClick}
           iconBefore

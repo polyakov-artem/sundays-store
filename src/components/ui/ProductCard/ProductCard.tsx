@@ -166,7 +166,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             view="primary"
             theme="primary"
             icon={<FaShoppingCart />}
-            text={localizedAppStrings[locale][AppStrings.Buy]}
+            text={localizedAppStrings[locale][AppStrings.AddToCart]}
             size="sm"
             onClick={handleBuyBtnClick}
             iconBefore

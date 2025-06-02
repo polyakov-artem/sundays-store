@@ -60,4 +60,5 @@ export enum AppStrings {
   UserInformationWasUpdated = 'User personal information was successfully updated',
   TheDefaultAddressesWereUpdated = 'The default addresses were successfully updated',
   ThePasswordChanged = 'The password has been successfully changed',
+  AddToCart = 'Add to cart',
 }
