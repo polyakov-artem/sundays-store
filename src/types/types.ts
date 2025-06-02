@@ -678,6 +678,74 @@ export type TQueryCategoriesParams = {
   withTotal?: boolean;
 };
 
+export type TUpdateMyCustomerParams = {
+  version: number;
+  actions: TCustomerUpdateAction[];
+};
+
+export type TCustomerUpdateAction =
+  | TChangeEmail
+  | TSetFirstName
+  | TSetLastName
+  | TAddAddress
+  | TChangeAddress
+  | TRemoveAddress
+  | TSetDefaultShippingAddress
+  | TSetDefaultBillingAddress
+  | TSetDateOfBirth;
+
+export type TChangeEmail = {
+  action: 'changeEmail';
+  email: string;
+};
+
+export type TSetFirstName = {
+  action: 'setFirstName';
+  firstName: string;
+};
+
+export type TSetLastName = {
+  action: 'setLastName';
+  lastName: string;
+};
+
+export type TAddAddress = {
+  action: 'addAddress';
+  address: TBaseAddress;
+};
+
+export type TChangeAddress = {
+  action: 'changeAddress';
+  addressKey: string;
+  address: TBaseAddress;
+};
+
+export type TRemoveAddress = {
+  action: 'removeAddress';
+  addressKey: string;
+};
+
+export type TSetDefaultShippingAddress = {
+  action: 'setDefaultShippingAddress';
+  addressKey: string;
+};
+
+export type TSetDefaultBillingAddress = {
+  action: 'setDefaultBillingAddress';
+  addressKey: string;
+};
+
+export type TSetDateOfBirth = {
+  action: 'setDateOfBirth';
+  dateOfBirth: string;
+};
+
+export type TMyCustomerChangePassword = {
+  version: number;
+  currentPassword: string;
+  newPassword: string;
+};
+
 export type TIntrinsicFooter = ComponentProps<'footer'>;
 export type TIntrinsicHeader = ComponentProps<'header'>;
 export type TIntrinsicMain = ComponentProps<'main'>;

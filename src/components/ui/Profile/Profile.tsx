@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo, useState } from 'react';
-import { TCustomer, TIntrinsicSection } from '../../../types/types';
+import { TCustomer, TCustomerUpdateAction, TIntrinsicSection } from '../../../types/types';
 import classNames from 'classnames';
 import FormProfile from '../FormProfile/FormProfile';
 import { BLOCK } from '../../../constants/cssHelpers';
@@ -23,11 +23,26 @@ import {
   KEY_STREET,
   TFormValues,
 } from '../FormProfile/formProfileUtils';
-import { delay } from '../../../utils/delay';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
+import {
+  TCustomError,
+  useChangePasswordMutation,
+  useUpdateMyCustomerMutation,
+} from '../../../store/storeApi';
+import {
+  createAddAddressAction,
+  createChangeEmailAction,
+  createRemoveAddressAction,
+  createSetDateOfBirthAction,
+  createSetDefaultBillingAddressAction,
+  createSetDefaultShippingAddressAction,
+  createSetFirstNameAction,
+  createSetLastNameAction,
+} from '../../../utils/customerUpdateActionCreators';
+import { toast } from 'react-toastify';
 
 export const PROFILE = 'profile';
 export const PROFILE_INNER = `${PROFILE}__inner`;
@@ -44,6 +59,8 @@ const Profile: FC<TProfileProps> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const locale = useAppSelector(selectLocale);
+  const [updateMyCustomer] = useUpdateMyCustomerMutation();
+  const [changePassword] = useChangePasswordMutation();
 
   const handleEditBtnClick = useCallback(() => {
     setFormMode(FormMode.update);
@@ -51,6 +68,7 @@ const Profile: FC<TProfileProps> = (props) => {
 
   const handleCancelBtnClick = useCallback(() => {
     setFormMode(FormMode.view);
+    setError('');
   }, []);
 
   const formInitialValues = useMemo(() => {
@@ -93,20 +111,100 @@ const Profile: FC<TProfileProps> = (props) => {
       );
 
       if (defaultShippingAddress && defaultShippingAddress.key) {
-        values[KEY_DEFAULT_BILLING_ADDRESS] = defaultShippingAddress.key;
+        values[KEY_DEFAULT_SHIPPING_ADDRESS] = defaultShippingAddress.key;
       }
     }
 
     return values;
   }, [userData]);
 
-  const handleSubmit = useCallback(async () => {
-    setError('');
-    setIsSubmitting(true);
-    await delay(500);
-    setIsSubmitting(false);
-    setFormMode(FormMode.view);
-  }, []);
+  const handleSubmit = useCallback(
+    async (values: TFormValues) => {
+      const { addresses: userAddresses, version } = userData;
+      let userDataVersion = version;
+
+      const formAddresses = values[KEY_ADDRESSES].map((address) => {
+        return {
+          ...address,
+          firstName: values[KEY_FIRST_NAME],
+          lastName: values[KEY_LAST_NAME],
+        };
+      });
+
+      const actions: TCustomerUpdateAction[] = [
+        createChangeEmailAction(values[KEY_EMAIL]),
+        createSetFirstNameAction(values[KEY_FIRST_NAME]),
+        createSetLastNameAction(values[KEY_LAST_NAME]),
+        createSetDateOfBirthAction(values[KEY_DATE_OF_BIRTH]),
+        ...userAddresses.map(({ key }) => createRemoveAddressAction(key || '')),
+        ...formAddresses.map((formAddress) => createAddAddressAction(formAddress)),
+      ];
+
+      setError('');
+      setIsSubmitting(true);
+
+      const updateResponse = await updateMyCustomer({
+        version: userDataVersion,
+        actions,
+      });
+
+      if (updateResponse.error) {
+        setError((updateResponse.error as TCustomError).data);
+        setIsSubmitting(false);
+        return;
+      } else {
+        toast.success(localizedAppStrings[locale][AppStrings.UserInformationWasUpdated]);
+        userDataVersion = updateResponse.data.version;
+      }
+
+      const defaultAddressActions = [];
+
+      const defaultShippingAddressKey = values[KEY_DEFAULT_SHIPPING_ADDRESS];
+      const defaultBillingAddressKey = values[KEY_DEFAULT_BILLING_ADDRESS];
+
+      if (defaultShippingAddressKey) {
+        defaultAddressActions.push(
+          createSetDefaultShippingAddressAction(defaultShippingAddressKey)
+        );
+      }
+
+      if (defaultBillingAddressKey) {
+        defaultAddressActions.push(createSetDefaultBillingAddressAction(defaultBillingAddressKey));
+      }
+
+      if (defaultAddressActions.length) {
+        const defaultAddressUpdateResponse = await updateMyCustomer({
+          version: userDataVersion,
+          actions: defaultAddressActions,
+        });
+
+        if (defaultAddressUpdateResponse.error) {
+          setError((defaultAddressUpdateResponse.error as TCustomError).data);
+          setIsSubmitting(false);
+          return;
+        } else {
+          toast.success(localizedAppStrings[locale][AppStrings.TheDefaultAddressesWereUpdated]);
+          userDataVersion = defaultAddressUpdateResponse.data.version;
+        }
+      }
+
+      if (values[KEY_CHANGE_PASSWORD]) {
+        const passwordUpdateResponse = await changePassword({
+          version: userDataVersion,
+          currentPassword: values[KEY_PASSWORD],
+          newPassword: values[KEY_NEW_PASSWORD],
+        });
+
+        if (passwordUpdateResponse.error) {
+          setError((passwordUpdateResponse.error as TCustomError).data);
+        } else {
+          toast.success(localizedAppStrings[locale][AppStrings.ThePasswordChanged]);
+        }
+      }
+      setIsSubmitting(false);
+    },
+    [userData, updateMyCustomer, locale, changePassword]
+  );
 
   return (
     <section className={classes} {...rest}>

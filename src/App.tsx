@@ -5,6 +5,7 @@ import './scss/index.scss';
 import { useAppDispatch } from './hooks/store-hooks';
 import { loadInitialTokens } from './store/authSlice';
 import SvgSprite from './components/shared/SvgSprite/SvgSprite';
+import { Slide, ToastContainer } from 'react-toastify';
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,19 @@ const App: FC = () => {
     <>
       <SvgSprite />
       <>{lsTokensAreLoaded ? <Page /> : null}</>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Slide}
+      />
     </>
   );
 };
