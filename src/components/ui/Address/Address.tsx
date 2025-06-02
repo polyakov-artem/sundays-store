@@ -131,7 +131,7 @@ const Address: FC<TAddressProps> = (props) => {
         />
 
         <CheckboxField
-          labelContent={localizedAppStrings[locale][AppStrings.DefaultShippingAddress]}
+          labelContent={localizedAppStrings[locale][AppStrings.DefaultBillingAddress]}
           checkboxProps={{
             theme: 'primary',
             view: 'primary',

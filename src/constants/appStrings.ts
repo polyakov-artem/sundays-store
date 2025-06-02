@@ -57,4 +57,7 @@ export enum AppStrings {
   CurrentPassword = 'Current password',
   Edit = 'Edit',
   Cancel = 'Cancel',
+  UserInformationWasUpdated = 'User personal information was successfully updated',
+  TheDefaultAddressesWereUpdated = 'The default addresses were successfully updated',
+  ThePasswordChanged = 'The password has been successfully changed',
 }

@@ -11,6 +11,7 @@ import {
   TExtProductProjectionPagedSearchResponse,
   TGetProductDiscountsParams,
   TGetProductProjectionByIdParams,
+  TMyCustomerChangePassword,
   TMyCustomerDraft,
   TProductDiscount,
   TProductDiscountPagedQueryResponse,
@@ -18,6 +19,7 @@ import {
   TProductProjectionPagedSearchParams,
   TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
+  TUpdateMyCustomerParams,
 } from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
@@ -86,6 +88,24 @@ export const storeApi = createApi({
     signUp: builder.mutation<TCustomerSignInResult, TMyCustomerDraft>({
       query: (data: TMyCustomerDraft) => ({
         url: `${projectKey}/me/signup`,
+        data,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Customer'],
+    }),
+
+    updateMyCustomer: builder.mutation<TCustomer, TUpdateMyCustomerParams>({
+      query: (data: TUpdateMyCustomerParams) => ({
+        url: `${projectKey}/me`,
+        data,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Customer'],
+    }),
+
+    changePassword: builder.mutation<TCustomer, TMyCustomerChangePassword>({
+      query: (data: TMyCustomerChangePassword) => ({
+        url: `${projectKey}/me/password`,
         data,
         method: 'POST',
       }),
@@ -221,4 +241,6 @@ export const {
   useSearchProductProjectionsQuery,
   useGetProductDiscountsQuery,
   useGetProductProjectionByIdQuery,
+  useUpdateMyCustomerMutation,
+  useChangePasswordMutation,
 } = storeApi;
