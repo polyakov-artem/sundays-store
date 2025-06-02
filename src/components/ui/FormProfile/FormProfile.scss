@@ -21,7 +21,7 @@
   }
 
   &__error-message {
-    margin-bottom: 0;
+    margin-bottom: var(--g-md-gap);
     color: var(--red-1);
     text-align: center;
   }

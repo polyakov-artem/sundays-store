@@ -176,4 +176,13 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.Cancel]: {
     [CountryLocale.DE]: 'Stornieren',
   },
+  [AppStrings.UserInformationWasUpdated]: {
+    [CountryLocale.DE]: 'Die persönlichen Benutzerinformationen wurden erfolgreich aktualisiert',
+  },
+  [AppStrings.TheDefaultAddressesWereUpdated]: {
+    [CountryLocale.DE]: 'Die Standardadressen wurden erfolgreich aktualisiert',
+  },
+  [AppStrings.ThePasswordChanged]: {
+    [CountryLocale.DE]: 'Das Passwort wurde erfolgreich geändert',
+  },
 };

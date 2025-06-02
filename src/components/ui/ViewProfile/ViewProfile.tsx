@@ -9,15 +9,11 @@ import './ViewProfile.scss';
 export const VIEW_PROFILE = 'view-profile';
 
 const ViewProfile: FC = () => {
-  const {
-    isFetching: isProfileFetching,
-    isError: isProfileError,
-    data: userData,
-  } = useGetMeQuery();
+  const { isError: isProfileError, data: userData } = useGetMeQuery();
 
   let content;
 
-  if (isProfileFetching) {
+  if (!userData) {
     content = <LoaderBlock />;
   } else if (isProfileError) {
     content = <ErrorBlock isBlock />;
