@@ -57,7 +57,6 @@ export const createAuthSlice = (initialState: TAuthState, sliceName: string) =>
         state.tokens[TokenRole.basic] = basicToken;
         state.tokens[TokenRole.user] = userToken;
         state.refreshTokens[TokenRole.user] = userRefreshToken;
-        state.isLoading = false;
       },
       basicTokenLoaded(state, action: { payload: { basicToken: string } }) {
         const role = TokenRole.basic;
@@ -118,28 +117,9 @@ export const logOut = () => (dispatch: AppDispatch, getState: AppGetState) => {
 };
 
 export const loadInitialTokens = () => (dispatch: AppDispatch) => {
-  dispatch(tokenLoadingStarted());
-  let userToken = '';
-  let basicToken = '';
-  let userRefreshToken = '';
-
-  try {
-    userToken = authService.getLSUserToken() || '';
-  } catch {
-    // ignore
-  }
-
-  try {
-    userRefreshToken = authService.getLSUserRefreshToken() || '';
-  } catch {
-    userToken = '';
-  }
-
-  try {
-    basicToken = authService.getLSBasicToken() || '';
-  } catch {
-    // ignore
-  }
+  const userToken = authService.getLSUserToken() || '';
+  const userRefreshToken = authService.getLSUserRefreshToken() || '';
+  const basicToken = authService.getLSBasicToken() || '';
 
   const role = userToken && userRefreshToken ? TokenRole.user : TokenRole.basic;
   dispatch(lsTokensLoaded({ userToken, userRefreshToken, basicToken, role }));

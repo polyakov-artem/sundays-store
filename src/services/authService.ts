@@ -132,13 +132,7 @@ export class AuthService {
     });
 
     const tokenData = response.data;
-
-    try {
-      this.saveBasicTokenToLS(tokenData.access_token);
-    } catch {
-      // ignore
-    }
-
+    this.saveBasicTokenToLS(tokenData.access_token);
     return tokenData;
   };
 
@@ -165,12 +159,8 @@ export class AuthService {
 
     const tokenData = response.data;
 
-    try {
-      this.saveUserTokenToLS(tokenData.access_token);
-      this.saveUserRefreshTokenToLS(tokenData.refresh_token);
-    } catch {
-      // ignore
-    }
+    this.saveUserTokenToLS(tokenData.access_token);
+    this.saveUserRefreshTokenToLS(tokenData.refresh_token);
 
     return tokenData;
   };
@@ -189,13 +179,7 @@ export class AuthService {
       });
 
       const tokenData = response.data;
-
-      try {
-        this.saveUserTokenToLS(tokenData.access_token);
-      } catch {
-        // ignore
-      }
-
+      this.saveUserTokenToLS(tokenData.access_token);
       return tokenData;
     } catch (e: unknown) {
       if (isAxiosError(e)) {
