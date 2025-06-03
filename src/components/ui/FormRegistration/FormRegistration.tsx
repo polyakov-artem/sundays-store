@@ -85,6 +85,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
 
       if (response.error) {
         setError((response.error as { data: string }).data);
+        setIsSubmitting(false);
         return;
       }
 
