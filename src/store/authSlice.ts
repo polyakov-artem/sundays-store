@@ -1,36 +1,52 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { authService, TBasicAuthData, TokenRole } from '../services/authService';
-import { mutex } from '../services/httpService';
 import { AppDispatch, AppGetState, RootState } from './store';
 import { isAxiosError } from 'axios';
 import { storeApi } from './storeApi';
 
-type TAuthState = {
+export type TAuthState = {
   role: TokenRole;
-  tokens: Record<TokenRole, string>;
-  refreshTokens: {
-    [TokenRole.user]: string;
-  };
+  token: string;
+  refreshToken: string;
   isLoading: boolean;
 };
 
-const initialState = {
-  role: TokenRole.basic,
-  tokens: {
-    [TokenRole.basic]: '',
-    [TokenRole.user]: '',
-  },
-  refreshTokens: {
-    [TokenRole.user]: '',
-  },
-  isLoading: false,
+export type TBasicTokenData = {
+  token: string;
 };
 
-export type TTokensLoadedFromLSPayload = {
-  userToken: string;
-  userRefreshToken: string;
-  basicToken: string;
-  role: TokenRole;
+export type TExtendedTokenData = {
+  token: string;
+  refreshToken: string;
+};
+
+export const getInitialState = (): TAuthState => {
+  const basicToken = authService.getLSBasicToken() || '';
+  const userToken = authService.getLSUserToken() || '';
+  const userRefreshToken = authService.getLSUserRefreshToken() || '';
+  const anonymousToken = authService.getLSAnonymousToken() || '';
+  const anonymousRefreshToken = authService.getLSAnonymousRefreshToken() || '';
+
+  return userToken
+    ? {
+        role: TokenRole.user,
+        token: userToken,
+        refreshToken: userRefreshToken,
+        isLoading: false,
+      }
+    : anonymousToken
+      ? {
+          role: TokenRole.anonymous,
+          token: anonymousToken,
+          refreshToken: anonymousRefreshToken,
+          isLoading: false,
+        }
+      : {
+          role: TokenRole.basic,
+          token: basicToken,
+          refreshToken: '',
+          isLoading: false,
+        };
 };
 
 export const SLICE_NAME = 'auth';
@@ -46,110 +62,85 @@ export const createAuthSlice = (initialState: TAuthState, sliceName: string) =>
       tokenLoadingEnded(state) {
         state.isLoading = false;
       },
-      lsTokensLoaded(
-        state,
-        action: {
-          payload: TTokensLoadedFromLSPayload;
-        }
-      ) {
-        const { userToken, userRefreshToken, role, basicToken } = action.payload;
-        state.role = role;
-        state.tokens[TokenRole.basic] = basicToken;
-        state.tokens[TokenRole.user] = userToken;
-        state.refreshTokens[TokenRole.user] = userRefreshToken;
-      },
-      basicTokenLoaded(state, action: { payload: { basicToken: string } }) {
-        const role = TokenRole.basic;
-        state.role = role;
-        state.tokens[role] = action.payload.basicToken;
-        state.tokens[TokenRole.user] = '';
-        state.refreshTokens[TokenRole.user] = '';
-        state.isLoading = false;
-      },
-      userTokenLoaded(state, action: { payload: { userToken: string; userRefreshToken: string } }) {
-        const role = TokenRole.user;
-        state.role = role;
-        state.tokens[role] = action.payload.userToken;
-        state.refreshTokens[role] = action.payload.userRefreshToken;
-        state.isLoading = false;
-      },
-      userTokenRefreshed(state, action: { payload: { userToken: string } }) {
-        state.tokens[TokenRole.user] = action.payload.userToken;
-        state.isLoading = false;
-      },
-      userLoggedOut(state) {
+      basicTokenLoaded(state, action: PayloadAction<TBasicTokenData>) {
         state.role = TokenRole.basic;
-        state.tokens[TokenRole.user] = '';
-        state.refreshTokens[TokenRole.user] = '';
+        state.token = action.payload.token;
+        state.refreshToken = '';
+        state.isLoading = false;
+      },
+      userTokenLoaded(state, action: PayloadAction<TExtendedTokenData>) {
+        state.role = TokenRole.user;
+        state.token = action.payload.token;
+        state.refreshToken = action.payload.refreshToken;
+        state.isLoading = false;
+      },
+      anonymousTokenLoaded(state, action: PayloadAction<TExtendedTokenData>) {
+        state.role = TokenRole.anonymous;
+        state.token = action.payload.token;
+        state.refreshToken = action.payload.refreshToken;
+        state.isLoading = false;
+      },
+      tokenRefreshed(state, action: PayloadAction<TBasicTokenData>) {
+        state.token = action.payload.token;
+        state.isLoading = false;
+      },
+      roleChangedToBasic(state, action: PayloadAction<TBasicTokenData>) {
+        state.role = TokenRole.basic;
+        state.token = action.payload.token;
+        state.refreshToken = '';
       },
     },
   });
 
+const invalidateUserCache = () => (dispatch: AppDispatch) => {
+  dispatch(storeApi.util.invalidateTags(['Customer']));
+};
+
 export const logIn = (authData: TBasicAuthData) => async (dispatch: AppDispatch) => {
-  if (mutex.isLocked()) {
-    await mutex.waitForUnlock();
-  }
-
-  const release = await mutex.acquire();
-
   try {
     dispatch(tokenLoadingStarted());
     const tokenData = await authService.getUserTokenData(authData);
     dispatch(
       userTokenLoaded({
-        userToken: tokenData.access_token,
-        userRefreshToken: tokenData.refresh_token,
+        token: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
       })
     );
-    dispatch(storeApi.util.invalidateTags(['Customer']));
   } finally {
     dispatch(tokenLoadingEnded());
-    release();
   }
 };
 
 export const logOut = () => (dispatch: AppDispatch, getState: AppGetState) => {
-  const userToken = getState().auth.tokens.user;
-  const userRefreshToken = getState().auth.refreshTokens[TokenRole.user];
-  authService.revokeToken(TokenRole.user, userToken, userRefreshToken);
-  dispatch(userLoggedOut());
-  dispatch(storeApi.util.invalidateTags(['Customer']));
-};
-
-export const loadInitialTokens = () => (dispatch: AppDispatch) => {
-  const userToken = authService.getLSUserToken() || '';
-  const userRefreshToken = authService.getLSUserRefreshToken() || '';
-  const basicToken = authService.getLSBasicToken() || '';
-
-  const role = userToken && userRefreshToken ? TokenRole.user : TokenRole.basic;
-  dispatch(lsTokensLoaded({ userToken, userRefreshToken, basicToken, role }));
+  const token = getState().auth.token;
+  const refreshToken = getState().auth.refreshToken;
+  authService.revokeToken(TokenRole.user, token, refreshToken);
+  dispatch(roleChangedToBasic({ token: authService.getLSBasicToken() || '' }));
+  dispatch(invalidateUserCache());
 };
 
 export const tryToLoadToken = () => async (dispatch: AppDispatch, getState: AppGetState) => {
   dispatch(tokenLoadingStarted());
-  const authState = getState().auth;
-  const role = authState.role;
-  const userRefreshToken = authState.refreshTokens[TokenRole.user];
-  const basicToken = authState.tokens[TokenRole.basic];
+  const { role, token, refreshToken } = getState().auth;
 
   const isIncorrectRefreshToken = (error: unknown) => {
     if (isAxiosError(error)) {
-      const statusCode = error.response?.status || 0;
-      if (statusCode >= 400 && statusCode && statusCode < 500) {
+      const statusCode = error.response?.status;
+      if (statusCode && statusCode >= 400 && statusCode && statusCode < 500) {
         return true;
       }
     }
     return false;
   };
 
-  if (role === TokenRole.user) {
+  if (role === TokenRole.user || role === TokenRole.anonymous) {
     try {
-      const tokenData = await authService.refreshToken(userRefreshToken);
-      dispatch(userTokenRefreshed({ userToken: tokenData.access_token }));
+      const tokenData = await authService.refreshToken(refreshToken, role);
+      dispatch(tokenRefreshed({ token: tokenData.access_token }));
       return;
     } catch (e) {
       if (isIncorrectRefreshToken(e)) {
-        dispatch(logOut());
+        dispatch(roleChangedToBasic({ token: authService.getLSBasicToken() || '' }));
       } else {
         dispatch(tokenLoadingEnded());
         return;
@@ -158,12 +149,12 @@ export const tryToLoadToken = () => async (dispatch: AppDispatch, getState: AppG
   }
 
   try {
-    const validationResult = await authService.validateToken(basicToken, TokenRole.basic);
+    const validationResult = await authService.validateToken(token, TokenRole.basic);
 
     if (!validationResult.active) {
       try {
         const tokenData = await authService.getBasicTokenData();
-        dispatch(basicTokenLoaded({ basicToken: tokenData.access_token }));
+        dispatch(basicTokenLoaded({ token: tokenData.access_token }));
         return;
       } catch {
         // ignore
@@ -178,16 +169,16 @@ export const tryToLoadToken = () => async (dispatch: AppDispatch, getState: AppG
 export const selectUserRole = (state: RootState) => state[SLICE_NAME].role;
 export const selectIsLoggedIn = (state: RootState) => state[SLICE_NAME].role === TokenRole.user;
 
-export const slice = createAuthSlice(initialState, SLICE_NAME);
+export const slice = createAuthSlice(getInitialState(), SLICE_NAME);
 
 export const {
   tokenLoadingStarted,
   tokenLoadingEnded,
-  lsTokensLoaded,
   basicTokenLoaded,
-  userTokenRefreshed,
   userTokenLoaded,
-  userLoggedOut,
+  anonymousTokenLoaded,
+  tokenRefreshed,
+  roleChangedToBasic,
 } = slice.actions;
 
 export default slice.reducer;

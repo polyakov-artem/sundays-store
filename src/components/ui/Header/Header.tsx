@@ -39,7 +39,7 @@ export const HEADER_COUNTRY_SELECTOR = `${HEADER}__country-selector`;
 const Header: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const burgerRef = useRef<HTMLButtonElement>(null);
-  const { data: userData, isFetching, isError } = useGetMeQuery();
+  const { data: userData, isFetching, isError, refetch } = useGetMeQuery();
   const role = useAppSelector(selectUserRole);
   const countryCode = useAppSelector(selectCountryCode);
   const dispatch = useAppDispatch();
@@ -53,6 +53,12 @@ const Header: FC = () => {
     },
     [dispatch, setParams]
   );
+
+  useEffect(() => {
+    if (role === TokenRole.user) {
+      void refetch();
+    }
+  }, [refetch, role]);
 
   useEffect(() => {
     const handleDocumentClick = (event: MouseEvent) => {
