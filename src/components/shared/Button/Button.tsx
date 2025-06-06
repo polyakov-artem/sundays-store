@@ -46,6 +46,7 @@ const Button: FC<TButtonProps> = (props) => {
     el = 'button',
     size,
     iconBefore,
+    children,
     ...restProps
   } = props;
   const classes = getClasses(BTN, className, {
@@ -63,23 +64,29 @@ const Button: FC<TButtonProps> = (props) => {
 
   const inner = (
     <span className={BTN_INNER}>
-      {text && <span className={BTN_TEXT}>{text}</span>}
-      {icon && <span className={BTN_ICON}>{icon}</span>}
+      {children ? (
+        children
+      ) : (
+        <>
+          {text && <span className={BTN_TEXT}>{text}</span>}
+          {icon && <span className={BTN_ICON}>{icon}</span>}
+        </>
+      )}
     </span>
   );
 
   const elProps = { className: classes, children: inner, ...restProps };
 
   if (el === 'button') {
-    return <button {...(elProps as ComponentProps<'button'>)} />;
+    return <button {...(elProps as ComponentProps<'button'>)}>{inner}</button>;
   }
 
   if (el === 'link') {
-    return <Link {...(elProps as LinkProps)} />;
+    return <Link {...(elProps as LinkProps)}>{inner}</Link>;
   }
 
   if (el === 'a') {
-    return <a {...(elProps as ComponentProps<'a'>)} />;
+    return <a {...(elProps as ComponentProps<'a'>)}>{inner}</a>;
   }
 };
 
