@@ -199,6 +199,8 @@
 .btn_view_round {
   padding: 0.5rem;
   border-radius: 50%;
+  border-width: 1px;
+  border-style: solid;
 
   .btn__icon {
     font-size: 1.4rem;
@@ -212,7 +214,8 @@
 
   &.btn_size_sm {
     .btn__icon {
-      height: 1.1rem;
+      font-size: 1rem;
+      height: 1rem;
     }
   }
 }

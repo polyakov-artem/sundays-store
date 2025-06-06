@@ -1,0 +1,13 @@
+.counter {
+  display: inline-flex;
+  gap: var(--g-xs-gap);
+  align-items: center;
+
+  &__input {
+    width: 80px;
+  }
+
+  &__btn {
+    flex: none;
+  }
+}

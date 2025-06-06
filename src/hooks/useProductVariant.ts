@@ -8,7 +8,6 @@ import {
 } from '../types/types';
 import { createNormalizedData } from '../utils/createNormalizedData';
 import { EntityState } from '@reduxjs/toolkit';
-import { TRedirectUnauthorized } from './useRedirectionOfUnauthorized';
 
 export type TUseProductVariantProps = {
   variants: TExtProductVariant[];
@@ -18,7 +17,6 @@ export type TUseProductVariantProps = {
   paramVariantId?: number | null;
   locale: CountryLocale;
   discounts: EntityState<TProductDiscount, string>;
-  redirectUnauthorized: TRedirectUnauthorized;
 };
 
 export const useProductVariant = ({
@@ -29,7 +27,6 @@ export const useProductVariant = ({
   paramVariantId,
   discounts,
   locale,
-  redirectUnauthorized,
 }: TUseProductVariantProps) => {
   const variantsData = useMemo(() => createNormalizedData(variants, 'id'), [variants]);
   const { ids: variantIds, entities: variantEntities } = variantsData;
@@ -76,11 +73,6 @@ export const useProductVariant = ({
 
   const discountName = discountId ? discounts.entities[discountId]?.name[locale] : '';
 
-  const handleBuyBtnClick = useCallback(() => {
-    if (!isAvailable || !currentPrice) return;
-    void redirectUnauthorized();
-  }, [redirectUnauthorized, isAvailable, currentPrice]);
-
   const handleVariantIdSetting = useCallback((id: number) => {
     setInnerVariantId(id);
   }, []);
@@ -97,7 +89,6 @@ export const useProductVariant = ({
     originalPrice,
     discountName,
     currentVariantId,
-    handleBuyBtnClick,
     handleVariantIdSetting,
   };
 };

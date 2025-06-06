@@ -14,15 +14,14 @@ import { Link } from 'react-router';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import Button from '../../shared/Button/Button';
-import { FaShoppingCart } from 'react-icons/fa';
 import LoadingImage from '../../shared/LoadingImage/LoadingImage';
 import ProductPrice from '../ProductPrice/ProductPrice';
-import { TRedirectUnauthorized } from '../../../hooks/useRedirectionOfUnauthorized';
 import TabButtons from '../../shared/TabButtons/TabButtons';
 import ProductAvailability from '../ProductAvailability/ProductAvailability';
 import { EntityState } from '@reduxjs/toolkit';
 import { useProductVariant } from '../../../hooks/useProductVariant';
 import ProductBadge from '../ProductBadge/ProductBadge';
+import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
@@ -50,7 +49,6 @@ export type TProductCardProps = {
   locale: CountryLocale;
   categoryId?: string;
   discounts: EntityState<TProductDiscount, string>;
-  redirectUnauthorized: TRedirectUnauthorized;
 } & TIntrinsicArticle;
 
 const ProductCard: FC<TProductCardProps> = (props) => {
@@ -62,7 +60,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     locale,
     categoryId,
     discounts,
-    redirectUnauthorized,
     ...rest
   } = props;
 
@@ -85,7 +82,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     originalPrice,
     discountName,
     currentVariantId,
-    handleBuyBtnClick,
     handleVariantIdSetting,
   } = useProductVariant({
     variants: matchedVariants,
@@ -94,7 +90,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     priceSorting,
     locale,
     discounts,
-    redirectUnauthorized,
   });
 
   const classes = classNames(
@@ -161,17 +156,11 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             relative="path"
             className={PRODUCT_CARD_ACTION_BTN}
           />
-          <Button
-            el="button"
-            view="primary"
-            theme="primary"
-            icon={<FaShoppingCart />}
-            text={localizedAppStrings[locale][AppStrings.AddToCart]}
-            size="sm"
-            onClick={handleBuyBtnClick}
-            iconBefore
-            className={PRODUCT_CARD_ACTION_BTN}
+          <PurchaseButtons
             disabled={!isAvailable}
+            productId={id}
+            variantId={currentVariantId}
+            key={currentVariantId}
           />
         </div>
         <ProductAvailability isAvailable={isAvailable} locale={locale} />

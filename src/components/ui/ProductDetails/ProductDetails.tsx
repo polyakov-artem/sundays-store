@@ -2,26 +2,23 @@ import { FC, useCallback } from 'react';
 import { TExtProductVariant, TIntrinsicDiv } from '../../../types/types';
 import { H1 } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
-import Button from '../../shared/Button/Button';
-import { FaShoppingCart } from 'react-icons/fa';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
 import TabButtons from '../../shared/TabButtons/TabButtons';
 import ProductPrice from '../ProductPrice/ProductPrice';
 import ProductAvailability from '../ProductAvailability/ProductAvailability';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
-import { useSearchParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { VARIANT_PARAM_NAME } from '../ProductCard/ProductCard';
+import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
 import './ProductDetails.scss';
 
-const PRODUCT_DETAILS = 'product-details';
-const PRODUCT_DETAILS_NOT_AVAILABLE = `${PRODUCT_DETAILS}_not-available`;
-const PRODUCT_DETAILS_TITLE = `${PRODUCT_DETAILS}__title`;
-const PRODUCT_DETAILS_DESCRIPTION = `${PRODUCT_DETAILS}__description`;
-const PRODUCT_DETAILS_TABS = `${PRODUCT_DETAILS}__tabs`;
-const PRODUCT_DETAILS_PRICE = `${PRODUCT_DETAILS}__price`;
-const PRODUCT_DETAILS_ACTIONS = `${PRODUCT_DETAILS}__actions`;
+export const PRODUCT_DETAILS = 'product-details';
+export const PRODUCT_DETAILS_NOT_AVAILABLE = `${PRODUCT_DETAILS}_not-available`;
+export const PRODUCT_DETAILS_TITLE = `${PRODUCT_DETAILS}__title`;
+export const PRODUCT_DETAILS_DESCRIPTION = `${PRODUCT_DETAILS}__description`;
+export const PRODUCT_DETAILS_TABS = `${PRODUCT_DETAILS}__tabs`;
+export const PRODUCT_DETAILS_PRICE = `${PRODUCT_DETAILS}__price`;
+export const PRODUCT_DETAILS_PURCHASE_BUTTONS = `${PRODUCT_DETAILS}__purchase-buttons`;
 
 export type TProductDetailsProps = {
   variants: TExtProductVariant[];
@@ -34,7 +31,6 @@ export type TProductDetailsProps = {
   isDiscounted: boolean;
   originalPrice: number;
   currentVariantId: number;
-  onBuyBtnClick: VoidFunction;
   onVariantIdSetting: (id: number) => void;
 } & TIntrinsicDiv;
 
@@ -51,7 +47,6 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
     isDiscounted,
     currentVariantId,
     originalPrice,
-    onBuyBtnClick,
     onVariantIdSetting,
     ...rest
   } = props;
@@ -64,6 +59,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
 
   const locale = useAppSelector(selectLocale);
   const [_params, setParams] = useSearchParams();
+  const { productId = '' } = useParams();
 
   const handleTabBtnClick = useCallback(
     (id: number) => {
@@ -106,19 +102,13 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
         currencyChar={currencyChar}
         isDiscounted={isDiscounted}
       />
-      <div className={PRODUCT_DETAILS_ACTIONS}>
-        <Button
-          el="button"
-          view="primary"
-          theme="primary"
-          icon={<FaShoppingCart />}
-          text={localizedAppStrings[locale][AppStrings.AddToCart]}
-          size="sm"
-          onClick={onBuyBtnClick}
-          iconBefore
-          disabled={!isAvailable}
-        />
-      </div>
+      <PurchaseButtons
+        className={PRODUCT_DETAILS_PURCHASE_BUTTONS}
+        disabled={!isAvailable}
+        productId={productId}
+        variantId={currentVariantId}
+        key={currentVariantId}
+      />
       <ProductAvailability isAvailable={isAvailable} locale={locale} />
     </div>
   );
