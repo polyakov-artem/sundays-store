@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import Burger from '../../shared/Burger/Burger';
 import LogoLink from '../LogoLink/LogoLink';
 import { WRAPPER } from '../../../constants/cssHelpers';
-import { useGetMeQuery } from '../../../store/storeApi';
+import { useGetMeQuery, useGetMyActiveCartQuery } from '../../../store/storeApi';
 import Button from '../../shared/Button/Button';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../constants/constants';
@@ -35,6 +35,8 @@ export const HEADER_LINK = `${HEADER}__link`;
 export const HEADER_LINK_TEXT = `${HEADER}__link-text`;
 export const HEADER_BURGER = `${HEADER}__burger`;
 export const HEADER_COUNTRY_SELECTOR = `${HEADER}__country-selector`;
+export const HEADER_CART_BTN = `${HEADER}__cart-btn`;
+export const HEADER_BTN_BADGE = `${HEADER}__btn-badge`;
 
 const Header: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,6 +47,8 @@ const Header: FC = () => {
   const dispatch = useAppDispatch();
   const locale = useAppSelector(selectLocale);
   const [_, setParams] = useSearchParams();
+  const { data: activeCart } = useGetMyActiveCartQuery();
+  const cartCount = activeCart?.lineItems.length || 0;
 
   const handleCountryCodeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -117,59 +121,52 @@ const Header: FC = () => {
     [locale, handleLogoutBtnClick]
   );
 
-  const userButtonsContent =
-    role === TokenRole.user ? (
-      <>
-        <Dropdown
-          trigger={
-            <Button
-              view="figure"
-              el="button"
-              theme="primary"
-              text={
-                userData && !isFetching && !isError
-                  ? `${userData.firstName}`
-                  : localizedAppStrings[locale][AppStrings.User]
-              }
-              icon={<FaRegUserCircle />}
-            />
-          }
-          menu={<DropdownMenu position="right" items={menuItems} />}
-        />
+  const userButtonsContent = (
+    <>
+      {role === TokenRole.user ? (
+        <>
+          <Dropdown
+            trigger={
+              <Button
+                view="figure"
+                el="button"
+                theme="primary"
+                text={
+                  userData && !isFetching && !isError
+                    ? `${userData.firstName}`
+                    : localizedAppStrings[locale][AppStrings.User]
+                }
+                icon={<FaRegUserCircle />}
+              />
+            }
+            menu={<DropdownMenu position="right" items={menuItems} />}
+          />
+        </>
+      ) : (
+        <>
+          <Button
+            size="sm"
+            theme="primary"
+            view="primary"
+            el="link"
+            to={getFullPath(VIEW_LOGIN)}
+            relative="path">
+            {localizedAppStrings[locale][AppStrings.LogIn]}
+          </Button>
 
-        <Button
-          view="figure"
-          el="link"
-          theme="primary"
-          to={getFullPath(VIEW_CART)}
-          relative="path"
-          text={'Cart'}
-          icon={<FaShoppingCart />}
-        />
-      </>
-    ) : (
-      <>
-        <Button
-          size="sm"
-          theme="primary"
-          view="primary"
-          el="link"
-          to={getFullPath(VIEW_LOGIN)}
-          relative="path">
-          {localizedAppStrings[locale][AppStrings.LogIn]}
-        </Button>
-
-        <Button
-          size="sm"
-          theme="primary"
-          view="primary"
-          el="link"
-          to={getFullPath(VIEW_REGISTER)}
-          relative="path">
-          {localizedAppStrings[locale][AppStrings.Register]}
-        </Button>
-      </>
-    );
+          <Button
+            size="sm"
+            theme="primary"
+            view="primary"
+            el="link"
+            to={getFullPath(VIEW_REGISTER)}
+            relative="path">
+            {localizedAppStrings[locale][AppStrings.Register]}
+          </Button>
+        </>
+      )}
+    </>
+  );
 
   return (
     <header className={getClasses(HEADER, null, { menuOpen: isMenuOpen })}>
@@ -190,6 +187,18 @@ const Header: FC = () => {
             options={SELECT_OPTIONS}
           />
           {userButtonsContent}
+          <div className={HEADER_CART_BTN}>
+            <Button
+              view="figure"
+              el="link"
+              theme="primary"
+              to={getFullPath(VIEW_CART)}
+              relative="path"
+              text={'Cart'}
+              icon={<FaShoppingCart />}
+            />
+            {!!cartCount && <span className={HEADER_BTN_BADGE}>{cartCount}</span>}
+          </div>
         </div>
         <Burger className={HEADER_BURGER} ref={burgerRef} active={isMenuOpen} />
       </nav>

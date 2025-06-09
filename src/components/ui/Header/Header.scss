@@ -43,6 +43,23 @@
     width: auto;
   }
 
+  &__cart-btn {
+    position: relative;
+  }
+
+  &__btn-badge {
+    line-height: 1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.8rem;
+    background-color: var(--green-4);
+    color: var(--white-1);
+    padding: 2px 4px;
+    border-radius: 5px;
+    pointer-events: none;
+  }
+
   @media (min-width: 992px) {
     &__menu {
       height: auto !important;

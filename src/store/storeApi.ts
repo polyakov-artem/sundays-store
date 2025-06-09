@@ -4,6 +4,8 @@ import type { AxiosRequestConfig } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
 import { AppGetState } from './store';
 import {
+  TCart,
+  TCartDraft,
   TCategory,
   TCustomer,
   TCustomerSignInResult,
@@ -11,6 +13,7 @@ import {
   TExtProductProjectionPagedSearchResponse,
   TGetProductDiscountsParams,
   TGetProductProjectionByIdParams,
+  TMyCartDraft,
   TMyCustomerChangePassword,
   TMyCustomerDraft,
   TProductDiscount,
@@ -19,6 +22,7 @@ import {
   TProductProjectionPagedSearchParams,
   TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
+  TUpdateMyCartParams,
   TUpdateMyCustomerParams,
 } from '../types/types';
 import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
@@ -78,7 +82,7 @@ const axiosBaseQuery = ({
 export const storeApi = createApi({
   reducerPath: 'storeApi',
   baseQuery: axiosBaseQuery({ httpService }),
-  tagTypes: ['Customer', 'Category', 'Product'],
+  tagTypes: ['Customer', 'Category', 'Product', 'Cart'],
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
@@ -168,6 +172,38 @@ export const storeApi = createApi({
       },
     }),
 
+    getMyActiveCart: builder.query<TCart, void>({
+      query: () => {
+        return {
+          url: `${projectKey}/me/active-cart`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['Cart'],
+    }),
+
+    createMyCart: builder.mutation<TCart, TMyCartDraft>({
+      query: (data: TCartDraft) => {
+        return {
+          url: `${projectKey}/me/carts`,
+          data,
+          method: 'POST',
+        };
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
+    updateMyCart: builder.mutation<TCart, TUpdateMyCartParams>({
+      query: ({ cartId, data }: TUpdateMyCartParams) => {
+        return {
+          url: `${projectKey}/me/carts/${cartId}`,
+          data,
+          method: 'POST',
+        };
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
     getProductProjectionById: builder.query<TExtProductProjection, TGetProductProjectionByIdParams>(
       {
         query: ({ id, params }) => ({
@@ -243,4 +279,8 @@ export const {
   useGetProductProjectionByIdQuery,
   useUpdateMyCustomerMutation,
   useChangePasswordMutation,
+  useGetMyActiveCartQuery,
+  useLazyGetMyActiveCartQuery,
+  useCreateMyCartMutation,
+  useUpdateMyCartMutation,
 } = storeApi;

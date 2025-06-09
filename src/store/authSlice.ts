@@ -111,6 +111,21 @@ export const logIn = (authData: TBasicAuthData) => async (dispatch: AppDispatch)
   }
 };
 
+export const getAnonymousToken = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(tokenLoadingStarted());
+    const tokenData = await authService.getAnonymousTokenData();
+    dispatch(
+      anonymousTokenLoaded({
+        token: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
+      })
+    );
+  } finally {
+    dispatch(tokenLoadingEnded());
+  }
+};
+
 export const logOut = () => (dispatch: AppDispatch, getState: AppGetState) => {
   const token = getState().auth.token;
   const refreshToken = getState().auth.refreshToken;
