@@ -29,10 +29,12 @@
   --color: var(--green-1);
 }
 
-.screen-loader_type_linear {
+.screen-loader_type_linear.screen-loader_theme_primary {
   --bg-color: var(--white-1);
   --bg-fade-color: var(--green-1-50);
+}
 
+.screen-loader_type_linear {
   .screen-loader__container {
     width: 16px;
     height: 16px;
