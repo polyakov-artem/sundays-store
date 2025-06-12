@@ -1,0 +1,21 @@
+.counter {
+  display: inline-flex;
+  gap: var(--g-xs-gap);
+  align-items: center;
+  position: relative;
+
+  &__input {
+    width: 80px;
+  }
+
+  &__btn {
+    flex: none;
+  }
+
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

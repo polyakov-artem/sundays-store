@@ -96,7 +96,8 @@
 }
 
 .btn_view_primary.btn_theme_primary,
-.btn_view_icon.btn_theme_secondary {
+.btn_view_icon.btn_theme_secondary,
+.btn_view_round.btn_theme_secondary {
   --color: var(--white-1);
   --hover-color: var(--color);
   --disabled-color: var(--color);
@@ -198,6 +199,8 @@
 .btn_view_round {
   padding: 0.5rem;
   border-radius: 50%;
+  border-width: 1px;
+  border-style: solid;
 
   .btn__icon {
     font-size: 1.4rem;
@@ -207,6 +210,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  &.btn_size_sm {
+    .btn__icon {
+      font-size: 1rem;
+      height: 1rem;
+    }
   }
 }
 

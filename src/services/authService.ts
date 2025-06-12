@@ -4,6 +4,7 @@ import { localStorageService, TLocalStorageService } from './localStorageService
 export enum TokenRole {
   basic = 'basic',
   user = 'user',
+  anonymous = 'anonymous',
 }
 
 export type TFetchedTokenData = {
@@ -34,9 +35,11 @@ export type TAuthServiceParams = {
   authURL: string;
   basicScope: string;
   userScope: string;
-  basicTokenKey: string;
-  userTokenKey: string;
-  userRefreshTokenKey: string;
+  anonymousScope: string;
+  keyLSRole: string;
+  keyLSbasicToken: string;
+  keyLSToken: string;
+  keyLSRefreshToken: string;
 };
 
 export type TBasicAuthData = {
@@ -44,14 +47,26 @@ export type TBasicAuthData = {
   email: string;
 };
 
+export type TRemoveLSTokensParams = {
+  isBasicToken: boolean;
+  withRefreshToken?: boolean;
+};
+
+export type TSaveTokensToLSParams = {
+  isBasic: boolean;
+  token: string;
+  refreshToken?: string;
+};
+
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 const clientSecret = import.meta.env.VITE_CTP_CLIENT_SECRET;
 const clientId = import.meta.env.VITE_CTP_CLIENT_ID;
 const authURL = import.meta.env.VITE_CTP_AUTH_URL;
 
-export const LS_BASIC_TOKEN_KEY = 'basic_token';
-export const LS_USER_TOKEN_KEY = 'user_token';
-export const LS_USER_REFRESH_TOKEN_KEY = 'refresh_token';
+export const KEY_LS_ROLE = 'role';
+export const KEY_LS_BASIC_TOKEN = 'basic_token';
+export const KEY_LS_TOKEN = 'token';
+export const KEY_LS_REFRESH_TOKEN = 'refresh_token';
 
 export const BASIC_SCOPE_KEYS = [
   'view_categories',
@@ -87,6 +102,17 @@ export const createScope = (scopeKeys: string[]): string =>
 
 export const basicScope = createScope(BASIC_SCOPE_KEYS);
 export const userScope = createScope(USER_SCOPE_KEYS);
+export const anonymousScope = createScope(ANONYMOUS_SCOPE_KEYS);
+
+export const isIncorrectRefreshToken = (error: unknown) => {
+  if (isAxiosError(error)) {
+    const statusCode = error.response?.status;
+    if (statusCode && statusCode >= 400 && statusCode && statusCode < 500) {
+      return true;
+    }
+  }
+  return false;
+};
 
 export class AuthService {
   private authClient: AxiosInstance;
@@ -97,9 +123,11 @@ export class AuthService {
   private authURL: string;
   private basicScope: string;
   private userScope: string;
-  private userTokenKey: string;
-  private userRefreshTokenKey: string;
-  private basicTokenKey: string;
+  private anonymousScope: string;
+  private keyLSRole: string;
+  private keyLSbasicToken: string;
+  private keyLSToken: string;
+  private keyLSRefreshToken: string;
 
   constructor(params: TAuthServiceParams) {
     this.localStorageService = params.localStorageService;
@@ -109,9 +137,11 @@ export class AuthService {
     this.authURL = params.authURL;
     this.basicScope = params.basicScope;
     this.userScope = params.userScope;
-    this.basicTokenKey = params.basicTokenKey;
-    this.userTokenKey = params.userTokenKey;
-    this.userRefreshTokenKey = params.userRefreshTokenKey;
+    this.anonymousScope = params.anonymousScope;
+    this.keyLSRole = params.keyLSRole;
+    this.keyLSbasicToken = params.keyLSbasicToken;
+    this.keyLSToken = params.keyLSToken;
+    this.keyLSRefreshToken = params.keyLSRefreshToken;
 
     this.authClient = axios.create({
       baseURL: `${this.authURL}/oauth/`,
@@ -132,13 +162,12 @@ export class AuthService {
     });
 
     const tokenData = response.data;
-
-    try {
-      this.saveBasicTokenToLS(tokenData.access_token);
-    } catch {
-      // ignore
-    }
-
+    this.saveTokensToLS({
+      isBasic: true,
+      token: tokenData.access_token,
+    });
+    this.saveRoleToLS(TokenRole.basic);
+    this.removeLSTokens({ isBasicToken: false });
     return tokenData;
   };
 
@@ -165,12 +194,40 @@ export class AuthService {
 
     const tokenData = response.data;
 
-    try {
-      this.saveUserTokenToLS(tokenData.access_token);
-      this.saveUserRefreshTokenToLS(tokenData.refresh_token);
-    } catch {
-      // ignore
-    }
+    this.saveTokensToLS({
+      isBasic: false,
+      token: tokenData.access_token,
+      refreshToken: tokenData.refresh_token,
+    });
+    this.saveRoleToLS(TokenRole.user);
+
+    return tokenData;
+  };
+
+  getAnonymousTokenData = async (): Promise<TFetchedExtendedTokenData> => {
+    const data = new URLSearchParams();
+    data.append('grant_type', 'client_credentials');
+    data.append('scope', this.anonymousScope);
+
+    const response = await this.authClient.post<TFetchedExtendedTokenData>(
+      `${this.projectKey}/anonymous/token`,
+      data,
+      {
+        auth: {
+          username: this.clientId,
+          password: this.clientSecret,
+        },
+      }
+    );
+
+    const tokenData = response.data;
+
+    this.saveTokensToLS({
+      isBasic: false,
+      token: tokenData.access_token,
+      refreshToken: tokenData.refresh_token,
+    });
+    this.saveRoleToLS(TokenRole.anonymous);
 
     return tokenData;
   };
@@ -189,25 +246,19 @@ export class AuthService {
       });
 
       const tokenData = response.data;
-
-      try {
-        this.saveUserTokenToLS(tokenData.access_token);
-      } catch {
-        // ignore
-      }
+      this.saveTokensToLS({ isBasic: false, token: tokenData.access_token, refreshToken });
 
       return tokenData;
     } catch (e: unknown) {
-      if (isAxiosError(e)) {
-        if (e.response?.status === 400) {
-          this.removeLSUserRefreshToken();
-        }
+      if (isIncorrectRefreshToken(e)) {
+        this.removeLSTokens({ isBasicToken: false });
+        this.saveRoleToLS(TokenRole.basic);
       }
       throw e;
     }
   };
 
-  validateToken = async (token: string, role: TokenRole): Promise<TTokenValidationResult> => {
+  validateToken = async (token: string): Promise<TTokenValidationResult> => {
     const data = new URLSearchParams();
     data.append('token', token);
 
@@ -219,26 +270,47 @@ export class AuthService {
     });
 
     const validationResult = response.data;
-
-    if (!validationResult.active) {
-      if (role === TokenRole.basic) {
-        this.removeLSBasicToken();
-      } else if (role === TokenRole.user) {
-        this.removeLSUserToken();
-      }
-    }
-
     return validationResult;
   };
 
-  revokeToken = (role: TokenRole, ...tokens: string[]): void => {
-    if (role === TokenRole.basic) {
-      this.removeLSBasicToken();
-    } else if (role === TokenRole.user) {
-      this.removeLSUserToken();
-      this.removeLSUserRefreshToken();
-    }
+  saveRoleToLS = (role: TokenRole) => {
+    this.localStorageService.saveData(this.keyLSRole, role);
+  };
 
+  getLSRole = () => {
+    return this.localStorageService.getData<TokenRole>(this.keyLSRole);
+  };
+
+  getLSTokens = () => {
+    return {
+      basicToken: this.localStorageService.getData<string>(this.keyLSbasicToken) || '',
+      token: this.localStorageService.getData<string>(this.keyLSToken) || '',
+      refreshToken: this.localStorageService.getData<string>(this.keyLSRefreshToken) || '',
+    };
+  };
+
+  saveTokensToLS = ({ isBasic, token, refreshToken }: TSaveTokensToLSParams) => {
+    if (isBasic) {
+      this.localStorageService.saveData(this.keyLSbasicToken, token);
+    } else {
+      this.localStorageService.saveData(this.keyLSToken, token);
+      this.localStorageService.saveData(this.keyLSRefreshToken, refreshToken);
+    }
+  };
+
+  removeLSTokens = ({ isBasicToken, withRefreshToken = true }: TRemoveLSTokensParams) => {
+    if (isBasicToken) {
+      this.localStorageService.removeData(this.keyLSbasicToken);
+    } else {
+      this.localStorageService.removeData(this.keyLSToken);
+
+      if (withRefreshToken) {
+        this.localStorageService.removeData(this.keyLSRefreshToken);
+      }
+    }
+  };
+
+  revokeTokens = (...tokens: string[]): void => {
     tokens.forEach((tokenString) => {
       const data = new URLSearchParams();
       data.append('token', tokenString);
@@ -251,21 +323,6 @@ export class AuthService {
       });
     });
   };
-
-  saveBasicTokenToLS = (token: string) =>
-    this.localStorageService.saveData(this.basicTokenKey, token);
-  saveUserTokenToLS = (token: string) =>
-    this.localStorageService.saveData(this.userTokenKey, token);
-  saveUserRefreshTokenToLS = (token: string) =>
-    this.localStorageService.saveData(this.userRefreshTokenKey, token);
-
-  getLSBasicToken = () => this.localStorageService.getData<string>(this.basicTokenKey);
-  getLSUserToken = () => this.localStorageService.getData<string>(this.userTokenKey);
-  getLSUserRefreshToken = () => this.localStorageService.getData<string>(this.userRefreshTokenKey);
-
-  removeLSBasicToken = () => this.localStorageService.removeData(this.basicTokenKey);
-  removeLSUserToken = () => this.localStorageService.removeData(this.userTokenKey);
-  removeLSUserRefreshToken = () => this.localStorageService.removeData(this.userRefreshTokenKey);
 }
 
 export const authService = new AuthService({
@@ -276,7 +333,9 @@ export const authService = new AuthService({
   authURL,
   basicScope,
   userScope,
-  basicTokenKey: LS_BASIC_TOKEN_KEY,
-  userTokenKey: LS_USER_TOKEN_KEY,
-  userRefreshTokenKey: LS_USER_REFRESH_TOKEN_KEY,
+  anonymousScope,
+  keyLSRole: KEY_LS_ROLE,
+  keyLSbasicToken: KEY_LS_BASIC_TOKEN,
+  keyLSToken: KEY_LS_TOKEN,
+  keyLSRefreshToken: KEY_LS_REFRESH_TOKEN,
 });

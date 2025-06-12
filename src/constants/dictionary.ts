@@ -185,4 +185,7 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.ThePasswordChanged]: {
     [CountryLocale.DE]: 'Das Passwort wurde erfolgreich geändert',
   },
+  [AppStrings.AddToCart]: {
+    [CountryLocale.DE]: 'In den Warenkorb legen',
+  },
 };
