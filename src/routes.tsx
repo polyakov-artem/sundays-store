@@ -46,7 +46,7 @@ const routes: RouteObject[] = [
       },
       {
         path: VIEW_CART,
-        element: 'Cart data',
+        element: '',
       },
       {
         path: `${VIEW_PRODUCT}/:categoryId/:productId`,

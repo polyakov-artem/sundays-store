@@ -100,6 +100,13 @@ export type TCustomerDraft = {
   custom?: unknown;
 };
 
+export type TMyCustomerSignin = {
+  email: string;
+  password: string;
+  activeCartSignInMode?: unknown;
+  updateProductData?: unknown;
+};
+
 export type TMyCustomerDraft = {
   email: string;
   password: string;

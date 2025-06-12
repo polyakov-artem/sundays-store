@@ -80,13 +80,13 @@ export class HttpService {
             statusCode === HttpStatusCode.Unauthorized
           ) {
             config.isRetry = true;
+
             if (!mutex.isLocked()) {
-              const release = await mutex.acquire();
               await self.dispatch?.(tryToLoadToken());
-              release();
             } else {
               await mutex.waitForUnlock();
             }
+
             return await self.client(config);
           }
         }

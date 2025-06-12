@@ -10,6 +10,8 @@ import { selectLocale } from '../../../store/settingsSlice';
 import { useParams, useSearchParams } from 'react-router';
 import { VARIANT_PARAM_NAME } from '../ProductCard/ProductCard';
 import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
+import { selectUserRole } from '../../../store/authSlice';
+import { TokenRole } from '../../../services/authService';
 import './ProductDetails.scss';
 
 export const PRODUCT_DETAILS = 'product-details';
@@ -60,6 +62,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
   const locale = useAppSelector(selectLocale);
   const [_params, setParams] = useSearchParams();
   const { productId = '' } = useParams();
+  const role = useAppSelector(selectUserRole);
 
   const handleTabBtnClick = useCallback(
     (id: number) => {
@@ -78,6 +81,9 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
     },
     [currentVariantId, onVariantIdSetting, setParams]
   );
+
+  const purchaseButtonsKey =
+    role === TokenRole.user ? `${currentVariantId}_${role}` : `${currentVariantId}`;
 
   return (
     <div className={classes} {...rest}>
@@ -107,7 +113,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
         disabled={!isAvailable}
         productId={productId}
         variantId={currentVariantId}
-        key={currentVariantId}
+        key={purchaseButtonsKey}
       />
       <ProductAvailability isAvailable={isAvailable} locale={locale} />
     </div>

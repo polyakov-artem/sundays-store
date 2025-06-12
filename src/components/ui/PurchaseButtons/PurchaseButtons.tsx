@@ -76,7 +76,7 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
 
     const { error: activeCartQueryError, data: activeCartQueryData } = await getMyActiveCart();
 
-    if (activeCartQueryData) {
+    if (!activeCartQueryError && activeCartQueryData) {
       return activeCartQueryData;
     }
 
@@ -85,12 +85,12 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
       'status' in activeCartQueryError &&
       activeCartQueryError?.status === HttpStatusCode.NotFound
     ) {
-      const { data: createCartQueryData } = await createMyCart({
+      const { data: createCartQueryData, error: createCartError } = await createMyCart({
         currency,
         country: countryCode,
       });
 
-      if (createCartQueryData) {
+      if (!createCartError && createCartQueryData) {
         return createCartQueryData;
       }
     }
@@ -163,20 +163,28 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
   useEffect(() => {
     const getInitialCount = async () => {
       setIsUpdatingCount(true);
-      const { data } = await getMyActiveCart();
 
-      if (data) {
-        const initialCount = findLineItem(productId, variantId, data.lineItems)?.quantity;
+      const { error: activeCartQueryError, data: activeCartQueryData } = await getMyActiveCart();
+
+      if (!activeCartQueryError && activeCartQueryData) {
+        const initialCount = findLineItem(
+          productId,
+          variantId,
+          activeCartQueryData.lineItems
+        )?.quantity;
 
         if (initialCount) {
           setCount(initialCount);
         }
       }
+
       setIsUpdatingCount(false);
     };
 
-    void getInitialCount();
-  }, [getMyActiveCart, productId, variantId]);
+    if (role !== TokenRole.basic) {
+      void getInitialCount();
+    }
+  }, [getMyActiveCart, productId, variantId, role]);
 
   const handleAddToCartBtnClick = useCallback(() => {
     if (disabled) {

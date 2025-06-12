@@ -24,6 +24,7 @@ import { countryChanged, selectCountryCode, selectLocale } from '../../../store/
 import { CountryCode } from '../../../types/types';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
+import { skipToken } from '@reduxjs/toolkit/query';
 import './Header.scss';
 
 export const HEADER = 'header';
@@ -41,14 +42,24 @@ export const HEADER_BTN_BADGE = `${HEADER}__btn-badge`;
 const Header: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const burgerRef = useRef<HTMLButtonElement>(null);
-  const { data: userData, isFetching, isError, refetch } = useGetMeQuery();
   const role = useAppSelector(selectUserRole);
   const countryCode = useAppSelector(selectCountryCode);
   const dispatch = useAppDispatch();
   const locale = useAppSelector(selectLocale);
   const [_, setParams] = useSearchParams();
-  const { data: activeCart } = useGetMyActiveCartQuery();
-  const cartCount = activeCart?.lineItems.length || 0;
+
+  const {
+    data: userData,
+    isFetching: isGetMeQueryFetching,
+    isError: isGetMeQueryError,
+  } = useGetMeQuery(role !== TokenRole.user ? skipToken : undefined);
+
+  const { data: activeCart, isError: isActiveCartQueryError } = useGetMyActiveCartQuery(
+    role === TokenRole.basic ? skipToken : undefined
+  );
+
+  const cartCount = !isActiveCartQueryError && activeCart ? activeCart.totalLineItemQuantity : 0;
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCountryCodeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -57,12 +68,6 @@ const Header: FC = () => {
     },
     [dispatch, setParams]
   );
-
-  useEffect(() => {
-    if (role === TokenRole.user) {
-      void refetch();
-    }
-  }, [refetch, role]);
 
   useEffect(() => {
     const handleDocumentClick = (event: MouseEvent) => {
@@ -96,9 +101,19 @@ const Header: FC = () => {
     return () => window.removeEventListener('resize', handleWindowResize);
   }, []);
 
-  const handleLogoutBtnClick = useCallback(() => {
-    dispatch(logOut());
-  }, [dispatch]);
+  const handleLogoutBtnClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+
+      if (isLoading) {
+        return;
+      }
+
+      setIsLoading(true);
+      void dispatch(logOut()).then(() => setIsLoading(false));
+    },
+    [dispatch, isLoading]
+  );
 
   const menuItems = useMemo(
     () => [
@@ -109,14 +124,9 @@ const Header: FC = () => {
         relative="path">
         <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.Profile]}</p>
       </Link>,
-      <Link
-        key={PUBLIC_PATH}
-        className={HEADER_LINK}
-        to={PUBLIC_PATH}
-        relative="path"
-        onClick={handleLogoutBtnClick}>
+      <a key={PUBLIC_PATH} className={HEADER_LINK} onClick={handleLogoutBtnClick}>
         <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.LogOut]}</p>
-      </Link>,
+      </a>,
     ],
     [locale, handleLogoutBtnClick]
   );
@@ -132,7 +142,7 @@ const Header: FC = () => {
                 el="button"
                 theme="primary"
                 text={
-                  userData && !isFetching && !isError
+                  userData && !isGetMeQueryFetching && !isGetMeQueryError
                     ? `${userData.firstName}`
                     : localizedAppStrings[locale][AppStrings.User]
                 }

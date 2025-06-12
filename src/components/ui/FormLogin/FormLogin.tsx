@@ -7,12 +7,11 @@ import { TIntrinsicForm } from '../../../types/types';
 import * as Yup from 'yup';
 import { inputErrors } from '../../../constants/constants';
 import { Form, Formik } from 'formik';
-import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
-import { logIn } from '../../../store/authSlice';
+import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { getMsgFromAxiosError } from '../../../utils/getMsgFromAxiosError';
+import { TCustomError, useSignInMutation } from '../../../store/storeApi';
 import './FormLogin.scss';
 
 export type TFormLoginProps = { onSuccess?: () => Promise<void> | void } & TIntrinsicForm;
@@ -56,7 +55,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
   const [loginError, setLoginError] = useState('');
   const locale = useAppSelector(selectLocale);
   const formRef = useRef<HTMLFormElement>(null);
-  const dispatch = useAppDispatch();
+  const [signIn] = useSignInMutation();
 
   useEffect(() => {
     const form = formRef.current;
@@ -76,13 +75,15 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         setIsSubmitting(true);
         setLoginError('');
 
-        try {
-          await dispatch(logIn(values));
-          await onSuccess?.();
-        } catch (e) {
-          setLoginError(getMsgFromAxiosError(e));
+        const { error: signinError } = await signIn(values);
+
+        if (signinError) {
+          setLoginError((signinError as TCustomError).data);
+          setIsSubmitting(false);
+          return;
         }
 
+        await onSuccess?.();
         setIsSubmitting(false);
       }}>
       <Form className={classes} {...restProps} ref={formRef}>

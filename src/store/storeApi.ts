@@ -2,7 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query/react';
 import type { AxiosRequestConfig } from 'axios';
 import { httpService, HttpService } from '../services/httpService';
-import { AppGetState } from './store';
+import { AppGetState, RootState } from './store';
 import {
   TCart,
   TCartDraft,
@@ -16,6 +16,7 @@ import {
   TMyCartDraft,
   TMyCustomerChangePassword,
   TMyCustomerDraft,
+  TMyCustomerSignin,
   TProductDiscount,
   TProductDiscountPagedQueryResponse,
   TProductProjection,
@@ -29,6 +30,8 @@ import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { getQueryString } from '../utils/getQueryString';
 import { getPriceData } from '../utils/getPriceData';
+import { authService, TokenRole } from '../services/authService';
+import { getUserToken } from './authSlice';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -39,7 +42,7 @@ export type TCustomError = {
   data: string;
 };
 
-const axiosBaseQuery = ({
+const createAxiosBaseQuery = ({
   httpService,
 }: TAxiosBaseQueryParams): BaseQueryFn<
   {
@@ -81,12 +84,49 @@ const axiosBaseQuery = ({
 
 export const storeApi = createApi({
   reducerPath: 'storeApi',
-  baseQuery: axiosBaseQuery({ httpService }),
+  baseQuery: createAxiosBaseQuery({ httpService }),
   tagTypes: ['Customer', 'Category', 'Product', 'Cart'],
+  keepUnusedDataFor: 0,
   endpoints: (builder) => ({
     getMe: builder.query<TCustomer, void>({
       query: () => ({ url: `${projectKey}/me` }),
       providesTags: ['Customer'],
+    }),
+
+    signIn: builder.mutation<TCustomerSignInResult, TMyCustomerSignin>({
+      queryFn: async (data, { dispatch, getState }, _extraOptions, fetchWithBQ) => {
+        const { data: customerSignInResult, error: loginError } = await fetchWithBQ({
+          url: `${projectKey}/me/login`,
+          data,
+          method: 'POST',
+        });
+
+        if (loginError) {
+          return { error: loginError };
+        }
+
+        const authState = (getState() as RootState).auth;
+        const { token, refreshToken, role } = authState;
+
+        try {
+          // eslint-disable-next-line @typescript-eslint/await-thenable
+          await dispatch(getUserToken(data));
+
+          if (role === TokenRole.anonymous) {
+            authService.revokeTokens(token, refreshToken);
+          }
+        } catch (err: unknown) {
+          return {
+            error: {
+              status: (err as { status?: number })?.status,
+              data: getMsgFromAxiosError(err),
+            },
+          };
+        }
+
+        return { data: customerSignInResult as TCustomerSignInResult };
+      },
+      invalidatesTags: ['Customer', 'Cart'],
     }),
 
     signUp: builder.mutation<TCustomerSignInResult, TMyCustomerDraft>({
@@ -95,7 +135,6 @@ export const storeApi = createApi({
         data,
         method: 'POST',
       }),
-      invalidatesTags: ['Customer'],
     }),
 
     updateMyCustomer: builder.mutation<TCustomer, TUpdateMyCustomerParams>({
@@ -283,4 +322,5 @@ export const {
   useLazyGetMyActiveCartQuery,
   useCreateMyCartMutation,
   useUpdateMyCartMutation,
+  useSignInMutation,
 } = storeApi;

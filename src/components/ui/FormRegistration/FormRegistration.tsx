@@ -1,10 +1,8 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { TIntrinsicForm } from '../../../types/types';
-import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
-import { logIn } from '../../../store/authSlice';
-import { useSignUpMutation } from '../../../store/storeApi';
-import { delay } from '../../../utils/delay';
+import { useAppSelector } from '../../../hooks/store-hooks';
+import { TCustomError, useSignInMutation, useSignUpMutation } from '../../../store/storeApi';
 import FormProfile from '../FormProfile/FormProfile';
 import { selectCountryCode } from '../../../store/settingsSlice';
 import {
@@ -28,12 +26,12 @@ export const FORM_REGISTRATION = 'form-registration';
 const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   const { className, onSuccess, ...restProps } = props;
   const classes = classNames(FORM_REGISTRATION, className);
-  const dispatch = useAppDispatch();
   const [register] = useSignUpMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const countryCode = useAppSelector(selectCountryCode);
   const formInitialValues = useMemo(() => createInitialValues(countryCode, 1), [countryCode]);
+  const [signIn] = useSignInMutation();
 
   const handleSubmit = useCallback(
     async (values: TFormValues) => {
@@ -81,26 +79,20 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
 
       setIsSubmitting(true);
 
-      const response = await register(data);
+      const { error: registrationError } = await register(data);
 
-      if (response.error) {
-        setError((response.error as { data: string }).data);
+      if (registrationError) {
+        setError((registrationError as TCustomError).data);
         setIsSubmitting(false);
         return;
       }
 
       onSuccess?.();
 
-      await delay(500);
-      try {
-        await dispatch(logIn({ email, password }));
-      } catch {
-        // ignore
-      }
-
+      void signIn(values);
       setIsSubmitting(false);
     },
-    [dispatch, onSuccess, register]
+    [onSuccess, register, signIn]
   );
 
   return (
