@@ -67,4 +67,10 @@
   border-width: 1px;
   border-style: solid;
   border-radius: 5px;
+
+  &.input-field_scale_sm {
+    height: 2rem;
+    padding: 0 0.5rem;
+    font-size: 1rem;
+  }
 }

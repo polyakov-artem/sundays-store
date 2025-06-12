@@ -14,15 +14,17 @@ import { Link } from 'react-router';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import Button from '../../shared/Button/Button';
-import { FaShoppingCart } from 'react-icons/fa';
 import LoadingImage from '../../shared/LoadingImage/LoadingImage';
 import ProductPrice from '../ProductPrice/ProductPrice';
-import { TRedirectUnauthorized } from '../../../hooks/useRedirectionOfUnauthorized';
 import TabButtons from '../../shared/TabButtons/TabButtons';
 import ProductAvailability from '../ProductAvailability/ProductAvailability';
 import { EntityState } from '@reduxjs/toolkit';
 import { useProductVariant } from '../../../hooks/useProductVariant';
 import ProductBadge from '../ProductBadge/ProductBadge';
+import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
+import { useAppSelector } from '../../../hooks/store-hooks';
+import { selectUserRole } from '../../../store/authSlice';
+import { TokenRole } from '../../../services/authService';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
@@ -50,7 +52,6 @@ export type TProductCardProps = {
   locale: CountryLocale;
   categoryId?: string;
   discounts: EntityState<TProductDiscount, string>;
-  redirectUnauthorized: TRedirectUnauthorized;
 } & TIntrinsicArticle;
 
 const ProductCard: FC<TProductCardProps> = (props) => {
@@ -62,10 +63,10 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     locale,
     categoryId,
     discounts,
-    redirectUnauthorized,
     ...rest
   } = props;
 
+  const role = useAppSelector(selectUserRole);
   const { id, masterVariant, variants, name, description } = productProjection;
 
   const matchedVariants = useMemo(
@@ -85,7 +86,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     originalPrice,
     discountName,
     currentVariantId,
-    handleBuyBtnClick,
     handleVariantIdSetting,
   } = useProductVariant({
     variants: matchedVariants,
@@ -94,7 +94,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     priceSorting,
     locale,
     discounts,
-    redirectUnauthorized,
   });
 
   const classes = classNames(
@@ -115,6 +114,9 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     VIEW_PRODUCT,
     `${categoryId}/${id}/?${VARIANT_PARAM_NAME}=${currentVariantId}`
   );
+
+  const purchaseButtonsKey =
+    role === TokenRole.user ? `${currentVariantId}_${role}` : `${currentVariantId}`;
 
   return (
     <article className={classes} {...rest}>
@@ -161,17 +163,11 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             relative="path"
             className={PRODUCT_CARD_ACTION_BTN}
           />
-          <Button
-            el="button"
-            view="primary"
-            theme="primary"
-            icon={<FaShoppingCart />}
-            text={localizedAppStrings[locale][AppStrings.Buy]}
-            size="sm"
-            onClick={handleBuyBtnClick}
-            iconBefore
-            className={PRODUCT_CARD_ACTION_BTN}
+          <PurchaseButtons
             disabled={!isAvailable}
+            productId={id}
+            variantId={currentVariantId}
+            key={purchaseButtonsKey}
           />
         </div>
         <ProductAvailability isAvailable={isAvailable} locale={locale} />

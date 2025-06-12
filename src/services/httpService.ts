@@ -36,15 +36,11 @@ export class HttpService {
   }
 
   setDispatchFn(dispatch: AppDispatch) {
-    if (!this.dispatch) {
-      this.dispatch = dispatch;
-    }
+    this.dispatch = dispatch;
   }
 
   setGetStateFn(getState: AppGetState) {
-    if (!this.getState) {
-      this.getState = getState;
-    }
+    this.getState = getState;
   }
 
   private configure = () => {
@@ -58,7 +54,7 @@ export class HttpService {
         }
 
         const authState = self.getState!().auth;
-        const accessToken = authState.tokens[authState.role];
+        const accessToken = authState.token;
 
         config.headers.set('Authorization', `Bearer ${accessToken}`);
         return config;
@@ -84,13 +80,13 @@ export class HttpService {
             statusCode === HttpStatusCode.Unauthorized
           ) {
             config.isRetry = true;
+
             if (!mutex.isLocked()) {
-              const release = await mutex.acquire();
               await self.dispatch?.(tryToLoadToken());
-              release();
             } else {
               await mutex.waitForUnlock();
             }
+
             return await self.client(config);
           }
         }

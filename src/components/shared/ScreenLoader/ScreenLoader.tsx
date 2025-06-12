@@ -9,12 +9,13 @@ export const SCREEN_LOADER_CONTAINER = `${SCREEN_LOADER}__container`;
 export type TScreenLoaderProps = TIntrinsicSpan & {
   fullSpace?: boolean;
   type?: 'linear' | 'round';
+  theme: 'white' | 'green';
 };
 
 const ScreenLoader: FC<TScreenLoaderProps> = (props) => {
-  const { className, fullSpace, type = 'round', ...rest } = props;
+  const { className, fullSpace, type = 'linear', theme, ...rest } = props;
 
-  const classes = getClasses(SCREEN_LOADER, className, { fullSpace, type });
+  const classes = getClasses(SCREEN_LOADER, className, { fullSpace, type, theme });
 
   return (
     <span className={classes} {...rest} data-testid="screen-loader">

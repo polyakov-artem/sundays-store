@@ -9,11 +9,12 @@ export type TInputFieldProps = TIntrinsicInput & {
   view?: 'primary';
   theme?: 'primary';
   invalid?: boolean;
+  scale?: 'sm';
 };
 
 const InputField: FC<TInputFieldProps> = (props) => {
-  const { className, view, theme, invalid, ...restProps } = props;
-  const classes = getClasses(INPUT_FIELD, className, { view, theme, invalid });
+  const { className, view, theme, invalid, scale, ...restProps } = props;
+  const classes = getClasses(INPUT_FIELD, className, { view, theme, invalid, scale });
 
   return <input className={classes} {...restProps} data-testid="input-field" />;
 };

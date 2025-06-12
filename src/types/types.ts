@@ -100,6 +100,13 @@ export type TCustomerDraft = {
   custom?: unknown;
 };
 
+export type TMyCustomerSignin = {
+  email: string;
+  password: string;
+  activeCartSignInMode?: unknown;
+  updateProductData?: unknown;
+};
+
 export type TMyCustomerDraft = {
   email: string;
   password: string;
@@ -119,8 +126,140 @@ export type TMyCustomerDraft = {
   custom?: unknown;
 };
 
-export type TCart = object;
-export type TCustomerSignInResult = TCustomer & Partial<TCart>;
+export type TCart = {
+  id: string;
+  version: number;
+  key?: string;
+  customerId?: string;
+  customerEmail?: string;
+  customerGroup?: unknown;
+  anonymousId?: string;
+  businessUnit: unknown;
+  store?: unknown;
+  lineItems: TLineItem[];
+  customLineItems: unknown[];
+  totalLineItemQuantity?: number;
+  totalPrice: TCentPrecisionMoney;
+  taxedPrice?: unknown;
+  taxedShippingPrice?: unknown;
+  discountOnTotalPrice?: unknown;
+  taxMode: unknown;
+  taxRoundingMode: unknown;
+  taxCalculationMode: unknown;
+  inventoryMode: unknown;
+  cartState: unknown;
+  billingAddress?: TAddress;
+  shippingAddress?: TAddress;
+  shippingMode: unknown;
+  shippingKey?: string;
+  shippingInfo?: unknown;
+  shippingRateInput?: unknown;
+  shippingCustomFields?: unknown;
+  shipping: unknown[];
+  itemShippingAddresses: TAddress[];
+  discountCodes: unknown[];
+  directDiscounts: unknown[];
+  refusedGifts: unknown;
+  paymentInfo?: unknown;
+  country?: CountryCode;
+  locale?: string;
+  origin: unknown;
+  discountTypeCombination?: unknown;
+  deleteDaysAfterLastModification?: number;
+  custom?: unknown;
+  createdAt: string;
+  createdBy?: unknown;
+  lastModifiedAt: string;
+  lastModifiedBy?: unknown;
+};
+
+export type TLineItem = {
+  id: string;
+  key?: string;
+  productId: string;
+  productKey?: string;
+  name: TLocalizedString;
+  productSlug?: TLocalizedString;
+  productType: unknown;
+  variant: TProductVariant;
+  price: TPrice;
+  quantity: number;
+  totalPrice: TCentPrecisionMoney;
+  discountedPricePerQuantity: unknown[];
+  taxedPrice?: unknown;
+  taxedPricePortions: unknown[];
+  state: unknown[];
+  taxRate?: unknown;
+  perMethodTaxRate: unknown[];
+  supplyChannel?: unknown;
+  distributionChannel?: unknown;
+  priceMode: unknown;
+  lineItemMode: unknown;
+  inventoryMode?: unknown;
+  shippingDetails?: unknown;
+  addedAt?: string;
+  custom?: unknown;
+  lastModifiedAt?: string;
+};
+
+export type TMyCartDraft = {
+  currency: string;
+  customerEmail?: string;
+  businessUnit?: unknown;
+  store?: unknown;
+  lineItems?: unknown;
+  taxMode?: unknown;
+  inventoryMode?: unknown;
+  billingAddress?: TBaseAddress;
+  shippingAddress?: TBaseAddress;
+  shippingMethod?: unknown;
+  itemShippingAddresses?: TBaseAddress[];
+  shippingMode?: unknown;
+  discountCodes?: string[];
+  country?: CountryCode;
+  locale?: string;
+  deleteDaysAfterLastModification?: number;
+  custom?: unknown;
+};
+
+export type TCartDraft = {
+  key?: string;
+  currency: CurrencyCode;
+  customerId?: string;
+  customerEmail?: string;
+  customerGroup?: unknown;
+  anonymousId?: string;
+  businessUnit?: unknown;
+  store?: unknown;
+  lineItems?: TLineItemDraft[];
+  customLineItems?: unknown;
+  taxMode?: unknown;
+  externalTaxRateForShippingMethod?: unknown;
+  taxRoundingMode?: unknown;
+  taxCalculationMode?: unknown;
+  inventoryMode?: unknown;
+  billingAddress?: TBaseAddress;
+  shippingAddress?: TBaseAddress;
+  shippingMethod?: unknown;
+  shippingRateInput?: unknown;
+  shippingMode?: unknown;
+  customShipping?: unknown[];
+  shipping?: unknown[];
+  itemShippingAddresses?: TBaseAddress[];
+  discountCodes?: string[];
+  country?: CountryCode;
+  locale?: string;
+  origin?: unknown;
+  deleteDaysAfterLastModification?: number;
+  custom?: unknown;
+};
+
+export type TLineItemDraft = object;
+
+export type TCustomerSignInResult = {
+  customer: TCustomer;
+  cart?: TCart;
+};
 
 export type TCategoryPagedQueryResponse = {
   limit: number;
@@ -364,6 +503,14 @@ export type TProductSearchResult = {
 export type TGetProductProjectionByIdParams = {
   id: string;
   params?: TGetProductProjectionByIdQueryParams;
+};
+
+export type TUpdateMyCartParams = {
+  cartId: string;
+  data: {
+    version: number;
+    actions: TUpdateCartAction[];
+  };
 };
 
 export type TGetProductProjectionByIdQueryParams = {
@@ -745,6 +892,32 @@ export type TMyCustomerChangePassword = {
   currentPassword: string;
   newPassword: string;
 };
+
+export type TAddLineItem = {
+  action: 'addLineItem';
+  key?: string;
+  productId?: string;
+  variantId?: number;
+  sku?: string;
+  quantity?: number;
+  addedAt?: string;
+  distributionChannel?: unknown;
+  supplyChannel?: unknown;
+  shippingDetails?: unknown;
+  custom?: unknown;
+};
+
+export type TRemoveLineItem = {
+  action: 'removeLineItem';
+  lineItemId?: string;
+  lineItemKey?: string;
+  quantity?: number;
+  externalPrice?: unknown;
+  externalTotalPrice?: unknown;
+  shippingDetailsToRemove?: unknown;
+};
+
+export type TUpdateCartAction = TAddLineItem | TRemoveLineItem;
 
 export type TIntrinsicFooter = ComponentProps<'footer'>;
 export type TIntrinsicHeader = ComponentProps<'header'>;

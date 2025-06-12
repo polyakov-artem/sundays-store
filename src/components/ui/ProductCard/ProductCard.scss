@@ -40,8 +40,9 @@
 
   &__actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: var(--g-xs-gap);
+    align-items: flex-end;
   }
 
   &__discount-badge {
