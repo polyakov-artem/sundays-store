@@ -2,7 +2,7 @@
 
 ## Deploy
 
-The website is currently being developed. Current version - https://sundays-store.netlify.app/
+The website is currently being developed. Current version - https://polyakov-artem.github.io/sundays-store/catalog
 
 ## Requirements
 

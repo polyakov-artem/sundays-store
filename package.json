@@ -12,7 +12,10 @@
     "lint:fix": "eslint . --fix",
     "format:fix": "prettier . --write",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "create404": "shx cp dist/index.html dist/404.html",
+    "deployOnGithub": "gh-pages -d dist",
+    "deploy": "npm run build && npm run create404 && npm run deployOnGithub"
   },
   "lint-staged": {
     "*.{css,scss,sass}": [
@@ -31,6 +34,7 @@
     "embla-carousel-react": "^8.6.0",
     "eslint-plugin-react": "^7.37.5",
     "formik": "^2.4.6",
+    "gh-pages": "^6.3.0",
     "normalize.css": "^8.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -39,6 +43,7 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.5.0",
     "react-toastify": "^11.0.5",
+    "shx": "^0.4.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {
