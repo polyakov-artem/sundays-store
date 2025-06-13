@@ -1,4 +1,4 @@
-export const PUBLIC_PATH = '/';
+export const PUBLIC_PATH = '/sundays-store/';
 
 export const VIEW_NOT_FOUND = 'not-found';
 export const VIEW_LOGIN = 'login';
