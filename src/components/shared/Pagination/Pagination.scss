@@ -1,0 +1,89 @@
+@use './../../../scss/abstracts/mixins';
+
+.pagination {
+  --color: var(--white-1);
+  --hover-color: var(--color);
+  --disabled-color: var(--color);
+  --selected-color: var(--black-1);
+
+  --bg-color: var(--green-1);
+  --hover-bg-color: color-mix(in oklab, var(--bg-color) 90%, rgb(255, 255, 255));
+  --active-bg-color: color-mix(in oklab, var(--bg-color) 95%, black);
+  --disabled-bg-color: var(--gray-1);
+  --selected-bg-color: var(--white-1);
+
+  --border-color: var(--bg-color);
+  --hover-border-color: var(--border-color);
+  --active-border-color: var(--border-color);
+  --disabled-border-color: var(--disabled-bg-color);
+  --selected-border-color: var(--border-color);
+
+  --focus-box-shadow: var(--green-1-50);
+  --selected-focus-box-shadow: var(--focus-box-shadow);
+}
+
+.pagination {
+  @include mixins.list;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
+
+  &__btn,
+  &__placeholder {
+    user-select: none;
+    flex: none;
+    font-size: 1rem;
+    padding: 0.2rem 0.6rem;
+    border: 3px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--color);
+    background-color: var(--bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-overflow: ellipsis;
+    position: relative;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+
+  &__btn {
+    @media (hover: hover) {
+      &:where(:hover) {
+        color: var(--hover-color);
+        background-color: var(--hover-bg-color);
+        border-color: var(--hover-border-color);
+      }
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 0.25rem var(--focus-box-shadow);
+    }
+
+    &:active {
+      background-color: var(--active-bg-color);
+      border-color: var(--active-border-color);
+    }
+
+    &_disabled {
+      cursor: default;
+      pointer-events: none;
+      color: var(--disabled-color);
+      background-color: var(--disabled-bg-color);
+      border-color: var(--disabled-border-color);
+    }
+
+    &_selected {
+      pointer-events: none;
+      color: var(--selected-color);
+      background-color: var(--selected-bg-color);
+      border-color: var(--selected-border-color);
+
+      &:focus-visible {
+        box-shadow: 0 0 0 0.25rem var(--selected-focus-box-shadow);
+      }
+    }
+  }
+}
