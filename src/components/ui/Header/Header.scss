@@ -5,23 +5,22 @@
   position: relative;
 
   &__nav {
-    padding: var(--g-xs-gap) 0;
+    padding: var(--g-xs-gap) var(--g-md-gap);
     display: flex;
     align-items: center;
     gap: var(--g-sm-gap);
-    min-height: var(--g-min-header-height);
   }
 
   &__logo {
     margin-right: auto;
   }
 
-  &__user-buttons {
+  &__buttons-wrap {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--g-xs-gap);
-    margin-left: auto;
+    justify-content: flex-end;
   }
 
   &__link {

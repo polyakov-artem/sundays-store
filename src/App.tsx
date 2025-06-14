@@ -1,7 +1,7 @@
-import { FC } from 'react';
-import Page from './components/ui/Page/Page';
 import 'normalize.css';
 import './scss/index.scss';
+import { FC } from 'react';
+import Page from './components/ui/Page/Page';
 import SvgSprite from './components/shared/SvgSprite/SvgSprite';
 import { Slide, ToastContainer } from 'react-toastify';
 
