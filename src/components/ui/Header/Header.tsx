@@ -37,7 +37,7 @@ export const HEADER_BURGER = `${HEADER}__burger`;
 export const HEADER_COUNTRY_SELECTOR = `${HEADER}__country-selector`;
 export const HEADER_CART_BTN = `${HEADER}__cart-btn`;
 export const HEADER_BTN_BADGE = `${HEADER}__btn-badge`;
-export const HEADER_BUTTONS_WRAP = `${HEADER}__buttons-wrap`;
+export const HEADER_BUTTONS = `${HEADER}__buttons`;
 
 const Header: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -185,32 +185,29 @@ const Header: FC = () => {
         <Collapse className={HEADER_MENU} expanded={isMenuOpen}>
           <HeaderLinks />
         </Collapse>
-        <div className={HEADER_BUTTONS_WRAP}>
+        <div className={HEADER_BUTTONS}>
+          <Select
+            className={HEADER_COUNTRY_SELECTOR}
+            theme="primary"
+            view="primary"
+            name="shippingCountry"
+            id="shippingCountry"
+            value={countryCode}
+            onChange={handleCountryCodeChange}
+            options={SELECT_OPTIONS}
+          />
           {userButtonsContent}
-          <div className={HEADER_BUTTONS_WRAP}>
-            <Select
-              className={HEADER_COUNTRY_SELECTOR}
+          <div className={HEADER_CART_BTN}>
+            <Button
+              view="figure"
+              el="link"
               theme="primary"
-              view="primary"
-              name="shippingCountry"
-              id="shippingCountry"
-              value={countryCode}
-              onChange={handleCountryCodeChange}
-              options={SELECT_OPTIONS}
+              to={getFullPath(VIEW_CART)}
+              relative="path"
+              text={'Cart'}
+              icon={<FaShoppingCart />}
             />
-            <div className={HEADER_CART_BTN}>
-              <Button
-                view="figure"
-                el="link"
-                theme="primary"
-                to={getFullPath(VIEW_CART)}
-                relative="path"
-                text={'Cart'}
-                icon={<FaShoppingCart />}
-              />
-
-              {!!cartCount && <span className={HEADER_BTN_BADGE}>{cartCount}</span>}
-            </div>
+            {!!cartCount && <span className={HEADER_BTN_BADGE}>{cartCount}</span>}
           </div>
         </div>
         <Burger className={HEADER_BURGER} ref={burgerRef} active={isMenuOpen} />

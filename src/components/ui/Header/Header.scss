@@ -15,12 +15,13 @@
     margin-right: auto;
   }
 
-  &__buttons-wrap {
+  &__buttons {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--g-xs-gap);
     justify-content: flex-end;
+    margin-left: auto;
   }
 
   &__link {
