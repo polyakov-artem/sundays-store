@@ -25,6 +25,7 @@ import ProductFilter, {
 import { BLOCK } from '../../../constants/cssHelpers';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
+import Pagination, { KEY_PAGE } from '../../shared/Pagination/Pagination';
 import './Products.scss';
 
 export const PRODUCTS = 'products';
@@ -32,6 +33,8 @@ export const PRODUCTS_LIST = `${PRODUCTS}__list`;
 export const PRODUCTS_HEADER = `${PRODUCTS}__header`;
 export const PRODUCTS_FILTER_WRAP = `${PRODUCTS}__filter-wrap`;
 export const PRODUCTS_FILTER = `${PRODUCTS}__filter`;
+
+export const PER_PAGE_COUNT = 10;
 
 export type TProductsProps = TIntrinsicSection;
 
@@ -48,6 +51,11 @@ const Products: FC<TProductsProps> = (props) => {
   const sizeFilterValue = searchParams.get(SIZE_FILTER_NAME);
   const priceFilterValue = searchParams.get(PRICE_FILTER_NAME);
   const countryCode = useAppSelector(selectCountryCode);
+  const currentPageParam = searchParams.get(KEY_PAGE);
+  const currentPage = useMemo(() => {
+    const parsedPageNumber = parseInt(currentPageParam || '');
+    return isNaN(parsedPageNumber) || parsedPageNumber <= 0 ? 1 : parsedPageNumber;
+  }, [currentPageParam]);
 
   const projectionsQueryParams = useMemo(() => {
     const params: TProductProjectionPagedSearchParams = {
@@ -55,6 +63,8 @@ const Products: FC<TProductsProps> = (props) => {
       markMatchingVariants: true,
       priceCurrency: CountryCurrency[countryCode],
       priceCountry: countryCode,
+      limit: PER_PAGE_COUNT,
+      offset: (currentPage - 1) * PER_PAGE_COUNT,
     };
 
     if (searchText) {
@@ -101,14 +111,15 @@ const Products: FC<TProductsProps> = (props) => {
     return params;
   }, [
     categoryId,
-    searchText,
-    locale,
-    sorting,
     countryCode,
+    currentPage,
+    searchText,
+    sorting,
     stockFilterValue,
     colorFilterValue,
     sizeFilterValue,
     priceFilterValue,
+    locale,
   ]);
 
   const {
@@ -116,6 +127,14 @@ const Products: FC<TProductsProps> = (props) => {
     isFetching: areProjectionsFetching,
     isError: isProjectionsError,
   } = useSearchProductProjectionsQuery(projectionsQueryParams);
+
+  const totalPageCount = useMemo(() => {
+    if (isProjectionsError || !projectionsData?.total) {
+      return 0;
+    }
+
+    return projectionsData.total;
+  }, [isProjectionsError, projectionsData]);
 
   const { isFetching: areDiscountsFetching } = useGetProductDiscountsQuery();
 
@@ -127,11 +146,13 @@ const Products: FC<TProductsProps> = (props) => {
     content = <ErrorBlock className={PRODUCTS_LIST} isBlock />;
   } else if (projectionsData?.results.length) {
     content = (
-      <ProductList
-        key={JSON.stringify(projectionsQueryParams)}
-        className={PRODUCTS_LIST}
-        productProjections={projectionsData?.results}
-      />
+      <>
+        <ProductList
+          key={JSON.stringify(projectionsQueryParams)}
+          className={PRODUCTS_LIST}
+          productProjections={projectionsData?.results}
+        />
+      </>
     );
   } else {
     content = (
@@ -147,6 +168,7 @@ const Products: FC<TProductsProps> = (props) => {
       <div className={PRODUCTS_FILTER_WRAP}>
         <ProductFilter className={PRODUCTS_FILTER} />
       </div>
+      {!!totalPageCount && <Pagination perPageCount={PER_PAGE_COUNT} totalCount={totalPageCount} />}
       {content}
     </section>
   );
