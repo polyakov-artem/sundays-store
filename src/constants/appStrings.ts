@@ -61,4 +61,7 @@ export enum AppStrings {
   TheDefaultAddressesWereUpdated = 'The default addresses were successfully updated',
   ThePasswordChanged = 'The password has been successfully changed',
   AddToCart = 'Add to cart',
+  YourCartIsEmpty = 'Your cart is empty',
+  ContinueShopping = 'Continue shopping',
+  looksLikeEmptyCart = "Looks like you haven't added anything to your cart",
 }
