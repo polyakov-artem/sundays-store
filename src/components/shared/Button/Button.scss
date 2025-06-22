@@ -174,6 +174,15 @@
   }
 }
 
+.btn_view_icon.btn_size_sm {
+  padding: 0.3rem;
+
+  .btn__icon {
+    font-size: 1rem;
+    height: 1rem;
+  }
+}
+
 .btn_view_icon.btn_theme_primary {
   --color: var(--gray-1);
   --hover-color: var(--black-1);
