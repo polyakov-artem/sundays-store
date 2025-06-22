@@ -13,7 +13,7 @@ export const PRODUCT_PRICE_DISCOUNT_PRICE = `${PRODUCT_PRICE}__discount-price`;
 export type TProductPriceProps = {
   originalPrice?: number;
   currentPrice?: number;
-  discountDifference?: number;
+  priceDifference?: number;
   currencyChar?: string;
   isDiscounted?: boolean;
 } & TIntrinsicDiv;
@@ -23,7 +23,7 @@ const ProductPrice: FC<TProductPriceProps> = (props) => {
     className,
     originalPrice,
     currentPrice,
-    discountDifference,
+    priceDifference,
     currencyChar,
     isDiscounted,
     ...rest
@@ -47,7 +47,7 @@ const ProductPrice: FC<TProductPriceProps> = (props) => {
             {originalPrice} {currencyChar}
           </span>
           <span className={PRODUCT_PRICE_DISCOUNT_PRICE}>
-            -{discountDifference} {currencyChar}
+            {priceDifference} {currencyChar}
           </span>
         </div>
         {actualPrice}

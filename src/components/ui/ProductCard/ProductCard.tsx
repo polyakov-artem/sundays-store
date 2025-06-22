@@ -80,7 +80,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     localizedName,
     localizedDescription,
     currentPrice,
-    discountDifference,
+    priceDifference,
     currencyChar,
     isDiscounted,
     originalPrice,
@@ -148,7 +148,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
           className={PRODUCT_CARD_PRICE}
           originalPrice={originalPrice}
           currentPrice={currentPrice}
-          discountDifference={discountDifference}
+          priceDifference={priceDifference}
           currencyChar={currencyChar}
           isDiscounted={isDiscounted}
         />

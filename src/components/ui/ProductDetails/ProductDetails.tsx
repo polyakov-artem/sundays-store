@@ -28,7 +28,7 @@ export type TProductDetailsProps = {
   localizedName: string;
   localizedDescription: string;
   currentPrice: number;
-  discountDifference: number;
+  priceDifference: number;
   currencyChar: string;
   isDiscounted: boolean;
   originalPrice: number;
@@ -44,7 +44,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
     localizedName,
     localizedDescription,
     currentPrice,
-    discountDifference,
+    priceDifference,
     currencyChar,
     isDiscounted,
     currentVariantId,
@@ -104,7 +104,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
         className={PRODUCT_DETAILS_PRICE}
         originalPrice={originalPrice}
         currentPrice={currentPrice}
-        discountDifference={discountDifference}
+        priceDifference={priceDifference}
         currencyChar={currencyChar}
         isDiscounted={isDiscounted}
       />

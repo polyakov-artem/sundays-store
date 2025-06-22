@@ -623,12 +623,16 @@ export type TProductVariant = {
 export type TExtProductVariant = TProductVariant & { priceData: TPriceData };
 
 export type TPriceData = {
-  originalPrice: number;
-  currentPrice: number;
-  discountDifference: number;
-  discountId?: string;
   currencyChar: string;
+  discountId?: string;
+  originalAmount: number;
+  originalPrice: number;
+  amountDifference: number;
+  priceDifference: number;
   isDiscounted: boolean;
+  currentPrice: number;
+  currentAmount: number;
+  fractionDigits: number;
 };
 
 export type TScopedPrice = {
