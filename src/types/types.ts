@@ -224,7 +224,7 @@ export type TMyCartDraft = {
 
 export type TCartDraft = {
   key?: string;
-  currency: CurrencyCode;
+  currency: string;
   customerId?: string;
   customerEmail?: string;
   customerGroup?: unknown;
@@ -511,6 +511,24 @@ export type TUpdateMyCartParams = {
     version: number;
     actions: TUpdateCartAction[];
   };
+};
+
+export type TDeleteMyCartParams = {
+  cartId: string;
+  params: {
+    version: number;
+  };
+};
+
+export type TChangedQuantityItems = {
+  productId: string;
+  variantId: number;
+  nextQuantity: number;
+};
+
+export type TChangeMyCartParams = {
+  cartDraft: TCartDraft;
+  changedQuantityItems: TChangedQuantityItems[];
 };
 
 export type TGetProductProjectionByIdQueryParams = {

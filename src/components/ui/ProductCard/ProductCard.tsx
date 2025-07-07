@@ -22,9 +22,6 @@ import { EntityState } from '@reduxjs/toolkit';
 import { useProductVariant } from '../../../hooks/useProductVariant';
 import ProductBadge from '../ProductBadge/ProductBadge';
 import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectUserRole } from '../../../store/authSlice';
-import { TokenRole } from '../../../services/authService';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
@@ -66,7 +63,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     ...rest
   } = props;
 
-  const role = useAppSelector(selectUserRole);
   const { id, masterVariant, variants, name, description } = productProjection;
 
   const matchedVariants = useMemo(
@@ -115,9 +111,6 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     `${categoryId}/${id}/?${VARIANT_PARAM_NAME}=${currentVariantId}`
   );
 
-  const purchaseButtonsKey =
-    role === TokenRole.user ? `${currentVariantId}_${role}` : `${currentVariantId}`;
-
   return (
     <article className={classes} {...rest}>
       <header className={PRODUCT_CARD_HEADER}>
@@ -163,12 +156,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             relative="path"
             className={PRODUCT_CARD_ACTION_BTN}
           />
-          <PurchaseButtons
-            disabled={!isAvailable}
-            productId={id}
-            variantId={currentVariantId}
-            key={purchaseButtonsKey}
-          />
+          <PurchaseButtons disabled={!isAvailable} productId={id} variantId={currentVariantId} />
         </div>
         <ProductAvailability isAvailable={isAvailable} locale={locale} />
       </div>

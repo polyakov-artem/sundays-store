@@ -3,7 +3,7 @@ import AuthWindow from '../AuthWindow/AuthWindow';
 import { TAuthProps, TIntrinsicMain } from '../../../types/types';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { Navigate, useLocation } from 'react-router';
-import { selectUserRole } from '../../../store/authSlice';
+import { selectUserRole } from '../../../store/userSlice';
 import { TokenRole } from '../../../services/authService';
 import { PUBLIC_PATH } from '../../../constants/constants';
 import './ViewAuth.scss';

@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { WRAPPER } from '../../../constants/cssHelpers';
-import { selectUserRole } from '../../../store/authSlice';
-import { useGetMyActiveCartQuery } from '../../../store/storeApi';
+import { selectUserRole } from '../../../store/userSlice';
+import { useGetMyActiveCartQuery } from '../../../store/userApi';
 import { TokenRole } from '../../../services/authService';
 import { skipToken } from '@reduxjs/toolkit/query';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';
@@ -23,6 +23,7 @@ const ViewCart: FC = () => {
   } = useGetMyActiveCartQuery(isBasicRole ? skipToken : undefined);
 
   let content;
+
   const isEmptyCart = isBasicRole || activeCart?.lineItems.length === 0;
 
   if (isActiveCartQueryFetching) {

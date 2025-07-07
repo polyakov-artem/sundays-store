@@ -1,17 +1,15 @@
 import { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import HeaderLinks from '../HeaderLinks/HeaderLinks';
-import { FaRegUserCircle, FaShoppingCart } from 'react-icons/fa';
 import classNames from 'classnames';
 import Burger from '../../shared/Burger/Burger';
 import LogoLink from '../LogoLink/LogoLink';
 import { WRAPPER } from '../../../constants/cssHelpers';
-import { useGetMeQuery, useGetMyActiveCartQuery } from '../../../store/storeApi';
 import Button from '../../shared/Button/Button';
 import { getFullPath } from '../../../utils/getFullPath';
-import { VIEW_CART, VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../constants/constants';
+import { VIEW_LOGIN, VIEW_PROFILE, VIEW_REGISTER } from '../../../constants/constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
-import { logOut, selectUserRole } from '../../../store/authSlice';
+import { logOut, selectIsAuthenticating, selectUserRole } from '../../../store/userSlice';
 import { TokenRole } from '../../../services/authService';
 import { getClasses } from '../../../utils/getClasses';
 import { Collapse } from '../../shared/Collapse/Collapse';
@@ -24,7 +22,8 @@ import { countryChanged, selectCountryCode, selectLocale } from '../../../store/
 import { CountryCode } from '../../../types/types';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
-import { skipToken } from '@reduxjs/toolkit/query';
+import CartButton from '../CartButton/CartButton';
+import ProfileButton from '../ProfileButton/ProfileButton';
 import './Header.scss';
 
 export const HEADER = 'header';
@@ -47,19 +46,7 @@ const Header: FC = () => {
   const dispatch = useAppDispatch();
   const locale = useAppSelector(selectLocale);
   const [_, setParams] = useSearchParams();
-
-  const {
-    data: userData,
-    isFetching: isGetMeQueryFetching,
-    isError: isGetMeQueryError,
-  } = useGetMeQuery(role !== TokenRole.user ? skipToken : undefined);
-
-  const { data: activeCart, isError: isActiveCartQueryError } = useGetMyActiveCartQuery(
-    role === TokenRole.basic ? skipToken : undefined
-  );
-
-  const cartCount = !isActiveCartQueryError && activeCart ? activeCart.totalLineItemQuantity : 0;
-  const [isLoading, setIsLoading] = useState(false);
+  const isAuthenticating = useAppSelector(selectIsAuthenticating);
 
   const handleCountryCodeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -103,16 +90,14 @@ const Header: FC = () => {
 
   const handleLogoutBtnClick = useCallback(
     (e: React.MouseEvent) => {
-      e.preventDefault();
-
-      if (isLoading) {
+      if (isAuthenticating) {
         return;
       }
 
-      setIsLoading(true);
-      void dispatch(logOut()).then(() => setIsLoading(false));
+      e.preventDefault();
+      void dispatch(logOut());
     },
-    [dispatch, isLoading]
+    [dispatch, isAuthenticating]
   );
 
   const menuItems = useMemo(
@@ -136,19 +121,7 @@ const Header: FC = () => {
       {role === TokenRole.user ? (
         <>
           <Dropdown
-            trigger={
-              <Button
-                view="figure"
-                el="button"
-                theme="primary"
-                text={
-                  userData && !isGetMeQueryFetching && !isGetMeQueryError
-                    ? `${userData.firstName}`
-                    : localizedAppStrings[locale][AppStrings.User]
-                }
-                icon={<FaRegUserCircle />}
-              />
-            }
+            trigger={<ProfileButton />}
             menu={<DropdownMenu position="right" items={menuItems} />}
           />
         </>
@@ -197,18 +170,7 @@ const Header: FC = () => {
             options={SELECT_OPTIONS}
           />
           {userButtonsContent}
-          <div className={HEADER_CART_BTN}>
-            <Button
-              view="figure"
-              el="link"
-              theme="primary"
-              to={getFullPath(VIEW_CART)}
-              relative="path"
-              text={'Cart'}
-              icon={<FaShoppingCart />}
-            />
-            {!!cartCount && <span className={HEADER_BTN_BADGE}>{cartCount}</span>}
-          </div>
+          <CartButton />
         </div>
         <Burger className={HEADER_BURGER} ref={burgerRef} active={isMenuOpen} />
       </nav>
