@@ -1,20 +1,12 @@
 .product-price {
   font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  &__discount-block {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
 
   &__old-price {
+    display: inline-block;
     color: var(--gray-2);
-    margin: 0;
     text-decoration: line-through;
     white-space: nowrap;
+    margin: 0 0.5rem 0.5rem 0;
   }
 
   &__discount-price {
@@ -23,6 +15,7 @@
     padding: 0 var(--g-xs-gap);
     color: var(--white-1);
     white-space: nowrap;
+    margin-bottom: 0.5rem;
   }
 
   &__actual-price {

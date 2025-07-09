@@ -173,6 +173,8 @@ export type TCart = {
   lastModifiedBy?: unknown;
 };
 
+export type TExtCart = Omit<TCart, 'lineItems'> & { lineItems: TExtLineItem[] };
+
 export type TLineItem = {
   id: string;
   key?: string;
@@ -201,6 +203,8 @@ export type TLineItem = {
   custom?: unknown;
   lastModifiedAt?: string;
 };
+
+export type TExtLineItem = Omit<TLineItem, 'variant'> & { variant: TExtProductVariant };
 
 export type TMyCartDraft = {
   currency: string;
@@ -520,7 +524,7 @@ export type TDeleteMyCartParams = {
   };
 };
 
-export type TChangedQuantityItems = {
+export type TChangedQuantityItem = {
   productId: string;
   variantId: number;
   nextQuantity: number;
@@ -528,7 +532,7 @@ export type TChangedQuantityItems = {
 
 export type TChangeMyCartParams = {
   cartDraft: TCartDraft;
-  changedQuantityItems: TChangedQuantityItems[];
+  changedQuantityItems: TChangedQuantityItem[];
 };
 
 export type TGetProductProjectionByIdQueryParams = {

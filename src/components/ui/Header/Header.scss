@@ -7,7 +7,7 @@
   &__nav {
     padding: var(--g-xs-gap) var(--g-md-gap);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--g-sm-gap);
   }
 
