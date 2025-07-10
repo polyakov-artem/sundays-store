@@ -1,33 +1,20 @@
 import classNames from 'classnames';
-import { FC, useCallback, useEffect, useState } from 'react';
-import {
-  CountryCurrency,
-  TCart,
-  TIntrinsicDiv,
-  TLineItem,
-  TUpdateCartAction,
-} from '../../../types/types';
+import { FC, useCallback, useEffect, useMemo } from 'react';
+import { CountryCurrency, TIntrinsicDiv, TLineItem } from '../../../types/types';
 import Button from '../../shared/Button/Button';
 import { FaShoppingCart } from 'react-icons/fa';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
+import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import Counter from '../../shared/Counter/Counter';
 import ScreenLoader from '../../shared/ScreenLoader/ScreenLoader';
 import {
-  useCreateMyCartMutation,
+  useChangeItemsQuantityInCartMutation,
   useLazyGetMyActiveCartQuery,
-  useUpdateMyCartMutation,
-} from '../../../store/storeApi';
-import { TokenRole } from '../../../services/authService';
-import { getAnonymousToken, selectUserRole } from '../../../store/authSlice';
-import { HttpStatusCode } from 'axios';
+} from '../../../store/userApi';
+import { selectIsUpdatingCart, selectUserRole } from '../../../store/userSlice';
 import { toast } from 'react-toastify';
-import {
-  createAddLineItemAction,
-  createRemoveLineItemAction,
-} from '../../../utils/cartUpdateActionCreators';
 import './PurchaseButtons.scss';
 
 export const PURCHASE_BUTTONS = 'purchase-buttons';
@@ -48,150 +35,49 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
   const { className, disabled, variantId, productId, ...rest } = props;
   const locale = useAppSelector(selectLocale);
   const classes = classNames(PURCHASE_BUTTONS, className);
-  const [count, setCount] = useState(0);
-  const dispatch = useAppDispatch();
 
-  const [isUpdatingCount, setIsUpdatingCount] = useState(false);
   const role = useAppSelector(selectUserRole);
-  const countryCode = useAppSelector(selectCountryCode);
-  const currency = CountryCurrency[countryCode];
+  const country = useAppSelector(selectCountryCode);
+  const currency = CountryCurrency[country];
+  const isUpdatingCart = useAppSelector(selectIsUpdatingCart);
+  const [getMyActiveCart, { data: activeCart }] = useLazyGetMyActiveCartQuery();
+  const [changeItemsQuantityInCart] = useChangeItemsQuantityInCartMutation();
+  const isDisabled = isUpdatingCart || disabled;
 
-  const [getMyActiveCart] = useLazyGetMyActiveCartQuery();
-  const [createMyCart] = useCreateMyCartMutation();
-  const [updateMyCart] = useUpdateMyCartMutation();
-
-  const handleCartError = useCallback(() => {
-    toast.error(ERROR_FAILED_TO_UPDATE_CART);
-    setIsUpdatingCount(false);
-  }, []);
-
-  const getOrCreateActiveCart = useCallback(async (): Promise<TCart | undefined> => {
-    if (role === TokenRole.basic) {
-      try {
-        await dispatch(getAnonymousToken());
-      } catch {
-        // ignore
-      }
-    }
-
-    const { error: activeCartQueryError, data: activeCartQueryData } = await getMyActiveCart();
-
-    if (!activeCartQueryError && activeCartQueryData) {
-      return activeCartQueryData;
-    }
-
-    if (
-      activeCartQueryError &&
-      'status' in activeCartQueryError &&
-      activeCartQueryError?.status === HttpStatusCode.NotFound
-    ) {
-      const { data: createCartQueryData, error: createCartError } = await createMyCart({
-        currency,
-        country: countryCode,
-      });
-
-      if (!createCartError && createCartQueryData) {
-        return createCartQueryData;
-      }
-    }
-
-    return undefined;
-  }, [countryCode, createMyCart, currency, dispatch, getMyActiveCart, role]);
-
-  const createUpdateAction = useCallback(
-    (activeCart: TCart, newCount: number): TUpdateCartAction | undefined => {
-      const cartLineItem = findLineItem(productId, variantId, activeCart.lineItems);
-
-      if (!cartLineItem) {
-        if (newCount > 0) {
-          return createAddLineItemAction(productId, variantId, newCount);
-        }
-        return undefined;
-      }
-
-      const { quantity, id: lineItemId } = cartLineItem;
-      const quantityDiff = newCount - quantity;
-
-      if (quantityDiff > 0) {
-        return createAddLineItemAction(productId, variantId, quantityDiff);
-      } else if (quantityDiff < 0) {
-        return createRemoveLineItemAction(lineItemId, -quantityDiff);
-      }
-
-      return undefined;
-    },
-    [productId, variantId]
-  );
+  const count = useMemo(() => {
+    return findLineItem(productId, variantId, activeCart?.lineItems)?.quantity || 0;
+  }, [activeCart, productId, variantId]);
 
   const handleCountChange = useCallback(
     async (newCount: number) => {
-      setIsUpdatingCount(true);
-
-      const activeCart = await getOrCreateActiveCart();
-
-      if (!activeCart) {
-        handleCartError();
+      if (isDisabled) {
         return;
       }
 
-      const action = createUpdateAction(activeCart, newCount);
-
-      if (!action) {
-        setIsUpdatingCount(false);
-        return;
-      }
-
-      const updateMyCartResponse = await updateMyCart({
-        cartId: activeCart.id,
-        data: {
-          version: activeCart.version,
-          actions: [action],
-        },
+      const changeItemsQuantityInCartResult = await changeItemsQuantityInCart({
+        cartDraft: { currency, country },
+        changedQuantityItems: [{ productId, variantId, nextQuantity: newCount }],
       });
 
-      if (updateMyCartResponse.error) {
-        handleCartError();
+      if (changeItemsQuantityInCartResult.error) {
+        toast.error(ERROR_FAILED_TO_UPDATE_CART);
         return;
       }
-
-      setCount(newCount);
-      setIsUpdatingCount(false);
     },
-    [createUpdateAction, getOrCreateActiveCart, handleCartError, updateMyCart]
+    [changeItemsQuantityInCart, country, currency, isDisabled, productId, variantId]
   );
 
   useEffect(() => {
-    const getInitialCount = async () => {
-      setIsUpdatingCount(true);
-
-      const { error: activeCartQueryError, data: activeCartQueryData } = await getMyActiveCart();
-
-      if (!activeCartQueryError && activeCartQueryData) {
-        const initialCount = findLineItem(
-          productId,
-          variantId,
-          activeCartQueryData.lineItems
-        )?.quantity;
-
-        if (initialCount) {
-          setCount(initialCount);
-        }
-      }
-
-      setIsUpdatingCount(false);
-    };
-
-    if (role !== TokenRole.basic) {
-      void getInitialCount();
-    }
-  }, [getMyActiveCart, productId, variantId, role]);
+    void getMyActiveCart();
+  }, [getMyActiveCart, role]);
 
   const handleAddToCartBtnClick = useCallback(() => {
-    if (disabled) {
+    if (isDisabled) {
       return;
     }
+
     void handleCountChange(1);
-  }, [disabled, handleCountChange]);
+  }, [isDisabled, handleCountChange]);
 
   let purchaseButtonContent;
 
@@ -201,13 +87,13 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
         el="button"
         view="primary"
         theme="primary"
-        icon={isUpdatingCount ? <ScreenLoader type="round" theme="white" /> : <FaShoppingCart />}
+        icon={isUpdatingCart ? <ScreenLoader type="round" theme="white" /> : <FaShoppingCart />}
         text={localizedAppStrings[locale][AppStrings.AddToCart]}
         size="sm"
         iconBefore
         className={PURCHASE_BUTTONS_ADD_BTN}
         onClick={handleAddToCartBtnClick}
-        disabled={disabled || isUpdatingCount}
+        disabled={isDisabled}
       />
     );
   } else {
@@ -217,8 +103,8 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
         onCountChange={handleCountChange}
         max={99}
         min={0}
-        disabled={disabled || isUpdatingCount}
-        isLoading={isUpdatingCount}
+        disabled={isDisabled}
+        isLoading={isUpdatingCart}
       />
     );
   }

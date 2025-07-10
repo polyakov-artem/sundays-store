@@ -188,4 +188,40 @@ export const dictionary: Record<string, Partial<TLocalizedString>> = {
   [AppStrings.AddToCart]: {
     [CountryLocale.DE]: 'In den Warenkorb legen',
   },
+  [AppStrings.YourCartIsEmpty]: {
+    [CountryLocale.DE]: 'Ihr Warenkorb ist leer',
+  },
+  [AppStrings.ContinueShopping]: {
+    [CountryLocale.DE]: 'Weiter einkaufen',
+  },
+  [AppStrings.looksLikeEmptyCart]: {
+    [CountryLocale.DE]: 'Sieht so aus, als hätten Sie Ihrem Warenkorb nichts hinzugefügt',
+  },
+  [AppStrings.DeleteSelected]: {
+    [CountryLocale.DE]: 'Ausgewählte löschen',
+  },
+  [AppStrings.SelectAll]: {
+    [CountryLocale.DE]: 'Alles auswählen',
+  },
+  [AppStrings.YourCart]: {
+    [CountryLocale.DE]: 'Ihr Warenkorb',
+  },
+  [AppStrings.item]: {
+    [CountryLocale.DE]: 'Artikel',
+  },
+  [AppStrings.items]: {
+    [CountryLocale.DE]: 'Artikel',
+  },
+  [AppStrings.OriginalPrice]: {
+    [CountryLocale.DE]: 'Originalpreis',
+  },
+  [AppStrings.Discount]: {
+    [CountryLocale.DE]: 'Rabatt',
+  },
+  [AppStrings.Total]: {
+    [CountryLocale.DE]: 'Gesamt',
+  },
+  [AppStrings.CreateOrder]: {
+    [CountryLocale.DE]: 'Ordnung schaffen',
+  },
 };

@@ -98,3 +98,20 @@
   --focus-box-shadow: var(--gray-1-50);
   --invalid-focus-box-shadow: var(--red-1-20);
 }
+
+.checkbox_theme_secondary {
+  --color: var(--white-1);
+  --disabled-color: var(--color);
+  --invalid-color: var(--color);
+
+  --bg-color: var(--green-1);
+  --disabled-bg-color: var(--gray-1);
+  --invalid-bg-color: var(--bg-color);
+
+  --border-color: var(--gray-1);
+  --disabled-border-color: var(--disabled-bg-color);
+  --invalid-border-color: var(--red-1);
+
+  --focus-box-shadow: var(--gray-1-50);
+  --invalid-focus-box-shadow: var(--red-1-20);
+}

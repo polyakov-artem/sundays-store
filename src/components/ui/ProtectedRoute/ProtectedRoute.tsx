@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectUserRole } from '../../../store/authSlice';
+import { selectUserRole } from '../../../store/userSlice';
 import { TokenRole } from '../../../services/authService';
 import { Navigate, Outlet } from 'react-router';
 import { useLoginRedirectionProps } from '../../../hooks/useLoginRedirectionProps';

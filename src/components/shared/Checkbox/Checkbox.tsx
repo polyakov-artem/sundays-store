@@ -11,7 +11,7 @@ const CHECKBOX_ICON = `${CHECKBOX}__icon`;
 
 export type TCheckboxProps = TIntrinsicLabel & {
   view?: 'primary';
-  theme?: 'primary';
+  theme?: 'primary' | 'secondary';
   invalid?: boolean;
   controlProps?: TIntrinsicInput;
 };

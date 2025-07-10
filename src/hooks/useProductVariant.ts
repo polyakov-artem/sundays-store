@@ -62,14 +62,8 @@ export const useProductVariant = ({
   const localizedName = name?.[locale] || '';
   const localizedDescription = description?.[locale] || '';
 
-  const {
-    currentPrice,
-    discountDifference,
-    discountId,
-    currencyChar,
-    isDiscounted,
-    originalPrice,
-  } = priceData;
+  const { currentPrice, priceDifference, discountId, currencyChar, isDiscounted, originalPrice } =
+    priceData;
 
   const discountName = discountId ? discounts.entities[discountId]?.name[locale] : '';
 
@@ -83,7 +77,7 @@ export const useProductVariant = ({
     localizedName,
     localizedDescription,
     currentPrice,
-    discountDifference,
+    priceDifference,
     currencyChar,
     isDiscounted,
     originalPrice,

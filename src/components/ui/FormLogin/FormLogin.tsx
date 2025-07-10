@@ -11,7 +11,9 @@ import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
 import { AppStrings } from '../../../constants/appStrings';
 import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { TCustomError, useSignInMutation } from '../../../store/storeApi';
+import { useSignInMutation } from '../../../store/userApi';
+import { TCustomError } from '../../../store/axiosBaseQuery';
+import { selectIsAuthenticating } from '../../../store/userSlice';
 import './FormLogin.scss';
 
 export type TFormLoginProps = { onSuccess?: () => Promise<void> | void } & TIntrinsicForm;
@@ -51,11 +53,11 @@ const validationSchema = Yup.object().shape({
 const FormLogin: FC<TFormLoginProps> = (props) => {
   const { className, onSuccess, ...restProps } = props;
   const classes = classNames(FORM_LOGIN, className);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
   const locale = useAppSelector(selectLocale);
   const formRef = useRef<HTMLFormElement>(null);
   const [signIn] = useSignInMutation();
+  const isAuthenticating = useAppSelector(selectIsAuthenticating);
 
   useEffect(() => {
     const form = formRef.current;
@@ -72,19 +74,19 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
       }}
       validationSchema={validationSchema}
       onSubmit={async (values) => {
-        setIsSubmitting(true);
-        setLoginError('');
+        if (isAuthenticating) {
+          return;
+        }
 
+        setLoginError('');
         const { error: signinError } = await signIn(values);
 
         if (signinError) {
           setLoginError((signinError as TCustomError).data);
-          setIsSubmitting(false);
           return;
         }
 
         await onSuccess?.();
-        setIsSubmitting(false);
       }}>
       <Form className={classes} {...restProps} ref={formRef}>
         <label className={FORM_LOGIN_LABEL} htmlFor={KEY_EMAIL}>
@@ -120,7 +122,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
           view="primary"
           el="button"
           type="submit"
-          disabled={isSubmitting}>
+          disabled={isAuthenticating}>
           {localizedAppStrings[locale][AppStrings.LogIn]}
         </Button>
       </Form>

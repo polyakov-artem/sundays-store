@@ -1,160 +1,30 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import type { BaseQueryFn } from '@reduxjs/toolkit/query/react';
-import type { AxiosRequestConfig } from 'axios';
-import { httpService, HttpService } from '../services/httpService';
-import { AppGetState, RootState } from './store';
 import {
-  TCart,
-  TCartDraft,
   TCategory,
-  TCustomer,
-  TCustomerSignInResult,
   TExtProductProjection,
   TExtProductProjectionPagedSearchResponse,
   TGetProductDiscountsParams,
   TGetProductProjectionByIdParams,
-  TMyCartDraft,
-  TMyCustomerChangePassword,
-  TMyCustomerDraft,
-  TMyCustomerSignin,
   TProductDiscount,
   TProductDiscountPagedQueryResponse,
   TProductProjection,
   TProductProjectionPagedSearchParams,
   TProductProjectionPagedSearchResponse,
   TQueryCategoriesParams,
-  TUpdateMyCartParams,
-  TUpdateMyCustomerParams,
 } from '../types/types';
-import { getMsgFromAxiosError } from '../utils/getMsgFromAxiosError';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { getQueryString } from '../utils/getQueryString';
 import { getPriceData } from '../utils/getPriceData';
-import { authService, TokenRole } from '../services/authService';
-import { getUserToken } from './authSlice';
+import { axiosBaseQuery } from './axiosBaseQuery';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
-export type TAxiosBaseQueryParams = { httpService: HttpService };
-
-export type TCustomError = {
-  status?: number;
-  data: string;
-};
-
-const createAxiosBaseQuery = ({
-  httpService,
-}: TAxiosBaseQueryParams): BaseQueryFn<
-  {
-    url: string;
-    method?: AxiosRequestConfig['method'];
-    data?: AxiosRequestConfig['data'];
-    params?: AxiosRequestConfig['params'];
-    headers?: AxiosRequestConfig['headers'];
-  },
-  unknown,
-  TCustomError
-> => {
-  return async ({ url, method, data, params, headers }, { dispatch, getState }) => {
-    httpService.setDispatchFn(dispatch);
-    httpService.setGetStateFn(getState as AppGetState);
-    const client = httpService.getClient();
-
-    try {
-      const result = await client({
-        url,
-        method,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        data,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        params,
-        headers,
-      });
-      return { data: result.data };
-    } catch (err: unknown) {
-      return {
-        error: {
-          status: (err as { status?: number })?.status,
-          data: getMsgFromAxiosError(err),
-        },
-      };
-    }
-  };
-};
-
 export const storeApi = createApi({
   reducerPath: 'storeApi',
-  baseQuery: createAxiosBaseQuery({ httpService }),
-  tagTypes: ['Customer', 'Category', 'Product', 'Cart'],
+  baseQuery: axiosBaseQuery,
+  tagTypes: ['Product', 'Cart', 'Category'],
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({
-    getMe: builder.query<TCustomer, void>({
-      query: () => ({ url: `${projectKey}/me` }),
-      providesTags: ['Customer'],
-    }),
-
-    signIn: builder.mutation<TCustomerSignInResult, TMyCustomerSignin>({
-      queryFn: async (data, { dispatch, getState }, _extraOptions, fetchWithBQ) => {
-        const { data: customerSignInResult, error: loginError } = await fetchWithBQ({
-          url: `${projectKey}/me/login`,
-          data,
-          method: 'POST',
-        });
-
-        if (loginError) {
-          return { error: loginError };
-        }
-
-        const authState = (getState() as RootState).auth;
-        const { token, refreshToken, role } = authState;
-
-        try {
-          // eslint-disable-next-line @typescript-eslint/await-thenable
-          await dispatch(getUserToken(data));
-
-          if (role === TokenRole.anonymous) {
-            authService.revokeTokens(token, refreshToken);
-          }
-        } catch (err: unknown) {
-          return {
-            error: {
-              status: (err as { status?: number })?.status,
-              data: getMsgFromAxiosError(err),
-            },
-          };
-        }
-
-        return { data: customerSignInResult as TCustomerSignInResult };
-      },
-      invalidatesTags: ['Customer', 'Cart'],
-    }),
-
-    signUp: builder.mutation<TCustomerSignInResult, TMyCustomerDraft>({
-      query: (data: TMyCustomerDraft) => ({
-        url: `${projectKey}/me/signup`,
-        data,
-        method: 'POST',
-      }),
-    }),
-
-    updateMyCustomer: builder.mutation<TCustomer, TUpdateMyCustomerParams>({
-      query: (data: TUpdateMyCustomerParams) => ({
-        url: `${projectKey}/me`,
-        data,
-        method: 'POST',
-      }),
-      invalidatesTags: ['Customer'],
-    }),
-
-    changePassword: builder.mutation<TCustomer, TMyCustomerChangePassword>({
-      query: (data: TMyCustomerChangePassword) => ({
-        url: `${projectKey}/me/password`,
-        data,
-        method: 'POST',
-      }),
-      invalidatesTags: ['Customer'],
-    }),
-
     queryCategories: builder.query<TCategory[], TQueryCategoriesParams | void>({
       query: (params: TQueryCategoriesParams = { limit: 500 }) => ({
         url: `${projectKey}/categories`,
@@ -209,38 +79,6 @@ export const storeApi = createApi({
       transformResponse: (response: TProductDiscountPagedQueryResponse) => {
         return response.results;
       },
-    }),
-
-    getMyActiveCart: builder.query<TCart, void>({
-      query: () => {
-        return {
-          url: `${projectKey}/me/active-cart`,
-          method: 'GET',
-        };
-      },
-      providesTags: ['Cart'],
-    }),
-
-    createMyCart: builder.mutation<TCart, TMyCartDraft>({
-      query: (data: TCartDraft) => {
-        return {
-          url: `${projectKey}/me/carts`,
-          data,
-          method: 'POST',
-        };
-      },
-      invalidatesTags: ['Cart'],
-    }),
-
-    updateMyCart: builder.mutation<TCart, TUpdateMyCartParams>({
-      query: ({ cartId, data }: TUpdateMyCartParams) => {
-        return {
-          url: `${projectKey}/me/carts/${cartId}`,
-          data,
-          method: 'POST',
-        };
-      },
-      invalidatesTags: ['Cart'],
     }),
 
     getProductProjectionById: builder.query<TExtProductProjection, TGetProductProjectionByIdParams>(
@@ -310,17 +148,8 @@ export const selectMainCategories = createSelector([selectAllCategories], (categ
 );
 
 export const {
-  useGetMeQuery,
-  useSignUpMutation,
   useQueryCategoriesQuery,
   useSearchProductProjectionsQuery,
   useGetProductDiscountsQuery,
   useGetProductProjectionByIdQuery,
-  useUpdateMyCustomerMutation,
-  useChangePasswordMutation,
-  useGetMyActiveCartQuery,
-  useLazyGetMyActiveCartQuery,
-  useCreateMyCartMutation,
-  useUpdateMyCartMutation,
-  useSignInMutation,
 } = storeApi;
