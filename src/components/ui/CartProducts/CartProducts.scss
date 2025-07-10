@@ -1,0 +1,25 @@
+.cart-products {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--g-md-gap);
+    flex-wrap: wrap;
+  }
+
+  &__select-all {
+    margin-right: auto;
+  }
+
+  &__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: var(--g-md-gap);
+    gap: var(--g-lg-gap);
+  }
+
+  &__item:not(:last-child) {
+    padding-bottom: var(--g-xs-gap);
+    border-bottom: 1px solid var(--gray-1);
+  }
+}

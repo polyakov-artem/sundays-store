@@ -168,8 +168,8 @@ const Products: FC<TProductsProps> = (props) => {
       <div className={PRODUCTS_FILTER_WRAP}>
         <ProductFilter className={PRODUCTS_FILTER} />
       </div>
-      {!!totalPageCount && <Pagination perPageCount={PER_PAGE_COUNT} totalCount={totalPageCount} />}
       {content}
+      {!!totalPageCount && <Pagination perPageCount={PER_PAGE_COUNT} totalCount={totalPageCount} />}
     </section>
   );
 };

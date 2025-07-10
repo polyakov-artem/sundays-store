@@ -27,11 +27,7 @@ import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { AppStrings } from '../../../constants/appStrings';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
-import {
-  TCustomError,
-  useChangePasswordMutation,
-  useUpdateMyCustomerMutation,
-} from '../../../store/storeApi';
+
 import {
   createAddAddressAction,
   createChangeEmailAction,
@@ -43,6 +39,8 @@ import {
   createSetLastNameAction,
 } from '../../../utils/customerUpdateActionCreators';
 import { toast } from 'react-toastify';
+import { useChangePasswordMutation, useUpdateMyCustomerMutation } from '../../../store/userApi';
+import { TCustomError } from '../../../store/axiosBaseQuery';
 
 export const PROFILE = 'profile';
 export const PROFILE_INNER = `${PROFILE}__inner`;

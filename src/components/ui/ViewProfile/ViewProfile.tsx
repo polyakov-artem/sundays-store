@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useGetMeQuery } from '../../../store/storeApi';
+import { useGetMeQuery } from '../../../store/userApi';
 import { WRAPPER } from '../../../constants/cssHelpers';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';

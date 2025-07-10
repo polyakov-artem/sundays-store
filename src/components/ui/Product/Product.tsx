@@ -9,8 +9,8 @@ import { useProductVariant } from '../../../hooks/useProductVariant';
 import { useSearchParams } from 'react-router';
 import { VARIANT_PARAM_NAME } from '../ProductCard/ProductCard';
 import ProductGallery from '../ProductGallery/ProductGallery';
-import './Product.scss';
 import { BLOCK } from '../../../constants/cssHelpers';
+import './Product.scss';
 
 export const PRODUCT = 'product';
 export const PRODUCT_DETAILS = `${PRODUCT}__details`;
@@ -36,7 +36,7 @@ const Product: FC<TProductProps> = (props) => {
     localizedName,
     localizedDescription,
     currentPrice,
-    discountDifference,
+    priceDifference,
     currencyChar,
     isDiscounted,
     originalPrice,
@@ -68,7 +68,7 @@ const Product: FC<TProductProps> = (props) => {
         localizedName={localizedName}
         localizedDescription={localizedDescription}
         currentPrice={currentPrice}
-        discountDifference={discountDifference}
+        priceDifference={priceDifference}
         currencyChar={currencyChar}
         isDiscounted={isDiscounted}
         originalPrice={originalPrice}

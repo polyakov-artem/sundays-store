@@ -173,6 +173,8 @@ export type TCart = {
   lastModifiedBy?: unknown;
 };
 
+export type TExtCart = Omit<TCart, 'lineItems'> & { lineItems: TExtLineItem[] };
+
 export type TLineItem = {
   id: string;
   key?: string;
@@ -202,6 +204,8 @@ export type TLineItem = {
   lastModifiedAt?: string;
 };
 
+export type TExtLineItem = Omit<TLineItem, 'variant'> & { variant: TExtProductVariant };
+
 export type TMyCartDraft = {
   currency: string;
   customerEmail?: string;
@@ -224,7 +228,7 @@ export type TMyCartDraft = {
 
 export type TCartDraft = {
   key?: string;
-  currency: CurrencyCode;
+  currency: string;
   customerId?: string;
   customerEmail?: string;
   customerGroup?: unknown;
@@ -513,6 +517,24 @@ export type TUpdateMyCartParams = {
   };
 };
 
+export type TDeleteMyCartParams = {
+  cartId: string;
+  params: {
+    version: number;
+  };
+};
+
+export type TChangedQuantityItem = {
+  productId: string;
+  variantId: number;
+  nextQuantity: number;
+};
+
+export type TChangeMyCartParams = {
+  cartDraft: TCartDraft;
+  changedQuantityItems: TChangedQuantityItem[];
+};
+
 export type TGetProductProjectionByIdQueryParams = {
   expand?: unknown;
   staged?: boolean;
@@ -623,12 +645,16 @@ export type TProductVariant = {
 export type TExtProductVariant = TProductVariant & { priceData: TPriceData };
 
 export type TPriceData = {
-  originalPrice: number;
-  currentPrice: number;
-  discountDifference: number;
-  discountId?: string;
   currencyChar: string;
+  discountId?: string;
+  originalAmount: number;
+  originalPrice: number;
+  amountDifference: number;
+  priceDifference: number;
   isDiscounted: boolean;
+  currentPrice: number;
+  currentAmount: number;
+  fractionDigits: number;
 };
 
 export type TScopedPrice = {
@@ -934,5 +960,6 @@ export type TIntrinsicLabel = ComponentProps<'label'>;
 export type TIntrinsicFieldset = ComponentProps<'fieldset'>;
 export type TIntrinsicSpan = ComponentProps<'span'>;
 export type TIntrinsicUl = ComponentProps<'ul'>;
+export type TIntrinsicLi = ComponentProps<'li'>;
 export type TIntrinsicImg = ComponentProps<'img'>;
 export type TIntrinsicP = ComponentProps<'p'>;

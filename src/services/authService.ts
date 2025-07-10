@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, isAxiosError } from 'axios';
+import { AxiosInstance, isAxiosError } from 'axios';
 import { localStorageService, TLocalStorageService } from './localStorageService';
+import { authClient } from './authClient';
 
 export enum TokenRole {
   basic = 'basic',
@@ -32,7 +33,7 @@ export type TAuthServiceParams = {
   projectKey: string;
   clientSecret: string;
   clientId: string;
-  authURL: string;
+  authClient: AxiosInstance;
   basicScope: string;
   userScope: string;
   anonymousScope: string;
@@ -48,7 +49,7 @@ export type TBasicAuthData = {
 };
 
 export type TRemoveLSTokensParams = {
-  isBasicToken: boolean;
+  isBasic: boolean;
   withRefreshToken?: boolean;
 };
 
@@ -61,7 +62,6 @@ export type TSaveTokensToLSParams = {
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 const clientSecret = import.meta.env.VITE_CTP_CLIENT_SECRET;
 const clientId = import.meta.env.VITE_CTP_CLIENT_ID;
-const authURL = import.meta.env.VITE_CTP_AUTH_URL;
 
 export const KEY_LS_ROLE = 'role';
 export const KEY_LS_BASIC_TOKEN = 'basic_token';
@@ -120,7 +120,6 @@ export class AuthService {
   private projectKey: string;
   private clientSecret: string;
   private clientId: string;
-  private authURL: string;
   private basicScope: string;
   private userScope: string;
   private anonymousScope: string;
@@ -134,7 +133,6 @@ export class AuthService {
     this.projectKey = params.projectKey;
     this.clientSecret = params.clientSecret;
     this.clientId = params.clientId;
-    this.authURL = params.authURL;
     this.basicScope = params.basicScope;
     this.userScope = params.userScope;
     this.anonymousScope = params.anonymousScope;
@@ -142,11 +140,7 @@ export class AuthService {
     this.keyLSbasicToken = params.keyLSbasicToken;
     this.keyLSToken = params.keyLSToken;
     this.keyLSRefreshToken = params.keyLSRefreshToken;
-
-    this.authClient = axios.create({
-      baseURL: `${this.authURL}/oauth/`,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    this.authClient = params.authClient;
   }
 
   getBasicTokenData = async (): Promise<TFetchedTokenData> => {
@@ -167,7 +161,7 @@ export class AuthService {
       token: tokenData.access_token,
     });
     this.saveRoleToLS(TokenRole.basic);
-    this.removeLSTokens({ isBasicToken: false });
+    this.removeTokensFromLS({ isBasic: false, withRefreshToken: true });
     return tokenData;
   };
 
@@ -251,14 +245,13 @@ export class AuthService {
       return tokenData;
     } catch (e: unknown) {
       if (isIncorrectRefreshToken(e)) {
-        this.removeLSTokens({ isBasicToken: false });
-        this.saveRoleToLS(TokenRole.basic);
+        this.removeTokensFromLS({ isBasic: false, withRefreshToken: true });
       }
       throw e;
     }
   };
 
-  validateToken = async (token: string): Promise<TTokenValidationResult> => {
+  validateToken = async (token: string, role: TokenRole): Promise<TTokenValidationResult> => {
     const data = new URLSearchParams();
     data.append('token', token);
 
@@ -270,6 +263,11 @@ export class AuthService {
     });
 
     const validationResult = response.data;
+
+    if (!validationResult.active) {
+      this.removeTokensFromLS({ isBasic: role === TokenRole.basic, withRefreshToken: false });
+    }
+
     return validationResult;
   };
 
@@ -277,11 +275,11 @@ export class AuthService {
     this.localStorageService.saveData(this.keyLSRole, role);
   };
 
-  getLSRole = () => {
+  getRoleFromLS = () => {
     return this.localStorageService.getData<TokenRole>(this.keyLSRole);
   };
 
-  getLSTokens = () => {
+  getTokensFromLS = () => {
     return {
       basicToken: this.localStorageService.getData<string>(this.keyLSbasicToken) || '',
       token: this.localStorageService.getData<string>(this.keyLSToken) || '',
@@ -298,12 +296,11 @@ export class AuthService {
     }
   };
 
-  removeLSTokens = ({ isBasicToken, withRefreshToken = true }: TRemoveLSTokensParams) => {
-    if (isBasicToken) {
+  removeTokensFromLS = ({ isBasic, withRefreshToken }: TRemoveLSTokensParams) => {
+    if (isBasic) {
       this.localStorageService.removeData(this.keyLSbasicToken);
     } else {
       this.localStorageService.removeData(this.keyLSToken);
-
       if (withRefreshToken) {
         this.localStorageService.removeData(this.keyLSRefreshToken);
       }
@@ -330,7 +327,7 @@ export const authService = new AuthService({
   projectKey,
   clientSecret,
   clientId,
-  authURL,
+  authClient,
   basicScope,
   userScope,
   anonymousScope,

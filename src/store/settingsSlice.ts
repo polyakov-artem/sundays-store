@@ -24,7 +24,7 @@ export const initialState = {
   countryCode: getCountryCodeFromLS(),
 };
 
-export const createAuthSlice = (initialState: TSettingsState, sliceName: string) =>
+export const createSettingsSlice = (initialState: TSettingsState, sliceName: string) =>
   createSlice({
     initialState,
     name: sliceName,
@@ -39,7 +39,7 @@ export const createAuthSlice = (initialState: TSettingsState, sliceName: string)
     },
   });
 
-export const slice = createAuthSlice(initialState, SLICE_NAME);
+export const slice = createSettingsSlice(initialState, SLICE_NAME);
 export const selectLocale = (state: RootState) => CountryLocale[state[SLICE_NAME].countryCode];
 export const selectCountryCode = (state: RootState) => state[SLICE_NAME].countryCode;
 export const { countryChanged } = slice.actions;

@@ -2,7 +2,7 @@ import { TObjKey } from '../types/types';
 
 type GetIdType<V> = V extends TObjKey ? (V extends infer R ? R : never) : never;
 
-type NormalizedData<T, V> = V extends TObjKey
+export type NormalizedData<T, V> = V extends TObjKey
   ? {
       ids: Array<GetIdType<V>>;
       entities: Record<GetIdType<V>, T>;

@@ -2,7 +2,6 @@ import { FC, useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { TIntrinsicForm } from '../../../types/types';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { TCustomError, useSignInMutation, useSignUpMutation } from '../../../store/storeApi';
 import FormProfile from '../FormProfile/FormProfile';
 import { selectCountryCode } from '../../../store/settingsSlice';
 import {
@@ -17,6 +16,9 @@ import {
   TFormValues,
 } from '../FormProfile/formProfileUtils';
 import { KEY_EMAIL, KEY_PASSWORD } from '../FormLogin/FormLogin';
+import { useSignInMutation, useSignUpMutation } from '../../../store/userApi';
+import { selectIsAuthenticating } from '../../../store/userSlice';
+import { TCustomError } from '../../../store/axiosBaseQuery';
 import './FormRegistration.scss';
 
 export type TFormRegistrationProps = { onSuccess?: VoidFunction } & TIntrinsicForm;
@@ -26,12 +28,12 @@ export const FORM_REGISTRATION = 'form-registration';
 const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   const { className, onSuccess, ...restProps } = props;
   const classes = classNames(FORM_REGISTRATION, className);
-  const [register] = useSignUpMutation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const countryCode = useAppSelector(selectCountryCode);
   const formInitialValues = useMemo(() => createInitialValues(countryCode, 1), [countryCode]);
   const [signIn] = useSignInMutation();
+  const [signUp] = useSignUpMutation();
+  const isAuthenticating = useAppSelector(selectIsAuthenticating);
 
   const handleSubmit = useCallback(
     async (values: TFormValues) => {
@@ -77,22 +79,18 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
         defaultBillingAddress: defaultBillingAddressIndex,
       };
 
-      setIsSubmitting(true);
-
-      const { error: registrationError } = await register(data);
+      const { error: registrationError } = await signUp(data);
 
       if (registrationError) {
         setError((registrationError as TCustomError).data);
-        setIsSubmitting(false);
         return;
       }
 
       onSuccess?.();
 
       void signIn(values);
-      setIsSubmitting(false);
     },
-    [onSuccess, register, signIn]
+    [onSuccess, signUp, signIn]
   );
 
   return (
@@ -101,7 +99,7 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
       className={classes}
       formInitialValues={formInitialValues}
       mode={FormMode.signUp}
-      isSubmitting={isSubmitting}
+      isSubmitting={isAuthenticating}
       error={error}
       onFormSubmit={handleSubmit}
       setError={setError}

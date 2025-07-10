@@ -10,8 +10,6 @@ import { selectLocale } from '../../../store/settingsSlice';
 import { useParams, useSearchParams } from 'react-router';
 import { VARIANT_PARAM_NAME } from '../ProductCard/ProductCard';
 import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
-import { selectUserRole } from '../../../store/authSlice';
-import { TokenRole } from '../../../services/authService';
 import './ProductDetails.scss';
 
 export const PRODUCT_DETAILS = 'product-details';
@@ -28,7 +26,7 @@ export type TProductDetailsProps = {
   localizedName: string;
   localizedDescription: string;
   currentPrice: number;
-  discountDifference: number;
+  priceDifference: number;
   currencyChar: string;
   isDiscounted: boolean;
   originalPrice: number;
@@ -44,7 +42,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
     localizedName,
     localizedDescription,
     currentPrice,
-    discountDifference,
+    priceDifference,
     currencyChar,
     isDiscounted,
     currentVariantId,
@@ -62,7 +60,6 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
   const locale = useAppSelector(selectLocale);
   const [_params, setParams] = useSearchParams();
   const { productId = '' } = useParams();
-  const role = useAppSelector(selectUserRole);
 
   const handleTabBtnClick = useCallback(
     (id: number) => {
@@ -81,9 +78,6 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
     },
     [currentVariantId, onVariantIdSetting, setParams]
   );
-
-  const purchaseButtonsKey =
-    role === TokenRole.user ? `${currentVariantId}_${role}` : `${currentVariantId}`;
 
   return (
     <div className={classes} {...rest}>
@@ -104,7 +98,7 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
         className={PRODUCT_DETAILS_PRICE}
         originalPrice={originalPrice}
         currentPrice={currentPrice}
-        discountDifference={discountDifference}
+        priceDifference={priceDifference}
         currencyChar={currencyChar}
         isDiscounted={isDiscounted}
       />
@@ -113,7 +107,6 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
         disabled={!isAvailable}
         productId={productId}
         variantId={currentVariantId}
-        key={purchaseButtonsKey}
       />
       <ProductAvailability isAvailable={isAvailable} locale={locale} />
     </div>

@@ -1,6 +1,7 @@
 import App from './App';
 import ProtectedRoute from './components/ui/ProtectedRoute/ProtectedRoute';
 import ViewAuth from './components/ui/ViewAuth/ViewAuth';
+import ViewCart from './components/ui/ViewCart/ViewCart';
 import ViewCategories from './components/ui/ViewCatalog/ViewCatalog';
 import ViewHome from './components/ui/ViewHome/ViewHome';
 import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
@@ -46,7 +47,7 @@ const routes: RouteObject[] = [
       },
       {
         path: VIEW_CART,
-        element: '',
+        element: <ViewCart />,
       },
       {
         path: `${VIEW_PRODUCT}/:categoryId/:productId`,
