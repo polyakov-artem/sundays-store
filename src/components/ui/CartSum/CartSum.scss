@@ -1,0 +1,56 @@
+@use '../../../scss/abstracts/mixins';
+
+.cart-sum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-md-gap);
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--g-md-gap);
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    line-height: 1;
+  }
+
+  &__quantity {
+    color: var(--gray-2);
+  }
+
+  &__list {
+    @include mixins.list;
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-xs-gap);
+  }
+
+  &__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--g-md-gap);
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  &__item-value {
+    font-weight: bold;
+    line-height: 1;
+    white-space: nowrap;
+
+    &_current {
+      color: var(--green-4);
+    }
+
+    &_difference {
+      color: var(--red-1);
+    }
+  }
+
+  &__order-btn {
+    align-self: center;
+  }
+}

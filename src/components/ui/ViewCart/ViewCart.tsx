@@ -1,40 +1,35 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { WRAPPER } from '../../../constants/cssHelpers';
 import { selectUserRole } from '../../../store/userSlice';
-import { useGetMyActiveCartQuery } from '../../../store/userApi';
-import { TokenRole } from '../../../services/authService';
-import { skipToken } from '@reduxjs/toolkit/query';
+import { useLazyGetMyActiveCartQuery } from '../../../store/userApi';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import EmptyCart from '../EmptyCart/EmptyCart';
+import Cart from '../Cart/Cart';
 import './ViewCart.scss';
 
 export const VIEW_CART = 'view-cart';
 
 const ViewCart: FC = () => {
   const role = useAppSelector(selectUserRole);
-  const isBasicRole = role === TokenRole.basic;
-
-  const {
-    data: activeCart,
-    isFetching: isActiveCartQueryFetching,
-    isError: isActiveCartQueryError,
-  } = useGetMyActiveCartQuery(isBasicRole ? skipToken : undefined);
+  const [getMyActiveCart, { data, isFetching, error }] = useLazyGetMyActiveCartQuery();
 
   let content;
 
-  const isEmptyCart = isBasicRole || activeCart?.lineItems.length === 0;
-
-  if (isActiveCartQueryFetching) {
+  if (!data && isFetching) {
     content = <LoaderBlock />;
-  } else if (isActiveCartQueryError) {
+  } else if (error) {
     content = <ErrorBlock isBlock />;
-  } else if (isEmptyCart) {
+  } else if (data === null || data?.lineItems.length === 0) {
     content = <EmptyCart />;
-  } else if (activeCart) {
-    content = <></>;
+  } else if (data) {
+    content = <Cart cart={data} isLoading={isFetching} />;
   }
+
+  useEffect(() => {
+    void getMyActiveCart();
+  }, [getMyActiveCart, role]);
 
   return (
     <main className={VIEW_CART}>

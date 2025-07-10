@@ -2,12 +2,12 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { RootState } from './store';
 import {
   TAddLineItem,
-  TCart,
   TCartDraft,
   TChangeMyCartParams,
   TCustomer,
   TCustomerSignInResult,
   TDeleteMyCartParams,
+  TExtCart,
   TLineItem,
   TMyCartDraft,
   TMyCustomerChangePassword,
@@ -36,6 +36,7 @@ import {
   createAddLineItemAction,
   createRemoveLineItemAction,
 } from '../utils/cartUpdateActionCreators';
+import { getPriceData } from '../utils/getPriceData';
 
 export type TUserApi = typeof userApi;
 
@@ -174,7 +175,7 @@ export const userApi = createApi({
       invalidatesTags: ['Customer'],
     }),
 
-    getMyActiveCart: builder.query<TCart | null, void>({
+    getMyActiveCart: builder.query<TExtCart | null, void>({
       queryFn: async (_data, { getState }, _extraOptions, fetchWithBQ) => {
         const { role } = (getState() as RootState).user;
 
@@ -184,19 +185,30 @@ export const userApi = createApi({
 
         const result = (await fetchWithBQ({
           url: `${projectKey}/me/active-cart`,
-        })) as TQueryResult<TCart>;
+        })) as TQueryResult<TExtCart>;
 
-        if (isErrorWithCode(HttpStatusCode.NotFound, result.error)) {
-          return { data: null };
+        if (result.error) {
+          if (isErrorWithCode(HttpStatusCode.NotFound, result.error)) {
+            return { data: null };
+          }
+
+          return result;
         }
 
-        return result;
+        const extCart = result.data;
+
+        extCart.lineItems.forEach((lineItem) => {
+          const { price } = lineItem;
+          return (lineItem.variant.priceData = getPriceData(price.value, price.discounted));
+        });
+
+        return { data: extCart };
       },
 
       providesTags: ['Cart'],
     }),
 
-    changeItemsQuantityInCart: builder.mutation<TCart, TChangeMyCartParams>({
+    changeItemsQuantityInCart: builder.mutation<TExtCart, TChangeMyCartParams>({
       queryFn: async ({ cartDraft, changedQuantityItems }, { dispatch }) => {
         dispatch(cartUpdatingStarted());
 
@@ -210,7 +222,7 @@ export const userApi = createApi({
           return { error };
         }
 
-        const activeCart: TCart = activeCartQueryData;
+        const activeCart: TExtCart = activeCartQueryData;
 
         const { lineItems, version, id: cartId } = activeCart;
 
@@ -258,7 +270,7 @@ export const userApi = createApi({
             return { error };
           }
 
-          const deletedCart: TCart = deleteCartQueryData;
+          const deletedCart: TExtCart = deleteCartQueryData;
 
           dispatch(cartUpdatingEnded());
           return { data: deletedCart };
@@ -277,7 +289,7 @@ export const userApi = createApi({
           return { error };
         }
 
-        const updatedCart: TCart = updateCartQueryData;
+        const updatedCart: TExtCart = updateCartQueryData;
 
         dispatch(cartUpdatingEnded());
         return { data: updatedCart };
@@ -286,7 +298,44 @@ export const userApi = createApi({
       invalidatesTags: ['Cart'],
     }),
 
-    getOrCreateActiveCart: builder.mutation<TCart, TCartDraft>({
+    removeMyCart: builder.mutation<void, void>({
+      queryFn: async (_args, { dispatch }) => {
+        dispatch(cartUpdatingStarted());
+
+        const { error: activeCartQueryError, data: activeCartQueryData } = await dispatch(
+          userApi.endpoints.getMyActiveCart.initiate()
+        );
+
+        if (activeCartQueryError) {
+          const error = activeCartQueryError as TCustomError;
+          dispatch(cartUpdatingEnded());
+          return { error };
+        }
+
+        if (!activeCartQueryData) {
+          return { data: undefined };
+        }
+
+        const { version, id: cartId } = activeCartQueryData;
+
+        const { error: deleteCartQueryError } = await dispatch(
+          userApi.endpoints.deleteMyCart.initiate({ cartId, params: { version } })
+        );
+
+        if (deleteCartQueryError) {
+          const error = deleteCartQueryError as TCustomError;
+          dispatch(cartUpdatingEnded());
+          return { error };
+        }
+
+        dispatch(cartUpdatingEnded());
+        return { data: undefined };
+      },
+
+      invalidatesTags: ['Cart'],
+    }),
+
+    getOrCreateActiveCart: builder.mutation<TExtCart, TCartDraft>({
       queryFn: async (cartDraft, { getState, dispatch }) => {
         const { role } = (getState() as RootState).user;
 
@@ -324,7 +373,7 @@ export const userApi = createApi({
         }
 
         if (activeCartQueryData) {
-          const activeCart: TCart = activeCartQueryData;
+          const activeCart: TExtCart = activeCartQueryData;
           return { data: activeCart };
         }
 
@@ -337,12 +386,12 @@ export const userApi = createApi({
           return { error };
         }
 
-        const activeCart: TCart = createCartQueryData;
+        const activeCart: TExtCart = createCartQueryData;
         return { data: activeCart };
       },
     }),
 
-    createMyCart: builder.mutation<TCart, TMyCartDraft>({
+    createMyCart: builder.mutation<TExtCart, TMyCartDraft>({
       query: (data: TCartDraft) => {
         return {
           url: `${projectKey}/me/carts`,
@@ -352,7 +401,7 @@ export const userApi = createApi({
       },
     }),
 
-    updateMyCart: builder.mutation<TCart, TUpdateMyCartParams>({
+    updateMyCart: builder.mutation<TExtCart, TUpdateMyCartParams>({
       query: ({ cartId, data }: TUpdateMyCartParams) => {
         return {
           url: `${projectKey}/me/carts/${cartId}`,
@@ -362,7 +411,7 @@ export const userApi = createApi({
       },
     }),
 
-    deleteMyCart: builder.mutation<TCart, TDeleteMyCartParams>({
+    deleteMyCart: builder.mutation<TExtCart, TDeleteMyCartParams>({
       query: ({ cartId, params }: TDeleteMyCartParams) => {
         return {
           url: `${projectKey}/me/carts/${cartId}`,
@@ -385,4 +434,5 @@ export const {
   useUpdateMyCartMutation,
   useSignInMutation,
   useChangeItemsQuantityInCartMutation,
+  useRemoveMyCartMutation,
 } = userApi;

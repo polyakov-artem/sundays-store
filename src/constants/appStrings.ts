@@ -64,4 +64,13 @@ export enum AppStrings {
   YourCartIsEmpty = 'Your cart is empty',
   ContinueShopping = 'Continue shopping',
   looksLikeEmptyCart = "Looks like you haven't added anything to your cart",
+  DeleteSelected = 'Delete selected',
+  SelectAll = 'Select all',
+  YourCart = 'Your cart',
+  item = 'item',
+  items = 'items',
+  OriginalPrice = 'Original price',
+  Discount = 'Discount',
+  Total = 'Total',
+  CreateOrder = 'Create order',
 }
