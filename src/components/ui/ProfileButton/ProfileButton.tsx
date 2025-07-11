@@ -14,7 +14,6 @@ import './ProfileButton.scss';
 export type TProfileButtonProps = TIntrinsicButton;
 
 export const PROFILE_BUTTON = 'profile-button';
-export const PROFILE_BUTTON_BADGE = `${PROFILE_BUTTON}__badge`;
 
 const ProfileButton: FC<TProfileButtonProps> = (props) => {
   const { className, ...rest } = props;
