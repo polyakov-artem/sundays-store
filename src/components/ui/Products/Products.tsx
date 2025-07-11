@@ -53,13 +53,35 @@ const Products: FC<TProductsProps> = (props) => {
   const countryCode = useAppSelector(selectCountryCode);
   const currentPageParam = searchParams.get(KEY_PAGE);
   const currentPage = useMemo(() => {
-    const parsedPageNumber = parseInt(currentPageParam || '');
+    const parsedPageNumber = parseInt(currentPageParam || '', 10);
     return isNaN(parsedPageNumber) || parsedPageNumber <= 0 ? 1 : parsedPageNumber;
   }, [currentPageParam]);
 
   const projectionsQueryParams = useMemo(() => {
+    const filterQueries: string[] = [`categories.id:"${categoryId}"`];
+
+    if (stockFilterValue) {
+      filterQueries.push('variants.availability.isOnStock:true');
+    }
+
+    if (colorFilterValue) {
+      filterQueries.push(`variants.attributes.color.${locale}:${colorFilterValue}`);
+    }
+
+    if (sizeFilterValue) {
+      filterQueries.push(`variants.attributes.size.${locale}:${sizeFilterValue}`);
+    }
+
+    if (priceFilterValue) {
+      const [minPrice, maxPrice] = priceFilterValue.split(';');
+
+      filterQueries.push(
+        `variants.scopedPrice.currentValue.centAmount:range (${minPrice} to ${maxPrice})`
+      );
+    }
+
     const params: TProductProjectionPagedSearchParams = {
-      'filter.query': [`categories.id:"${categoryId}"`],
+      'filter.query': filterQueries,
       markMatchingVariants: true,
       priceCurrency: CountryCurrency[countryCode],
       priceCountry: countryCode,
@@ -68,7 +90,7 @@ const Products: FC<TProductsProps> = (props) => {
     };
 
     if (searchText) {
-      params[`text.${locale}`] = `${searchText}`;
+      params[`text.${locale}`] = searchText;
       params.fuzzy = true;
     }
 
@@ -77,35 +99,9 @@ const Products: FC<TProductsProps> = (props) => {
 
       if (key === 'name') {
         params.sort = `${key}.${locale} ${direction}`;
-      }
-
-      if (key === 'price') {
+      } else if (key === 'price') {
         params.sort = `variants.scopedPrice.currentValue.centAmount ${direction}`;
       }
-    }
-
-    if (stockFilterValue) {
-      (params['filter.query'] as string[]).push('variants.availability.isOnStock:true');
-    }
-
-    if (colorFilterValue) {
-      (params['filter.query'] as string[]).push(
-        `variants.attributes.color.${locale}:${colorFilterValue}`
-      );
-    }
-
-    if (sizeFilterValue) {
-      (params['filter.query'] as string[]).push(
-        `variants.attributes.size.${locale}:${sizeFilterValue}`
-      );
-    }
-
-    if (priceFilterValue) {
-      const [minPrice, maxPrice] = priceFilterValue.split(';');
-
-      (params['filter.query'] as string[]).push(
-        `variants.scopedPrice.currentValue.centAmount:range (${minPrice} to ${maxPrice})`
-      );
     }
 
     return params;
