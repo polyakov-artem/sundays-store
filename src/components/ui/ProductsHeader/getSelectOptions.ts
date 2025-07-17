@@ -1,6 +1,5 @@
-import { AppStrings } from '../../../constants/appStrings';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { CountryLocale } from '../../../types/types';
+import { TFunction } from 'i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import { TSelectOptions } from '../../shared/Select/Select';
 
 export const DEFAULT_VALUE = '';
@@ -9,27 +8,25 @@ export const PRICE_DESC = 'price_desc';
 export const NAME_DESC = 'name_desc';
 export const NAME_ASC = 'name_asc';
 
-export const getSelectOptions = (locale: CountryLocale): TSelectOptions => [
+export const getSelectOptions = (t: TFunction<'translation', undefined>): TSelectOptions => [
   {
-    label: localizedAppStrings[locale][AppStrings.Default],
+    label: t(I18nKey.Default),
     value: DEFAULT_VALUE,
   },
   {
-    label: localizedAppStrings[locale][AppStrings.PriceAscending],
+    label: t(I18nKey.PriceAscending),
     value: PRICE_ASC,
   },
   {
-    label: localizedAppStrings[locale][AppStrings.PriceDescending],
+    label: t(I18nKey.PriceDescending),
     value: PRICE_DESC,
   },
   {
-    label: localizedAppStrings[locale][AppStrings.NameAlphabetical],
+    label: t(I18nKey.NameAlphabetical),
     value: NAME_ASC,
   },
   {
-    label: localizedAppStrings[locale][AppStrings.NameInReverseOrder],
+    label: t(I18nKey.NameInReverseOrder),
     value: NAME_DESC,
   },
 ];
-
-export const selectValues = getSelectOptions(CountryLocale.US).map((item) => item.value);

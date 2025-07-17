@@ -29,7 +29,7 @@ void i18n.use(initReactI18next).init({
   saveMissing: true,
 
   interpolation: {
-    escapeValue: false, // not needed for react as it escapes by default
+    escapeValue: false,
   },
 });
 

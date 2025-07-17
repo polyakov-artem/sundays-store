@@ -11,8 +11,6 @@ import { BLOCK, BLOCK_WITH_HOVER, H4 } from '../../../constants/cssHelpers';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_PRODUCT } from '../../../constants/constants';
 import { Link } from 'react-router';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
 import Button from '../../shared/Button/Button';
 import LoadingImage from '../../shared/LoadingImage/LoadingImage';
 import ProductPrice from '../ProductPrice/ProductPrice';
@@ -22,6 +20,8 @@ import { EntityState } from '@reduxjs/toolkit';
 import { useProductVariant } from '../../../hooks/useProductVariant';
 import ProductBadge from '../ProductBadge/ProductBadge';
 import PurchaseButtons from '../PurchaseButtons/PurchaseButtons';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './ProductCard.scss';
 
 export const PRODUCT_CARD = 'product-card';
@@ -63,6 +63,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
     ...rest
   } = props;
 
+  const { t } = useTranslation();
   const { id, masterVariant, variants, name, description } = productProjection;
 
   const matchedVariants = useMemo(
@@ -150,7 +151,7 @@ const ProductCard: FC<TProductCardProps> = (props) => {
             el="link"
             view="primary"
             theme="primary"
-            text={localizedAppStrings[locale][AppStrings.Details]}
+            text={t(I18nKey.Details)}
             size="sm"
             to={linkURL}
             relative="path"

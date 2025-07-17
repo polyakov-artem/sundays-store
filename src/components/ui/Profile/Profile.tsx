@@ -23,10 +23,6 @@ import {
   KEY_STREET,
   TFormValues,
 } from '../FormProfile/formProfileUtils';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
 
 import {
   createAddAddressAction,
@@ -41,6 +37,8 @@ import {
 import { toast } from 'react-toastify';
 import { useChangePasswordMutation, useUpdateMyCustomerMutation } from '../../../store/userApi';
 import { TCustomError } from '../../../store/axiosBaseQuery';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 
 export const PROFILE = 'profile';
 export const PROFILE_INNER = `${PROFILE}__inner`;
@@ -56,9 +54,9 @@ const Profile: FC<TProfileProps> = (props) => {
   const [formMode, setFormMode] = useState(FormMode.view);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const locale = useAppSelector(selectLocale);
   const [updateMyCustomer] = useUpdateMyCustomerMutation();
   const [changePassword] = useChangePasswordMutation();
+  const { t } = useTranslation();
 
   const handleEditBtnClick = useCallback(() => {
     setFormMode(FormMode.update);
@@ -151,7 +149,7 @@ const Profile: FC<TProfileProps> = (props) => {
         setIsSubmitting(false);
         return;
       } else {
-        toast.success(localizedAppStrings[locale][AppStrings.UserInformationWasUpdated]);
+        toast.success(t(I18nKey.UserInformationWasUpdated));
         userDataVersion = updateResponse.data.version;
       }
 
@@ -181,7 +179,7 @@ const Profile: FC<TProfileProps> = (props) => {
           setIsSubmitting(false);
           return;
         } else {
-          toast.success(localizedAppStrings[locale][AppStrings.TheDefaultAddressesWereUpdated]);
+          toast.success(t(I18nKey.TheDefaultAddressesWereUpdated));
           userDataVersion = defaultAddressUpdateResponse.data.version;
         }
       }
@@ -196,12 +194,12 @@ const Profile: FC<TProfileProps> = (props) => {
         if (passwordUpdateResponse.error) {
           setError((passwordUpdateResponse.error as TCustomError).data);
         } else {
-          toast.success(localizedAppStrings[locale][AppStrings.ThePasswordChanged]);
+          toast.success(t(I18nKey.ThePasswordChanged));
         }
       }
       setIsSubmitting(false);
     },
-    [userData, updateMyCustomer, locale, changePassword]
+    [userData, updateMyCustomer, t, changePassword]
   );
 
   return (
@@ -227,7 +225,7 @@ const Profile: FC<TProfileProps> = (props) => {
             theme="primary"
             disabled={formMode === FormMode.update}
             onClick={handleEditBtnClick}>
-            {localizedAppStrings[locale][AppStrings.Edit]}
+            {t(I18nKey.Edit)}
           </Button>
           <Button
             className={PROFILE_BTN}
@@ -237,7 +235,7 @@ const Profile: FC<TProfileProps> = (props) => {
             theme="primary"
             disabled={formMode === FormMode.view || isSubmitting}
             onClick={handleCancelBtnClick}>
-            {localizedAppStrings[locale][AppStrings.Cancel]}
+            {t(I18nKey.Cancel)}
           </Button>
         </div>
       </div>

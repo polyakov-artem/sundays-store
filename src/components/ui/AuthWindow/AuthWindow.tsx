@@ -4,13 +4,11 @@ import { TAuthProps, TIntrinsicDiv } from '../../../types/types';
 import FormLogin from '../FormLogin/FormLogin';
 import FormRegistration from '../FormRegistration/FormRegistration';
 import { FaCheckCircle } from 'react-icons/fa';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
 import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
 import { VIEW_LOGIN, VIEW_REGISTER } from '../../../constants/constants';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import './AuthWindow.scss';
 
 export type TAuthWindow = TIntrinsicDiv & TAuthProps;
@@ -25,7 +23,7 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
   const { className, type, ...restProps } = props;
   const classes = classNames(AUTH_WINDOW, className);
   const [isSent, setIsSent] = useState(false);
-  const locale = useAppSelector(selectLocale);
+  const { t } = useTranslation();
 
   const handleSubmit = useCallback(() => setIsSent(true), []);
 
@@ -37,7 +35,7 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
         <span className={AUTH_WINDOW_iCON}>
           <FaCheckCircle />
         </span>
-        {`${localizedAppStrings[locale][AppStrings.CompletedSuccessfully]}!`}
+        {`${t(I18nKey.CompletedSuccessfully)}!`}
       </p>
     );
   } else if (type === 'login') {
@@ -45,9 +43,9 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
       <>
         <FormLogin onSuccess={handleSubmit} />
         <p className={AUTH_WINDOW_QUESTION}>
-          {localizedAppStrings[locale][AppStrings.QDontHaveAnAccountYet]}{' '}
+          {t(I18nKey.QDontHaveAnAccountYet)}{' '}
           <Link relative="path" className={AUTH_WINDOW_LINK} to={getFullPath(VIEW_REGISTER)}>
-            {localizedAppStrings[locale][AppStrings.Register]}
+            {t(I18nKey.Register)}
           </Link>
         </p>
       </>
@@ -57,9 +55,9 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
       <>
         <FormRegistration onSuccess={handleSubmit} />
         <p className={AUTH_WINDOW_QUESTION}>
-          {localizedAppStrings[locale][AppStrings.QAlreadyHaveAnAccount]}{' '}
+          {t(I18nKey.QAlreadyHaveAnAccount)}{' '}
           <Link relative="path" className={AUTH_WINDOW_LINK} to={getFullPath(VIEW_LOGIN)}>
-            {localizedAppStrings[locale][AppStrings.LogIn]}
+            {t(I18nKey.LogIn)}
           </Link>
         </p>
       </>

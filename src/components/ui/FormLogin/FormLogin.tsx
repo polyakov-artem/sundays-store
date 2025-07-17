@@ -8,12 +8,11 @@ import * as Yup from 'yup';
 import { inputErrors } from '../../../constants/constants';
 import { Form, Formik } from 'formik';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
-import { AppStrings } from '../../../constants/appStrings';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { useSignInMutation } from '../../../store/userApi';
 import { TCustomError } from '../../../store/axiosBaseQuery';
 import { selectIsAuthenticating } from '../../../store/userSlice';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import './FormLogin.scss';
 
 export type TFormLoginProps = { onSuccess?: () => Promise<void> | void } & TIntrinsicForm;
@@ -54,7 +53,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
   const { className, onSuccess, ...restProps } = props;
   const classes = classNames(FORM_LOGIN, className);
   const [loginError, setLoginError] = useState('');
-  const locale = useAppSelector(selectLocale);
+  const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
   const [signIn] = useSignInMutation();
   const isAuthenticating = useAppSelector(selectIsAuthenticating);
@@ -90,7 +89,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
       }}>
       <Form className={classes} {...restProps} ref={formRef}>
         <label className={FORM_LOGIN_LABEL} htmlFor={KEY_EMAIL}>
-          {localizedAppStrings[locale][AppStrings.Email]}
+          {t(I18nKey.Email)}
         </label>
         <ValidationField
           Component={InputField}
@@ -103,7 +102,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
         />
 
         <label className={FORM_LOGIN_LABEL} htmlFor={KEY_PASSWORD}>
-          {localizedAppStrings[locale][AppStrings.Password]}
+          {t(I18nKey.Password)}
         </label>
         <ValidationField
           Component={InputField}
@@ -123,7 +122,7 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
           el="button"
           type="submit"
           disabled={isAuthenticating}>
-          {localizedAppStrings[locale][AppStrings.LogIn]}
+          {t(I18nKey.LogIn)}
         </Button>
       </Form>
     </Formik>

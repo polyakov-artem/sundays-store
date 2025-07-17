@@ -3,10 +3,8 @@ import { FC, useCallback, useEffect, useMemo } from 'react';
 import { CountryCurrency, TIntrinsicDiv, TLineItem } from '../../../types/types';
 import Button from '../../shared/Button/Button';
 import { FaShoppingCart } from 'react-icons/fa';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
-import { AppStrings } from '../../../constants/appStrings';
+import { selectCountryCode } from '../../../store/settingsSlice';
 import Counter from '../../shared/Counter/Counter';
 import ScreenLoader from '../../shared/ScreenLoader/ScreenLoader';
 import {
@@ -15,6 +13,8 @@ import {
 } from '../../../store/userApi';
 import { selectIsUpdatingCart, selectUserRole } from '../../../store/userSlice';
 import { toast } from 'react-toastify';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './PurchaseButtons.scss';
 
 export const PURCHASE_BUTTONS = 'purchase-buttons';
@@ -33,8 +33,8 @@ const findLineItem = (productId: string, variantId: number, lineItems?: TLineIte
 
 const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
   const { className, disabled, variantId, productId, ...rest } = props;
-  const locale = useAppSelector(selectLocale);
   const classes = classNames(PURCHASE_BUTTONS, className);
+  const { t } = useTranslation();
 
   const role = useAppSelector(selectUserRole);
   const country = useAppSelector(selectCountryCode);
@@ -88,7 +88,7 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
         view="primary"
         theme="primary"
         icon={isUpdatingCart ? <ScreenLoader type="round" theme="white" /> : <FaShoppingCart />}
-        text={localizedAppStrings[locale][AppStrings.AddToCart]}
+        text={t(I18nKey.AddToCart)}
         size="sm"
         iconBefore
         className={PURCHASE_BUTTONS_ADD_BTN}

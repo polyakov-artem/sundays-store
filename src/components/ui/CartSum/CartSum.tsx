@@ -4,12 +4,10 @@ import classNames from 'classnames';
 import { convertToNumber } from '../../../utils/getPriceData';
 import { BLOCK, H2, H3 } from '../../../constants/cssHelpers';
 import Button from '../../shared/Button/Button';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
-import { AppStrings } from '../../../constants/appStrings';
 import { useRemoveMyCartMutation } from '../../../store/userApi';
 import { toast } from 'react-toastify';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './CartSum.scss';
 
 export const CART_SUM = 'cart-sum';
@@ -39,8 +37,8 @@ const CartSum: FC<TCartSumProps> = (props) => {
   const { totalPrice, lineItems, totalLineItemQuantity } = cart;
   const { currencyCode } = totalPrice;
   const [removeMyCartMutation] = useRemoveMyCartMutation();
-  const locale = useAppSelector(selectLocale);
   const currencyChar = CurrencyChar[currencyCode];
+  const { t } = useTranslation();
 
   const totalPrices = useMemo(() => {
     const { fractionDigits, centAmount: currentTotalAmount } = totalPrice;
@@ -64,47 +62,38 @@ const CartSum: FC<TCartSumProps> = (props) => {
   const handleCreateOrder = useCallback(() => {
     void removeMyCartMutation().then(({ error }) => {
       if (error) {
-        toast.error(localizedAppStrings[locale][AppStrings.SomethingWentWrong]);
+        toast.error(t(I18nKey.SomethingWentWrong));
       } else {
-        toast.success(localizedAppStrings[locale][AppStrings.CompletedSuccessfully]);
+        toast.success(t(I18nKey.CompletedSuccessfully));
       }
     });
-  }, [locale, removeMyCartMutation]);
+  }, [removeMyCartMutation, t]);
 
   return (
     <div className={classes} {...rest}>
       <div className={CART_SUM_HEADER}>
-        <h2 className={titleClasses}>{localizedAppStrings[locale][AppStrings.YourCart]}</h2>
+        <h2 className={titleClasses}>{t(I18nKey.YourCart)}</h2>
         <span className={CART_SUM_QUANTITY}>
-          {totalLineItemQuantity}{' '}
-          {totalLineItemQuantity! > 1
-            ? localizedAppStrings[locale][AppStrings.items]
-            : localizedAppStrings[locale][AppStrings.item]}
+          {totalLineItemQuantity} {totalLineItemQuantity! > 1 ? t(I18nKey.items) : t(I18nKey.item)}
         </span>
       </div>
       <ul className={CART_SUM_LIST}>
         <li className={CART_SUM_ITEM}>
-          <span className={CART_SUM_ITEM_NAME}>
-            {localizedAppStrings[locale][AppStrings.OriginalPrice]}
-          </span>
+          <span className={CART_SUM_ITEM_NAME}>{t(I18nKey.OriginalPrice)}</span>
           <span className={CART_SUM_ITEM_VALUE}>
             {totalPrices.original} {currencyChar}
           </span>
         </li>
         {totalPrices.difference < 0 && (
           <li className={CART_SUM_ITEM}>
-            <span className={CART_SUM_ITEM_NAME}>
-              {localizedAppStrings[locale][AppStrings.Discount]}
-            </span>
+            <span className={CART_SUM_ITEM_NAME}>{t(I18nKey.Discount)}</span>
             <span className={differenceValueClasses}>
               {totalPrices.difference} {currencyChar}
             </span>
           </li>
         )}
         <li className={CART_SUM_ITEM}>
-          <span className={CART_SUM_ITEM_NAME}>
-            {localizedAppStrings[locale][AppStrings.Total]}
-          </span>
+          <span className={CART_SUM_ITEM_NAME}>{t(I18nKey.Total)}</span>
           <span className={currentValueClasses}>
             {totalPrices.current} {currencyChar}
           </span>
@@ -119,7 +108,7 @@ const CartSum: FC<TCartSumProps> = (props) => {
         type="submit"
         disabled={isDisabled}
         onClick={handleCreateOrder}
-        text={localizedAppStrings[locale][AppStrings.CreateOrder]}
+        text={t(I18nKey.CreateOrder)}
       />
     </div>
   );
