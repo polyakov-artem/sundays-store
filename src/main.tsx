@@ -6,6 +6,7 @@ import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { apiClient } from './services/apiClient';
 import { getAccessToken, tryToLoadToken } from './store/userSlice';
+import './utils/i18n/i18n';
 
 const router = createBrowserRouter(routes);
 
