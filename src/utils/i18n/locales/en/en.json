@@ -72,5 +72,8 @@
   "OriginalPrice": "Original price",
   "Discount": "Discount",
   "Total": "Total",
-  "CreateOrder": "Create order"
+  "CreateOrder": "Create order",
+  "GoToHomePage": "Go to the home page",
+  "PageWasNotFound": "Page was not found",
+  "ReloadPage": "Reload the page"
 }

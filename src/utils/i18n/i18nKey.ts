@@ -73,4 +73,7 @@ export enum I18nKey {
   Discount = 'Discount',
   Total = 'Total',
   CreateOrder = 'CreateOrder',
+  GoToHomePage = 'GoToHomePage',
+  PageWasNotFound = 'PageWasNotFound',
+  ReloadPage = 'ReloadPage',
 }

@@ -1,17 +1,19 @@
 .view-not-found {
-  flex-grow: 1;
-  display: flex;
+  padding: var(--g-md-gap) 0;
+
+  &__window {
+    padding: var(--g-xlg-gap) var(--g-md-gap);
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-md-gap);
+    align-items: center;
+  }
 
   &__title {
     margin: 0;
   }
 
-  &__banner {
-    margin: auto;
-    padding: var(--g-md-gap);
-    display: flex;
-    flex-direction: column;
-    gap: var(--g-md-gap);
-    align-items: center;
+  &__img {
+    max-width: 300px;
   }
 }

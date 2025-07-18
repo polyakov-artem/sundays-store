@@ -72,5 +72,8 @@
   "OriginalPrice": "Originalpreis",
   "Discount": "Rabatt",
   "Total": "Gesamt",
-  "CreateOrder": "Ordnung schaffen"
+  "CreateOrder": "Ordnung schaffen",
+  "GoToHomePage": "Zur Startseite gehen",
+  "PageWasNotFound": "Seite wurde nicht gefunden",
+  "ReloadPage": "Laden Sie die Seite neu"
 }
