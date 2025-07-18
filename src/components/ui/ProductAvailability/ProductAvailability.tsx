@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { CountryLocale, TIntrinsicP } from '../../../types/types';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -33,4 +33,4 @@ const ProductAvailability: FC<TProductAvailabilityProps> = (props) => {
   );
 };
 
-export default ProductAvailability;
+export default memo(ProductAvailability);

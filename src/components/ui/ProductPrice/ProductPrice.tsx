@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import { H3 } from '../../../constants/cssHelpers';
@@ -64,4 +64,4 @@ const ProductPrice: FC<TProductPriceProps> = (props) => {
   );
 };
 
-export default ProductPrice;
+export default memo(ProductPrice);

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo } from 'react';
 import { TIntrinsicDiv, TExtCart, CurrencyChar } from '../../../types/types';
 import classNames from 'classnames';
 import { convertToNumber } from '../../../utils/getPriceData';
@@ -114,4 +114,4 @@ const CartSum: FC<TCartSumProps> = (props) => {
   );
 };
 
-export default CartSum;
+export default memo(CartSum);

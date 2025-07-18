@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useId, useMemo, useState } from 'react';
+import { ChangeEvent, FC, memo, useCallback, useId, useMemo, useState } from 'react';
 import {
   TIntrinsicDiv,
   TExtLineItem,
@@ -189,4 +189,4 @@ const CartProducts: FC<TCartProductsProps> = (props) => {
   );
 };
 
-export default CartProducts;
+export default memo(CartProducts);

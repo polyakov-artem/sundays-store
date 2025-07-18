@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import ReactModal from 'react-modal';
 import { ReactModalProps } from './reactModalProps';
 import Button from '../Button/Button';
@@ -41,4 +41,4 @@ const ModalWindow: FC<TModalWindowProps> = (props) => {
   );
 };
 
-export default ModalWindow;
+export default memo(ModalWindow);

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK } from '../../../constants/cssHelpers';
@@ -24,4 +24,4 @@ const ErrorBlock: FC<TErrorBlockProps> = (props) => {
   );
 };
 
-export default ErrorBlock;
+export default memo(ErrorBlock);

@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { MEDIA_CONTAIN, MEDIA_COVER } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
 import Button from '../Button/Button';
@@ -133,4 +133,4 @@ const ImageGallery: FC<TImageGalleryProps> = (props) => {
   );
 };
 
-export default ImageGallery;
+export default memo(ImageGallery);

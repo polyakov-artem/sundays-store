@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { selectAllCategories, useQueryCategoriesQuery } from '../../../store/storeApi';
 import { Navigate } from 'react-router';
 import { VIEW_NOT_FOUND } from '../../../constants/constants';
@@ -65,4 +65,4 @@ const ViewCatalog: FC = () => {
   );
 };
 
-export default ViewCatalog;
+export default memo(ViewCatalog);

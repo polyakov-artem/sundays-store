@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK } from '../../../constants/cssHelpers';
@@ -21,4 +21,4 @@ const LoaderBlock: FC<TLoaderBlockProps> = (props) => {
   );
 };
 
-export default LoaderBlock;
+export default memo(LoaderBlock);

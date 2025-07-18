@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import {
   selectGetProductDiscountsAdapterState,
   useGetProductDiscountsQuery,
@@ -60,4 +60,4 @@ const ViewProduct: FC = () => {
   );
 };
 
-export default ViewProduct;
+export default memo(ViewProduct);

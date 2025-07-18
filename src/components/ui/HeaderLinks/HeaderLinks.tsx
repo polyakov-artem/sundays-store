@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { NavLink } from 'react-router';
 import classNames from 'classnames';
 import { useAppSelector } from '../../../hooks/store-hooks';
@@ -50,4 +50,4 @@ const HeaderLinks: FC<THeaderLinksProps> = (props) => {
   return <ul className={classes}>{!isLoading && links}</ul>;
 };
 
-export default HeaderLinks;
+export default memo(HeaderLinks);

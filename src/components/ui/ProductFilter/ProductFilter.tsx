@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo } from 'react';
 import {
   CountryCurrency,
   TIntrinsicDiv,
@@ -344,4 +344,4 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   );
 };
 
-export default ProductFilter;
+export default memo(ProductFilter);

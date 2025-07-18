@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, memo, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import ValidationField from '../../shared/ValidationField/ValidationField';
@@ -129,4 +129,4 @@ const FormLogin: FC<TFormLoginProps> = (props) => {
   );
 };
 
-export default FormLogin;
+export default memo(FormLogin);

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { TIntrinsicForm } from '../../../types/types';
 import { useAppSelector } from '../../../hooks/store-hooks';
@@ -107,4 +107,4 @@ const FormRegistration: FC<TFormRegistrationProps> = (props) => {
   );
 };
 
-export default FormRegistration;
+export default memo(FormRegistration);

@@ -1,4 +1,4 @@
-import { ComponentProps, FC, useMemo } from 'react';
+import { ComponentProps, FC, memo, useMemo } from 'react';
 import { getClasses } from '../../../utils/getClasses';
 import './Select.scss';
 
@@ -36,4 +36,4 @@ const Select: FC<TSelectProps> = (props) => {
   );
 };
 
-export default Select;
+export default memo(Select);

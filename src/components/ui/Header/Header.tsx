@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import HeaderLinks from '../HeaderLinks/HeaderLinks';
 import classNames from 'classnames';
@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import { logOut, selectIsAuthenticating, selectUserRole } from '../../../store/userSlice';
 import { TokenRole } from '../../../services/authService';
 import { getClasses } from '../../../utils/getClasses';
-import { Collapse } from '../../shared/Collapse/Collapse';
+import Collapse from '../../shared/Collapse/Collapse';
 import Dropdown from '../../shared/Dropdown/Dropdown';
 import DropdownMenu from '../../shared/DropdownMenu/DropdownMenu';
 import { PUBLIC_PATH } from '../../../constants/constants';
@@ -178,4 +178,4 @@ const Header: FC = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

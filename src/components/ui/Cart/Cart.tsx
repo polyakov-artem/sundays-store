@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TExtCart, TIntrinsicSection } from '../../../types/types';
 import classNames from 'classnames';
 import { H1 } from '../../../constants/cssHelpers';
@@ -35,4 +35,4 @@ const Cart: FC<TCartProps> = (props) => {
   );
 };
 
-export default Cart;
+export default memo(Cart);

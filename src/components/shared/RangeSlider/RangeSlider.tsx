@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useRef } from 'react';
+import { ChangeEvent, FC, memo, useEffect, useRef } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import './RangeSlider.scss';
@@ -126,4 +126,4 @@ const RangeSlider: FC<TRangeSliderProps> = (props) => {
   );
 };
 
-export default RangeSlider;
+export default memo(RangeSlider);

@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, memo, useCallback, useState } from 'react';
 import classNames from 'classnames';
 import { TAuthProps, TIntrinsicDiv } from '../../../types/types';
 import FormLogin from '../FormLogin/FormLogin';
@@ -71,4 +71,4 @@ const AuthWindow: FC<TAuthWindow> = (props) => {
   );
 };
 
-export default AuthWindow;
+export default memo(AuthWindow);

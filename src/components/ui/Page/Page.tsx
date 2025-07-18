@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react';
+import { FC, memo, PropsWithChildren } from 'react';
 import { Outlet } from 'react-router';
 import Header from '../Header/Header';
 import './Page.scss';
@@ -14,4 +14,4 @@ const Page: FC<PropsWithChildren> = () => {
   );
 };
 
-export default Page;
+export default memo(Page);

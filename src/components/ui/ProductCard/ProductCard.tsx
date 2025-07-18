@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import {
   CountryLocale,
   Order,
@@ -165,4 +165,4 @@ const ProductCard: FC<TProductCardProps> = (props) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

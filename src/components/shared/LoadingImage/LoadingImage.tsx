@@ -1,4 +1,4 @@
-import { useState, FC, useEffect, useRef, useMemo } from 'react';
+import { useState, FC, useEffect, useRef, useMemo, memo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import ScreenLoader from '../ScreenLoader/ScreenLoader';
@@ -53,4 +53,4 @@ const LoadingImage: FC<TLoadingImageProps> = (props) => {
   );
 };
 
-export default LoadingImage;
+export default memo(LoadingImage);

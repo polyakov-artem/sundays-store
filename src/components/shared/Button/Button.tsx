@@ -1,4 +1,4 @@
-import { ComponentProps, FC, ReactNode } from 'react';
+import { ComponentProps, FC, ReactNode, memo } from 'react';
 import { Link, LinkProps } from 'react-router';
 import { getClasses } from '../../../utils/getClasses';
 import { TIntrinsicButton, TIntrinsicLink } from '../../../types/types';
@@ -90,4 +90,4 @@ const Button: FC<TButtonProps> = (props) => {
   }
 };
 
-export default Button;
+export default memo(Button);

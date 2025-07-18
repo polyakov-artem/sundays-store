@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import CategoryItem from '../CategoryItem/CategoryItem';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
@@ -21,4 +21,4 @@ const CategoryList: FC<TCategoryListProps> = ({ ids }) => {
   return <>{!!ids.length && <ul className={CATEGORY_LIST}>{listItems}</ul>}</>;
 };
 
-export default CategoryList;
+export default memo(CategoryList);

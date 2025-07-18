@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useMemo, useState } from 'react';
 import { TCustomer, TCustomerUpdateAction, TIntrinsicSection } from '../../../types/types';
 import classNames from 'classnames';
 import FormProfile from '../FormProfile/FormProfile';
@@ -243,4 +243,4 @@ const Profile: FC<TProfileProps> = (props) => {
   );
 };
 
-export default Profile;
+export default memo(Profile);

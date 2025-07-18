@@ -1,4 +1,4 @@
-import { useState, FC, ReactNode, useEffect, useRef } from 'react';
+import { useState, FC, ReactNode, useEffect, useRef, memo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import './Dropdown.scss';
@@ -46,4 +46,4 @@ const Dropdown: FC<TDropdown> = (props) => {
   );
 };
 
-export default Dropdown;
+export default memo(Dropdown);

@@ -1,4 +1,4 @@
-import { Dispatch, FC, useCallback, useEffect, useRef } from 'react';
+import { Dispatch, FC, memo, useCallback, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import { TIntrinsicForm } from '../../../types/types';
@@ -283,4 +283,4 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
   );
 };
 
-export default FormProfile;
+export default memo(FormProfile);

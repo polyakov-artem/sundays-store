@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import {
   CountryCurrency,
   TIntrinsicSection,
@@ -169,4 +169,4 @@ const Products: FC<TProductsProps> = (props) => {
   );
 };
 
-export default Products;
+export default memo(Products);

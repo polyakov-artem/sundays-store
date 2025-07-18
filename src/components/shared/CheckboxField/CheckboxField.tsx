@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { TIntrinsicDiv, TIntrinsicLabel } from '../../../types/types';
 import classNames from 'classnames';
 import Checkbox, { TCheckboxProps } from '../Checkbox/Checkbox';
@@ -37,4 +37,4 @@ const CheckboxField: FC<TCheckboxFieldProps> = (props) => {
   );
 };
 
-export default CheckboxField;
+export default memo(CheckboxField);

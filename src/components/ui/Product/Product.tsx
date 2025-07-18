@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, memo } from 'react';
 import { TExtProductProjection, TIntrinsicDiv, TProductDiscount } from '../../../types/types';
 import classNames from 'classnames';
 import ProductDetails from '../ProductDetails/ProductDetails';
@@ -78,4 +78,4 @@ const Product: FC<TProductProps> = (props) => {
   );
 };
 
-export default Product;
+export default memo(Product);

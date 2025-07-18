@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import Button from '../../shared/Button/Button';
 import classNames from 'classnames';
 import { BLOCK, H1, H3, MEDIA_CONTAIN } from '../../../constants/cssHelpers';
@@ -30,4 +30,4 @@ const EmptyCart: FC = () => {
   );
 };
 
-export default EmptyCart;
+export default memo(EmptyCart);

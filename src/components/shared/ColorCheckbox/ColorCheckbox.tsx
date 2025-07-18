@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicInput, TIntrinsicLabel } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import './ColorCheckbox.scss';
@@ -24,4 +24,4 @@ const ColorCheckbox: FC<TColorCheckboxProps> = (props) => {
   );
 };
 
-export default ColorCheckbox;
+export default memo(ColorCheckbox);

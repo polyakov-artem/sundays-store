@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { PUBLIC_PATH } from '../../../constants/constants';
 import Button from '../../shared/Button/Button';
 import './ViewNotFound.scss';
@@ -28,4 +28,4 @@ const ViewNotFound: FC = () => {
   );
 };
 
-export default ViewNotFound;
+export default memo(ViewNotFound);

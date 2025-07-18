@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react';
+import { FC, memo, PropsWithChildren } from 'react';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectUserRole } from '../../../store/userSlice';
 import { TokenRole } from '../../../services/authService';
@@ -12,4 +12,4 @@ const ProtectedRoute: FC<PropsWithChildren> = () => {
   return role === TokenRole.user ? <Outlet /> : <Navigate {...loginNavigationProps} />;
 };
 
-export default ProtectedRoute;
+export default memo(ProtectedRoute);

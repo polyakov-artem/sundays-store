@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { FaRegUserCircle } from 'react-icons/fa';
 import Button from '../../shared/Button/Button';
 import classNames from 'classnames';
@@ -42,4 +42,4 @@ const ProfileButton: FC<TProfileButtonProps> = (props) => {
   );
 };
 
-export default ProfileButton;
+export default memo(ProfileButton);

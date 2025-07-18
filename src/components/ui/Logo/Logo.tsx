@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import classNames from 'classnames';
 import { TIntrinsicImg } from '../../../types/types';
 import imgSrc from './img/Logo.png';
@@ -13,4 +13,4 @@ const Logo: FC<TIntrinsicImg> = (props) => {
   return <img {...restProps} className={classes} src={imgSrc} alt="Logo" />;
 };
 
-export default Logo;
+export default memo(Logo);

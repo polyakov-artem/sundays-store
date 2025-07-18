@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FC, memo, useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import RangeSlider, {
   MIN_CONTROL_NAME_PREFIX,
@@ -93,4 +93,4 @@ const IntervalSlider: FC<TIntervalSliderProps> = (props) => {
   );
 };
 
-export default IntervalSlider;
+export default memo(IntervalSlider);

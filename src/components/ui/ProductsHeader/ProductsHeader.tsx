@@ -1,4 +1,4 @@
-import { FC, FormEvent, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FC, FormEvent, memo, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { TIntrinsicHeader } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK } from '../../../constants/cssHelpers';
@@ -175,4 +175,4 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
   );
 };
 
-export default ProductsHeader;
+export default memo(ProductsHeader);

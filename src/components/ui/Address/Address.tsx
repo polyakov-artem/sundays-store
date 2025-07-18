@@ -1,4 +1,4 @@
-import { FC, useCallback, useId, useMemo } from 'react';
+import { FC, memo, useCallback, useId, useMemo } from 'react';
 import classNames from 'classnames';
 import ValidationField from '../../shared/ValidationField/ValidationField';
 import { ArrayHelpers } from 'formik';
@@ -214,4 +214,4 @@ const Address: FC<TAddressProps> = (props) => {
   );
 };
 
-export default Address;
+export default memo(Address);

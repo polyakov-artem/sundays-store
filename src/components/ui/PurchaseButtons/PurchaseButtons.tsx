@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FC, useCallback, useEffect, useMemo } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo } from 'react';
 import { CountryCurrency, TIntrinsicDiv, TLineItem } from '../../../types/types';
 import Button from '../../shared/Button/Button';
 import { FaShoppingCart } from 'react-icons/fa';
@@ -116,4 +116,4 @@ const PurchaseButtons: FC<TPurchaseButtonsProps> = (props) => {
   );
 };
 
-export default PurchaseButtons;
+export default memo(PurchaseButtons);

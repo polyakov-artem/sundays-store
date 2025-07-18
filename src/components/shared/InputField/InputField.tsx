@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { getClasses } from '../../../utils/getClasses';
 import { TIntrinsicInput } from '../../../types/types';
 import './InputField.scss';
@@ -19,4 +19,4 @@ const InputField: FC<TInputFieldProps> = (props) => {
   return <input className={classes} {...restProps} data-testid="input-field" />;
 };
 
-export default InputField;
+export default memo(InputField);

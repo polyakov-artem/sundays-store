@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicSpan } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import './ScreenLoader.scss';
@@ -24,4 +24,4 @@ const ScreenLoader: FC<TScreenLoaderProps> = (props) => {
   );
 };
 
-export default ScreenLoader;
+export default memo(ScreenLoader);
