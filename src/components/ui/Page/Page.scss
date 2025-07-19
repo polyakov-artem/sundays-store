@@ -4,4 +4,8 @@
   position: relative;
   min-height: 100dvh;
   background-color: var(--white-2);
+
+  &__loader {
+    flex-grow: 1;
+  }
 }

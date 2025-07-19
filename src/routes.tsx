@@ -1,23 +1,25 @@
+import { lazy } from 'react';
 import App from './App';
 import ProtectedRoute from './components/ui/ProtectedRoute/ProtectedRoute';
-import ViewAuth from './components/ui/ViewAuth/ViewAuth';
-import ViewCart from './components/ui/ViewCart/ViewCart';
-import ViewCategories from './components/ui/ViewCatalog/ViewCatalog';
-import ViewHome from './components/ui/ViewHome/ViewHome';
-import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
-import ViewProduct from './components/ui/ViewProduct/ViewProduct';
-import ViewProfile from './components/ui/ViewProfile/ViewProfile';
+
 import {
   PUBLIC_PATH,
   VIEW_CART,
   VIEW_CATALOG,
   VIEW_LOGIN,
-  VIEW_NOT_FOUND,
   VIEW_PRODUCT,
   VIEW_PROFILE,
   VIEW_REGISTER,
 } from './constants/constants';
 import { RouteObject } from 'react-router';
+import ViewNotFound from './components/ui/ViewNotFound/ViewNotFound';
+
+const ViewAuth = lazy(() => import('./components/ui/ViewAuth/ViewAuth'));
+const ViewCart = lazy(() => import('./components/ui/ViewCart/ViewCart'));
+const ViewCategories = lazy(() => import('./components/ui/ViewCatalog/ViewCatalog'));
+const ViewHome = lazy(() => import('./components/ui/ViewHome/ViewHome'));
+const ViewProduct = lazy(() => import('./components/ui/ViewProduct/ViewProduct'));
+const ViewProfile = lazy(() => import('./components/ui/ViewProfile/ViewProfile'));
 
 const routes: RouteObject[] = [
   {
@@ -59,10 +61,6 @@ const routes: RouteObject[] = [
       },
       {
         path: `*`,
-        element: <ViewNotFound />,
-      },
-      {
-        path: VIEW_NOT_FOUND,
         element: <ViewNotFound />,
       },
     ],

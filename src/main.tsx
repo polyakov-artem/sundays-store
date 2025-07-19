@@ -6,7 +6,10 @@ import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { apiClient } from './services/apiClient';
 import { getAccessToken, tryToLoadToken } from './store/userSlice';
-import './utils/i18n/i18n';
+import { ErrorBoundary } from 'react-error-boundary';
+import ViewError from './components/ui/ViewError/ViewError';
+import 'normalize.css';
+import './scss/index.scss';
 
 const router = createBrowserRouter(routes);
 
@@ -15,8 +18,10 @@ apiClient.setGetAccessToken(() => store.dispatch(getAccessToken()));
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <ErrorBoundary fallback={<ViewError isRoot />}>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </ErrorBoundary>
   </StrictMode>
 );
