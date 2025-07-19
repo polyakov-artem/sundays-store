@@ -1,6 +1,6 @@
 import './SvgIcon.scss';
 import classNames from 'classnames';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicSVG } from '../../../types/types';
 
 export const SVG_ICON = 'svg-icon';
@@ -18,4 +18,4 @@ const SvgIcon: FC<TSvgIcon> = (props) => {
   );
 };
 
-export default SvgIcon;
+export default memo(SvgIcon);

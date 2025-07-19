@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo } from 'react';
 import {
   CountryCurrency,
   TIntrinsicDiv,
@@ -15,8 +15,6 @@ import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
 import ColorPalette from '../ColorPalette/ColorPalette';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
 import CheckboxList from '../CheckboxList/CheckboxList';
 import {
   createRangeConvertToParamFn,
@@ -30,6 +28,8 @@ import {
 import { useSynchronizedValue } from '../../../hooks/useSynchronizedValue';
 import { TRangeState } from '../../shared/RangeSlider/RangeSlider';
 import IntervalSlider from '../../shared/IntervalSlider/IntervalSlider';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './ProductFilter.scss';
 
 export const PRODUCT_FILTER = 'product-filter';
@@ -63,6 +63,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   const [params, setParams] = useSearchParams();
   const { categoryId } = useParams();
   const countryCode = useAppSelector(selectCountryCode);
+  const { t } = useTranslation();
 
   const projectionsQueryParams = useMemo(() => {
     const params: TProductProjectionPagedSearchParams = {
@@ -248,9 +249,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
       <>
         {!!Object.keys(checkboxesDefaultState.defaultColorFilterState).length && (
           <div className={PRODUCT_FILTER_BLOCK}>
-            <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>
-              {localizedAppStrings[locale][AppStrings.Colors]}
-            </h4>
+            <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>{t(I18nKey.Colors)}</h4>
             <ColorPalette
               state={colorFilterState}
               name={COLOR_FILTER_NAME}
@@ -288,11 +287,9 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
     <div className={classes} {...rest}>
       <div className={PRODUCT_FILTER_WRAP}>
         <div className={PRODUCT_FILTER_BLOCK}>
-          <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>
-            {localizedAppStrings[locale][AppStrings.Availability]}
-          </h4>
+          <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>{t(I18nKey.Availability)}</h4>
           <CheckboxField
-            labelContent={localizedAppStrings[locale][AppStrings.OnlyProductsThatAreInStock]}
+            labelContent={t(I18nKey.OnlyProductsThatAreInStock)}
             checkboxProps={{
               theme: 'primary',
               view: 'primary',
@@ -307,9 +304,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
           />
         </div>
         <div className={PRODUCT_FILTER_BLOCK}>
-          <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>
-            {localizedAppStrings[locale][AppStrings.Price]}
-          </h4>
+          <h4 className={classNames(H4, PRODUCT_FILTER_BLOCK_TITLE)}>{t(I18nKey.Price)}</h4>
           <div>
             <IntervalSlider
               minValueInputName={MIN_VALUE_CONTROL_NAME}
@@ -331,7 +326,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
             size="sm"
             onClick={handleResetBtnClick}
             className={PRODUCT_FILTER_BUTTON}>
-            {localizedAppStrings[locale][AppStrings.Reset]}
+            {t(I18nKey.Reset)}
           </Button>
           <Button
             type="button"
@@ -341,7 +336,7 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
             size="sm"
             onClick={handleApplyBtnClick}
             className={PRODUCT_FILTER_BUTTON}>
-            {localizedAppStrings[locale][AppStrings.Apply]}
+            {t(I18nKey.Apply)}
           </Button>
         </div>
       </div>
@@ -349,4 +344,4 @@ const ProductFilter: FC<TProductFilterProps> = (props) => {
   );
 };
 
-export default ProductFilter;
+export default memo(ProductFilter);

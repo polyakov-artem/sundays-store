@@ -1,8 +1,8 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { CountryLocale, TIntrinsicP } from '../../../types/types';
 import classNames from 'classnames';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import './ProductAvailability.scss';
 
 export const PRODUCT_AVAILABILITY = 'product-availability';
@@ -16,6 +16,7 @@ export type TProductAvailabilityProps = {
 
 const ProductAvailability: FC<TProductAvailabilityProps> = (props) => {
   const { className, isAvailable, locale, ...rest } = props;
+  const { t } = useTranslation();
 
   const classes = classNames(PRODUCT_AVAILABILITY, className, {
     [PRODUCT_AVAILABILITY_NOT_AVAILABLE]: !isAvailable,
@@ -23,13 +24,13 @@ const ProductAvailability: FC<TProductAvailabilityProps> = (props) => {
 
   return (
     <p {...rest} className={classes}>
-      {localizedAppStrings[locale][AppStrings.IsOnStock]}:{' '}
+      {t(I18nKey.IsOnStock)}:{' '}
       <span
         className={
           PRODUCT_AVAILABILITY_VALUE
-        }>{`${isAvailable ? localizedAppStrings[locale][AppStrings.Yes] : localizedAppStrings[locale][AppStrings.No]}`}</span>
+        }>{`${isAvailable ? t(I18nKey.Yes) : t(I18nKey.No)}`}</span>
     </p>
   );
 };
 
-export default ProductAvailability;
+export default memo(ProductAvailability);

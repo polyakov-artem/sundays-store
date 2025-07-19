@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import AuthWindow from '../AuthWindow/AuthWindow';
 import { TAuthProps, TIntrinsicMain } from '../../../types/types';
 import { useAppSelector } from '../../../hooks/store-hooks';
@@ -29,4 +29,4 @@ const ViewAuth: FC<TAuthViewProps> = ({ type }) => {
   );
 };
 
-export default ViewAuth;
+export default memo(ViewAuth);

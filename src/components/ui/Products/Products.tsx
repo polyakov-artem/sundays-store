@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import {
   CountryCurrency,
   TIntrinsicSection,
@@ -23,9 +23,9 @@ import ProductFilter, {
   STOCK_FILTER_NAME,
 } from '../ProductFilter/ProductFilter';
 import { BLOCK } from '../../../constants/cssHelpers';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
 import Pagination, { KEY_PAGE } from '../../shared/Pagination/Pagination';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './Products.scss';
 
 export const PRODUCTS = 'products';
@@ -52,6 +52,7 @@ const Products: FC<TProductsProps> = (props) => {
   const priceFilterValue = searchParams.get(PRICE_FILTER_NAME);
   const countryCode = useAppSelector(selectCountryCode);
   const currentPageParam = searchParams.get(KEY_PAGE);
+  const { t } = useTranslation();
   const currentPage = useMemo(() => {
     const parsedPageNumber = parseInt(currentPageParam || '', 10);
     return isNaN(parsedPageNumber) || parsedPageNumber <= 0 ? 1 : parsedPageNumber;
@@ -152,9 +153,7 @@ const Products: FC<TProductsProps> = (props) => {
     );
   } else {
     content = (
-      <div className={classNames(BLOCK, PRODUCTS_LIST)}>
-        {localizedAppStrings[locale][AppStrings.NothingWasFound]} :(
-      </div>
+      <div className={classNames(BLOCK, PRODUCTS_LIST)}>{t(I18nKey.NothingWasFound)} :(</div>
     );
   }
 
@@ -170,4 +169,4 @@ const Products: FC<TProductsProps> = (props) => {
   );
 };
 
-export default Products;
+export default memo(Products);

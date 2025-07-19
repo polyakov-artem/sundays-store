@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { CountryLocale } from '../../../types/types';
 import { Link } from 'react-router';
 import { getFullPath } from '../../../utils/getFullPath';
@@ -38,4 +38,4 @@ const CategoryItem: FC<TCategoryItemProps> = ({ id, locale }) => {
   );
 };
 
-export default CategoryItem;
+export default memo(CategoryItem);

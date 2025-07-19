@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicSpan } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import './ScreenLoader.scss';
@@ -9,11 +9,11 @@ export const SCREEN_LOADER_CONTAINER = `${SCREEN_LOADER}__container`;
 export type TScreenLoaderProps = TIntrinsicSpan & {
   fullSpace?: boolean;
   type?: 'linear' | 'round';
-  theme?: 'white' | 'green' | 'primary';
+  theme?: 'white' | 'green';
 };
 
 const ScreenLoader: FC<TScreenLoaderProps> = (props) => {
-  const { className, fullSpace, type = 'linear', theme = 'primary', ...rest } = props;
+  const { className, fullSpace, type = 'linear', theme, ...rest } = props;
 
   const classes = getClasses(SCREEN_LOADER, className, { fullSpace, type, theme });
 
@@ -24,4 +24,4 @@ const ScreenLoader: FC<TScreenLoaderProps> = (props) => {
   );
 };
 
-export default ScreenLoader;
+export default memo(ScreenLoader);

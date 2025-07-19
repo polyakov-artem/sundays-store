@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, memo, useCallback, useState } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import InputField, { TInputFieldProps } from '../InputField/InputField';
 import Button from '../Button/Button';
@@ -41,4 +41,4 @@ const PasswordField: FC<TPasswordFieldProps> = (props) => {
   );
 };
 
-export default PasswordField;
+export default memo(PasswordField);

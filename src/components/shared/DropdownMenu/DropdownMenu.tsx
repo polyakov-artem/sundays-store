@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, memo, ReactNode, useMemo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import './DropdownMenu.scss';
@@ -33,4 +33,4 @@ const DropdownMenu: FC<TDropdownMenu> = (props) => {
   );
 };
 
-export default DropdownMenu;
+export default memo(DropdownMenu);

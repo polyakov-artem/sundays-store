@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import classNames from 'classnames';
 import { PUBLIC_PATH } from '../../../constants/constants';
 import { TIntrinsicLink } from '../../../types/types';
@@ -21,4 +21,4 @@ const LogoLink: FC<TLogoLinkProps> = (props) => {
   );
 };
 
-export default LogoLink;
+export default memo(LogoLink);

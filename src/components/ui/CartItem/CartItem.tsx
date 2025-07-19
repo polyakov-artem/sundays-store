@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { TIntrinsicLi, TExtLineItem } from '../../../types/types';
-import { ChangeEventHandler, FC, MouseEventHandler, useMemo } from 'react';
+import { ChangeEventHandler, FC, memo, MouseEventHandler, useMemo } from 'react';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { selectLocale } from '../../../store/settingsSlice';
 import ProductPrice from '../ProductPrice/ProductPrice';
@@ -106,4 +106,4 @@ const CartItem: FC<TCartItemProps> = (props) => {
   );
 };
 
-export default CartItem;
+export default memo(CartItem);

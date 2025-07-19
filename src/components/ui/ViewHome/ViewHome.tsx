@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { Navigate } from 'react-router';
 import { VIEW_CATALOG } from '../../../constants/constants';
 import './ViewHome.scss';
@@ -9,4 +9,4 @@ const ViewHome: FC = () => {
   return <Navigate to={VIEW_CATALOG} replace />;
 };
 
-export default ViewHome;
+export default memo(ViewHome);

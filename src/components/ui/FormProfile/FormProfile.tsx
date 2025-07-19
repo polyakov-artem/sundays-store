@@ -1,4 +1,4 @@
-import { Dispatch, FC, useCallback, useEffect, useRef } from 'react';
+import { Dispatch, FC, memo, useCallback, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import Button from '../../shared/Button/Button';
 import { TIntrinsicForm } from '../../../types/types';
@@ -9,9 +9,7 @@ import {
   signUpValidationSchema,
   updateValidationSchema,
 } from './validationSchema';
-import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
+import { selectCountryCode } from '../../../store/settingsSlice';
 import { FIELD_GROUP, H3 } from '../../../constants/cssHelpers';
 import ValidationField from '../../shared/ValidationField/ValidationField';
 import InputField from '../../shared/InputField/InputField';
@@ -32,6 +30,8 @@ import {
 import Address from '../Address/Address';
 import CheckboxField from '../../shared/CheckboxField/CheckboxField';
 import './FormProfile.scss';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 
 export type TFormProfileProps = {
   formInitialValues: TFormValues;
@@ -64,7 +64,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
     ...restProps
   } = props;
   const classes = classNames(FORM_PROFILE, className);
-  const locale = useAppSelector(selectLocale);
+  const { t } = useTranslation();
   const countryCode = useAppSelector(selectCountryCode);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -99,7 +99,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
         <Form className={classes} {...restProps} ref={formRef}>
           <fieldset className={FORM_PROFILE_INNER} disabled={isModeView || isSubmitting}>
             <label className={FORM_PROFILE_LABEL} htmlFor={KEY_EMAIL}>
-              {localizedAppStrings[locale][AppStrings.Email]}
+              {t(I18nKey.Email)}
             </label>
             <ValidationField
               Component={InputField}
@@ -132,7 +132,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
                 />
 
                 <label className={FORM_PROFILE_LABEL} htmlFor={KEY_PASSWORD}>
-                  {localizedAppStrings[locale][AppStrings.CurrentPassword]}
+                  {t(I18nKey.CurrentPassword)}
                 </label>
                 <ValidationField
                   Component={PasswordField}
@@ -149,7 +149,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
                 />
 
                 <label className={FORM_PROFILE_LABEL} htmlFor={KEY_NEW_PASSWORD}>
-                  {localizedAppStrings[locale][AppStrings.NewPassword]}
+                  {t(I18nKey.NewPassword)}
                 </label>
                 <ValidationField
                   Component={PasswordField}
@@ -168,7 +168,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
             ) : isModeRegistration ? (
               <>
                 <label className={FORM_PROFILE_LABEL} htmlFor={KEY_PASSWORD}>
-                  {localizedAppStrings[locale][AppStrings.Password]}
+                  {t(I18nKey.Password)}
                 </label>
                 <ValidationField
                   Component={PasswordField}
@@ -186,7 +186,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
             ) : null}
 
             <label className={FORM_PROFILE_LABEL} htmlFor={KEY_FIRST_NAME}>
-              {localizedAppStrings[locale][AppStrings.FirstName]}
+              {t(I18nKey.FirstName)}
             </label>
             <ValidationField
               Component={InputField}
@@ -199,7 +199,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
             />
 
             <label className={FORM_PROFILE_LABEL} htmlFor={KEY_LAST_NAME}>
-              {localizedAppStrings[locale][AppStrings.LastName]}
+              {t(I18nKey.LastName)}
             </label>
             <ValidationField
               Component={InputField}
@@ -212,7 +212,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
             />
 
             <label className={FORM_PROFILE_LABEL} htmlFor={KEY_DATE_OF_BIRTH}>
-              {localizedAppStrings[locale][AppStrings.DateOfBirth]}
+              {t(I18nKey.DateOfBirth)}
             </label>
             <ValidationField
               Component={InputField}
@@ -232,7 +232,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
                   <>
                     {(isModeView && values[KEY_ADDRESSES].length) || !isModeView ? (
                       <div className={classNames(FIELD_GROUP, FORM_PROFILE_ADDRESSES)}>
-                        <h3 className={H3}>{localizedAppStrings[locale][AppStrings.Addresses]}</h3>
+                        <h3 className={H3}>{t(I18nKey.Addresses)}</h3>
 
                         {values[KEY_ADDRESSES].map((address, index) => (
                           <Address
@@ -254,7 +254,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
                             view="primary"
                             theme="primary"
                             onClick={() => arrayHelpers.push(createInitialAddress(countryCode))}>
-                            {localizedAppStrings[locale][AppStrings.AddNewAddress]}
+                            {t(I18nKey.AddNewAddress)}
                           </Button>
                         )}
                       </div>
@@ -273,7 +273,7 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
                 el="button"
                 type="submit"
                 disabled={isSubmitting}>
-                {localizedAppStrings[locale][AppStrings.Send]}
+                {t(I18nKey.Send)}
               </Button>
             )}
           </fieldset>
@@ -283,4 +283,4 @@ const FormProfile: FC<TFormProfileProps> = (props) => {
   );
 };
 
-export default FormProfile;
+export default memo(FormProfile);

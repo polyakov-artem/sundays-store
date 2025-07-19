@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicFieldset } from '../../../types/types';
 import classNames from 'classnames';
 import './Fieldset.scss';
@@ -22,4 +22,4 @@ const Fieldset: FC<TFieldsetProps> = (props) => {
   );
 };
 
-export default Fieldset;
+export default memo(Fieldset);

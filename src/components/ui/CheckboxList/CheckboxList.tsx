@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useMemo } from 'react';
+import { ChangeEvent, FC, memo, useMemo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import CheckboxField from '../../shared/CheckboxField/CheckboxField';
@@ -44,4 +44,4 @@ const CheckboxList: FC<TCheckboxListProps> = (props) => {
   return <div className={classes}>{content}</div>;
 };
 
-export default CheckboxList;
+export default memo(CheckboxList);

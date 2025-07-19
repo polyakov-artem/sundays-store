@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import { FC, memo, ReactNode, useCallback, useMemo, useState } from 'react';
 import { TImage, TIntrinsicDiv } from '../../../types/types';
 import { MEDIA_CONTAIN } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
@@ -85,4 +85,4 @@ const ProductGallery: FC<TProductGalleryProps> = (props) => {
   );
 };
 
-export default ProductGallery;
+export default memo(ProductGallery);

@@ -1,6 +1,6 @@
 import { getClasses } from '../../../utils/getClasses';
 import { TIntrinsicButton } from '../../../types/types';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import './Burger.scss';
 
 export type TBurgerProps = {
@@ -22,4 +22,4 @@ const Burger: FC<TBurgerProps> = (props) => {
   );
 };
 
-export default Burger;
+export default memo(Burger);

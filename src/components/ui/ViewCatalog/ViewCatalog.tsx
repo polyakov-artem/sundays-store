@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { selectAllCategories, useQueryCategoriesQuery } from '../../../store/storeApi';
 import { Navigate } from 'react-router';
 import { VIEW_NOT_FOUND } from '../../../constants/constants';
@@ -9,12 +9,13 @@ import { selectLocale } from '../../../store/settingsSlice';
 import CategoryList from '../CategoryList/CategoryList.';
 import { H1, WRAPPER } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { useCrumbs } from '../../../hooks/useCrumbs';
 import { useCurrentCategory } from '../../../hooks/useCurrentCategory';
 import Products from '../Products/Products';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
 import LoaderBlock from '../LoaderBlock/LoaderBlock';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import './ViewCatalog.scss';
 
 export const VIEW_CATALOG = 'view-catalog';
@@ -27,6 +28,7 @@ const ViewCatalog: FC = () => {
   const { currentCategory, categoryId } = useCurrentCategory();
   const crumbs = useCrumbs();
   const allCategories = useAppSelector(selectAllCategories);
+  const { t } = useTranslation();
 
   const childCategoriesIds = useMemo(() => {
     return allCategories
@@ -50,9 +52,7 @@ const ViewCatalog: FC = () => {
     content = <Navigate to={getFullPath(VIEW_NOT_FOUND)} relative="path" replace />;
   }
 
-  const title: string = currentCategory
-    ? currentCategory.name[locale]
-    : localizedAppStrings[locale].Catalog;
+  const title: string = currentCategory ? currentCategory.name[locale] : t(I18nKey.Catalog);
 
   return (
     <main className={VIEW_CATALOG}>
@@ -65,4 +65,4 @@ const ViewCatalog: FC = () => {
   );
 };
 
-export default ViewCatalog;
+export default memo(ViewCatalog);

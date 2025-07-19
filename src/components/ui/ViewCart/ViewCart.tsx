@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { WRAPPER } from '../../../constants/cssHelpers';
 import { selectUserRole } from '../../../store/userSlice';
@@ -38,4 +38,4 @@ const ViewCart: FC = () => {
   );
 };
 
-export default ViewCart;
+export default memo(ViewCart);

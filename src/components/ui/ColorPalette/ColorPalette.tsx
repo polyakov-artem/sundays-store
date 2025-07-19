@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import classNames from 'classnames';
 import ColorCheckbox from '../../shared/ColorCheckbox/ColorCheckbox';
 import { TCheckboxListProps } from '../CheckboxList/CheckboxList';
@@ -37,4 +37,4 @@ const ColorPalette: FC<TColorPaletteProps> = (props) => {
   return <div className={classes}>{content}</div>;
 };
 
-export default ColorPalette;
+export default memo(ColorPalette);

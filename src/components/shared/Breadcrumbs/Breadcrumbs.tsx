@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { Link } from 'react-router';
 import { TIntrinsicUl } from '../../../types/types';
 import classNames from 'classnames';
@@ -35,4 +35,4 @@ const Breadcrumbs: FC<TBreadcrumbsProps> = ({ crumbs, className }) => {
   return <>{!!crumbs?.length && <ul className={classes}>{listItems}</ul>}</>;
 };
 
-export default Breadcrumbs;
+export default memo(Breadcrumbs);

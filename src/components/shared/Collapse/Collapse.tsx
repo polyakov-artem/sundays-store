@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import { debounce } from '../../../utils/debounce';
 import { getClasses } from '../../../utils/getClasses';
@@ -57,3 +57,5 @@ export const Collapse: FC<TCollapse> = (props) => {
     </div>
   );
 };
+
+export default memo(Collapse);

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FC, useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import Button from '../../shared/Button/Button';
 import InputField from '../InputField/InputField';
@@ -148,4 +148,4 @@ const Counter: FC<TCounterProps> = (props) => {
   );
 };
 
-export default Counter;
+export default memo(Counter);

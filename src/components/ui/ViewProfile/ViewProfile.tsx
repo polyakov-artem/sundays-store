@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { useGetMeQuery } from '../../../store/userApi';
 import { WRAPPER } from '../../../constants/cssHelpers';
 import ErrorBlock from '../ErrorBlock/ErrorBlock';
@@ -28,4 +28,4 @@ const ViewProfile: FC = () => {
   );
 };
 
-export default ViewProfile;
+export default memo(ViewProfile);

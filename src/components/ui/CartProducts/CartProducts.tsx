@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useId, useMemo, useState } from 'react';
+import { ChangeEvent, FC, memo, useCallback, useId, useMemo, useState } from 'react';
 import {
   TIntrinsicDiv,
   TExtLineItem,
@@ -13,9 +13,9 @@ import { createNormalizedData } from '../../../utils/createNormalizedData';
 import Button from '../../shared/Button/Button';
 import { useAppSelector } from '../../../hooks/store-hooks';
 import { useChangeItemsQuantityInCartMutation } from '../../../store/userApi';
-import { selectCountryCode, selectLocale } from '../../../store/settingsSlice';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
+import { selectCountryCode } from '../../../store/settingsSlice';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import './CartProducts.scss';
 
 export const CART_PRODUCTS = 'cart-products';
@@ -55,7 +55,7 @@ const CartProducts: FC<TCartProductsProps> = (props) => {
   const normalizedItems = useMemo(() => createNormalizedData(items, 'id'), [items]);
   const country = useAppSelector(selectCountryCode);
   const currency = CountryCurrency[country];
-  const locale = useAppSelector(selectLocale);
+  const { t } = useTranslation();
   const [changeItemsQuantityInCart] = useChangeItemsQuantityInCartMutation();
 
   const areAllChecked = useMemo(
@@ -163,7 +163,7 @@ const CartProducts: FC<TCartProductsProps> = (props) => {
       <div className={headerClasses}>
         <CheckboxField
           className={CART_PRODUCTS_SELECT_ALL}
-          labelContent={localizedAppStrings[locale][AppStrings.SelectAll]}
+          labelContent={t(I18nKey.SelectAll)}
           checkboxProps={{
             view: 'primary',
             theme: 'secondary',
@@ -181,7 +181,7 @@ const CartProducts: FC<TCartProductsProps> = (props) => {
           view="primary"
           el="button"
           onClick={handleDeleteItemsBtnClick}>
-          {localizedAppStrings[locale][AppStrings.DeleteSelected]}
+          {t(I18nKey.DeleteSelected)}
         </Button>
       </div>
       <ul className={listClasses}>{cartItems}</ul>
@@ -189,4 +189,4 @@ const CartProducts: FC<TCartProductsProps> = (props) => {
   );
 };
 
-export default CartProducts;
+export default memo(CartProducts);

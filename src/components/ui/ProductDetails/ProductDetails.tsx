@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 import { TExtProductVariant, TIntrinsicDiv } from '../../../types/types';
 import { H1 } from '../../../constants/cssHelpers';
 import classNames from 'classnames';
@@ -113,4 +113,4 @@ const ProductDetails: FC<TProductDetailsProps> = (props) => {
   );
 };
 
-export default ProductDetails;
+export default memo(ProductDetails);

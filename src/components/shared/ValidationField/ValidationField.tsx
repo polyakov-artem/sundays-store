@@ -1,4 +1,4 @@
-import { ElementType, useMemo } from 'react';
+import { ElementType, memo, useMemo } from 'react';
 import classNames from 'classnames';
 import { TIntrinsicDiv, TObj } from '../../../types/types';
 import { useField } from 'formik';
@@ -90,4 +90,4 @@ const ValidationField = (props: TValidationFieldProps) => {
   );
 };
 
-export default ValidationField;
+export default memo(ValidationField);

@@ -1,11 +1,9 @@
-import { FC } from 'react';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
+import { FC, memo } from 'react';
 import { TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
 import { BLOCK } from '../../../constants/cssHelpers';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './ErrorBlock.scss';
 
 export const ERROR_BLOCK = 'error-block';
@@ -15,17 +13,15 @@ export type TErrorBlockProps = { isBlock?: boolean } & TIntrinsicDiv;
 
 const ErrorBlock: FC<TErrorBlockProps> = (props) => {
   const { className, isBlock, ...rest } = props;
-  const locale = useAppSelector(selectLocale);
+  const { t } = useTranslation();
 
   const classes = classNames({ [BLOCK]: isBlock }, ERROR_BLOCK, className);
 
   return (
     <div {...rest} className={classes}>
-      <p className={ERROR_BLOCK_TEXT}>
-        {localizedAppStrings[locale][AppStrings.SomethingWentWrong]}... :(
-      </p>
+      <p className={ERROR_BLOCK_TEXT}>{t(I18nKey.SomethingWentWrong)}... :(</p>
     </div>
   );
 };
 
-export default ErrorBlock;
+export default memo(ErrorBlock);

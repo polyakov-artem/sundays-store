@@ -1,9 +1,8 @@
-import 'normalize.css';
-import './scss/index.scss';
 import { FC } from 'react';
 import Page from './components/ui/Page/Page';
 import SvgSprite from './components/shared/SvgSprite/SvgSprite';
 import { Slide, ToastContainer } from 'react-toastify';
+import './utils/i18n/i18n';
 
 const App: FC = () => {
   return (

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicInput, TIntrinsicLabel } from '../../../types/types';
 import { getClasses } from '../../../utils/getClasses';
 import SvgIcon from '../SvgIcon/SvgIcon';
@@ -30,4 +30,4 @@ const Checkbox: FC<TCheckboxProps> = (props) => {
   );
 };
 
-export default Checkbox;
+export default memo(Checkbox);

@@ -1,15 +1,11 @@
-import { FC, FormEvent, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FC, FormEvent, memo, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { TIntrinsicHeader } from '../../../types/types';
 import classNames from 'classnames';
 import { BLOCK } from '../../../constants/cssHelpers';
 import Select from '../../shared/Select/Select';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
 import InputField from '../../shared/InputField/InputField';
-import { AppStrings } from '../../../constants/appStrings';
 import Button from '../../shared/Button/Button';
 import { BsGrid3X2Gap, BsListTask } from 'react-icons/bs';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
 import { useSearchParams } from 'react-router';
 import { getSelectOptions } from './getSelectOptions';
 import { useSynchronizedValue } from '../../../hooks/useSynchronizedValue';
@@ -19,6 +15,8 @@ import {
   defaultInputConvertToStateFn,
   defaultInputOnChangeFn,
 } from '../../../utils/useSynchronizedValueFns';
+import { useTranslation } from 'react-i18next';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
 import './ProductsHeader.scss';
 
 export const PRODUCTS_HEADER = 'products-header';
@@ -44,6 +42,8 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
   const [params, setParams] = useSearchParams();
   const isListMode = params.get(VIEW_MODE) === VIEW_MODE_LIST;
   const formRef = useRef<HTMLFormElement>(null);
+  const { t } = useTranslation();
+
   const {
     state: searchText,
     nextUrlValue: searchTextNextURLValue,
@@ -69,8 +69,6 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
     convertToStateFn: defaultInputConvertToStateFn,
     convertToParamFn: defaultInputConvertToParamFn,
   });
-
-  const locale = useAppSelector(selectLocale);
 
   useEffect(() => {
     formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
@@ -111,7 +109,7 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
     [setParams, sortingNextURLValue, searchTextNextURLValue]
   );
 
-  const selectOptions = useMemo(() => getSelectOptions(locale), [locale]);
+  const selectOptions = useMemo(() => getSelectOptions(t), [t]);
 
   return (
     <header className={classes} {...rest}>
@@ -123,7 +121,7 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
             theme="primary"
             name="searchText"
             type="search"
-            placeholder={localizedAppStrings[locale][AppStrings.SearchForProduct]}
+            placeholder={t(I18nKey.SearchForProduct)}
             value={searchText}
             onChange={handleSearchTextChange}
           />
@@ -134,12 +132,12 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
             theme="primary"
             size="sm"
             className={PRODUCTS_HEADER_SEARCH_BTN}>
-            {localizedAppStrings[locale][AppStrings.Search]}
+            {t(I18nKey.Search)}
           </Button>
         </div>
         <div className={PRODUCTS_HEADER_SORTING}>
           <label className={PRODUCTS_HEADER_LABEL} htmlFor="sorting">
-            {localizedAppStrings[locale][AppStrings.SortBy]}
+            {t(I18nKey.SortBy)}
           </label>
           <Select
             className={PRODUCTS_HEADER_SORTING_SELECT}
@@ -177,4 +175,4 @@ const ProductsHeader: FC<TProductsHeaderProps> = (props) => {
   );
 };
 
-export default ProductsHeader;
+export default memo(ProductsHeader);

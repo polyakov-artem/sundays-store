@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import HeaderLinks from '../HeaderLinks/HeaderLinks';
 import classNames from 'classnames';
@@ -12,18 +12,18 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/store-hooks';
 import { logOut, selectIsAuthenticating, selectUserRole } from '../../../store/userSlice';
 import { TokenRole } from '../../../services/authService';
 import { getClasses } from '../../../utils/getClasses';
-import { Collapse } from '../../shared/Collapse/Collapse';
+import Collapse from '../../shared/Collapse/Collapse';
 import Dropdown from '../../shared/Dropdown/Dropdown';
 import DropdownMenu from '../../shared/DropdownMenu/DropdownMenu';
 import { PUBLIC_PATH } from '../../../constants/constants';
 import Select from '../../shared/Select/Select';
 import { SELECT_OPTIONS } from './selectOptions';
-import { countryChanged, selectCountryCode, selectLocale } from '../../../store/settingsSlice';
+import { changeCountry, selectCountryCode } from '../../../store/settingsSlice';
 import { CountryCode } from '../../../types/types';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { AppStrings } from '../../../constants/appStrings';
 import CartButton from '../CartButton/CartButton';
 import ProfileButton from '../ProfileButton/ProfileButton';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 import './Header.scss';
 
 export const HEADER = 'header';
@@ -44,13 +44,13 @@ const Header: FC = () => {
   const role = useAppSelector(selectUserRole);
   const countryCode = useAppSelector(selectCountryCode);
   const dispatch = useAppDispatch();
-  const locale = useAppSelector(selectLocale);
   const [_, setParams] = useSearchParams();
   const isAuthenticating = useAppSelector(selectIsAuthenticating);
+  const { t } = useTranslation();
 
   const handleCountryCodeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(countryChanged(e.target.value as CountryCode));
+      dispatch(changeCountry(e.target.value as CountryCode));
       setParams([], { replace: true });
     },
     [dispatch, setParams]
@@ -107,13 +107,13 @@ const Header: FC = () => {
         className={HEADER_LINK}
         to={getFullPath(VIEW_PROFILE)}
         relative="path">
-        <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.Profile]}</p>
+        <p className={HEADER_LINK_TEXT}>{t(I18nKey.Profile)}</p>
       </Link>,
       <a key={PUBLIC_PATH} className={HEADER_LINK} onClick={handleLogoutBtnClick}>
-        <p className={HEADER_LINK_TEXT}>{localizedAppStrings[locale][AppStrings.LogOut]}</p>
+        <p className={HEADER_LINK_TEXT}>{t(I18nKey.LogOut)}</p>
       </a>,
     ],
-    [locale, handleLogoutBtnClick]
+    [handleLogoutBtnClick, t]
   );
 
   const userButtonsContent = (
@@ -134,7 +134,7 @@ const Header: FC = () => {
             el="link"
             to={getFullPath(VIEW_LOGIN)}
             relative="path">
-            {localizedAppStrings[locale][AppStrings.LogIn]}
+            {t(I18nKey.LogIn)}
           </Button>
 
           <Button
@@ -144,7 +144,7 @@ const Header: FC = () => {
             el="link"
             to={getFullPath(VIEW_REGISTER)}
             relative="path">
-            {localizedAppStrings[locale][AppStrings.Register]}
+            {t(I18nKey.Register)}
           </Button>
         </>
       )}
@@ -178,4 +178,4 @@ const Header: FC = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

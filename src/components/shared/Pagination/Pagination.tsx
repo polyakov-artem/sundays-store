@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, memo, ReactNode, useMemo } from 'react';
 import { Link, useLocation, useSearchParams, type Location } from 'react-router';
 import { getPaginationRange, NUMBERS_PLACEHOLDER } from './getPaginationRange';
 import classNames from 'classnames';
@@ -142,4 +142,4 @@ const Pagination: FC<TPaginationProps> = ({
   );
 };
 
-export default Pagination;
+export default memo(Pagination);

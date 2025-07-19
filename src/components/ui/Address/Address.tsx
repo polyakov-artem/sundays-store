@@ -1,11 +1,7 @@
-import { FC, useCallback, useId, useMemo } from 'react';
+import { FC, memo, useCallback, useId, useMemo } from 'react';
 import classNames from 'classnames';
 import ValidationField from '../../shared/ValidationField/ValidationField';
 import { ArrayHelpers } from 'formik';
-import { localizedAppStrings } from '../../../constants/localizedAppStrings';
-import { useAppSelector } from '../../../hooks/store-hooks';
-import { selectLocale } from '../../../store/settingsSlice';
-import { AppStrings } from '../../../constants/appStrings';
 import InputField from '../../shared/InputField/InputField';
 import { TIntrinsicDiv } from '../../../types/types';
 import { H3 } from '../../../constants/cssHelpers';
@@ -27,6 +23,8 @@ import {
 } from '../FormProfile/formProfileUtils';
 import { KEY_DEFAULT_BILLING_ADDRESS } from '../FormProfile/formProfileUtils';
 import './Address.scss';
+import { I18nKey } from '../../../utils/i18n/i18nKey';
+import { useTranslation } from 'react-i18next';
 
 export type TAddressProps = {
   index: number;
@@ -59,7 +57,7 @@ const Address: FC<TAddressProps> = (props) => {
   } = props;
   const classes = classNames(ADDRESS, className);
   const { key } = address;
-  const locale = useAppSelector(selectLocale);
+  const { t } = useTranslation();
   const streetFieldId = useId();
   const cityFieldId = useId();
   const postalCodeFieldId = useId();
@@ -116,7 +114,7 @@ const Address: FC<TAddressProps> = (props) => {
       <h4 className={ADDRESS_TITLE}>{title}</h4>
       <div className={ADDRESS_CHECKBOXES}>
         <CheckboxField
-          labelContent={localizedAppStrings[locale][AppStrings.DefaultShippingAddress]}
+          labelContent={t(I18nKey.DefaultShippingAddress)}
           checkboxProps={{
             theme: 'primary',
             view: 'primary',
@@ -131,7 +129,7 @@ const Address: FC<TAddressProps> = (props) => {
         />
 
         <CheckboxField
-          labelContent={localizedAppStrings[locale][AppStrings.DefaultBillingAddress]}
+          labelContent={t(I18nKey.DefaultBillingAddress)}
           checkboxProps={{
             theme: 'primary',
             view: 'primary',
@@ -160,7 +158,7 @@ const Address: FC<TAddressProps> = (props) => {
 
       <fieldset className={ADDRESS_FIELDS}>
         <label className={classNames(H3, ADDRESS_LABEL)} htmlFor={streetFieldId}>
-          {localizedAppStrings[locale][AppStrings.Street]}
+          {t(I18nKey.Street)}
         </label>
         <ValidationField
           Component={InputField}
@@ -173,7 +171,7 @@ const Address: FC<TAddressProps> = (props) => {
         />
 
         <label className={classNames(H3, ADDRESS_LABEL)} htmlFor={cityFieldId}>
-          {localizedAppStrings[locale][AppStrings.City]}
+          {t(I18nKey.City)}
         </label>
         <ValidationField
           Component={InputField}
@@ -186,7 +184,7 @@ const Address: FC<TAddressProps> = (props) => {
         />
 
         <label className={classNames(H3, ADDRESS_LABEL)} htmlFor={postalCodeFieldId}>
-          {localizedAppStrings[locale][AppStrings.PostalCode]}
+          {t(I18nKey.PostalCode)}
         </label>
         <ValidationField
           Component={InputField}
@@ -199,7 +197,7 @@ const Address: FC<TAddressProps> = (props) => {
         />
 
         <label className={classNames(H3, ADDRESS_LABEL)} htmlFor={countryFieldId}>
-          {localizedAppStrings[locale][AppStrings.Country]}
+          {t(I18nKey.Country)}
         </label>
         <ValidationField
           Component={Select}
@@ -216,4 +214,4 @@ const Address: FC<TAddressProps> = (props) => {
   );
 };
 
-export default Address;
+export default memo(Address);

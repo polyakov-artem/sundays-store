@@ -10,41 +10,42 @@
 }
 
 .screen-loader_type_round {
+  color: var(--green-1);
+
   .screen-loader__container {
     width: 16px;
     height: 16px;
-    border: 2px solid var(--color);
+    border: 2px solid currentColor;
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 2s linear infinite;
   }
-}
 
-.screen-loader_type_round.screen-loader_theme_white {
-  --color: var(--white-1);
-}
-.screen-loader_type_round.screen-loader_theme_green {
-  --color: var(--green-1);
-}
-
-.screen-loader_type_linear.screen-loader_theme_primary {
-  --bg-color: var(--white-1);
-  --bg-fade-color: var(--green-1-50);
+  &.screen-loader_theme_white {
+    color: var(--white-1);
+  }
 }
 
 .screen-loader_type_linear {
+  --width: 20px;
+  --positive-offset: 32px;
+  --negative-offset: -32px;
+
+  --bg-color: var(--white-1);
+  --bg-fade-color: var(--green-1-50);
+
   .screen-loader__container {
-    width: 16px;
-    height: 16px;
+    width: var(--width);
+    height: var(--width);
     border-radius: 50%;
     display: block;
     position: relative;
     background: var(--bg-color);
     box-shadow:
-      -24px 0 var(--bg-color),
-      24px 0 var(--bg-color);
+      var(--negative-offset) 0 var(--bg-color),
+      var(--positive-offset) 0 var(--bg-color);
     box-sizing: border-box;
     animation: shadowPulse 3s linear infinite;
   }
@@ -54,20 +55,20 @@
   33% {
     background: var(--bg-color);
     box-shadow:
-      -24px 0 var(--bg-fade-color),
-      24px 0 var(--bg-color);
+      var(--negative-offset) 0 var(--bg-fade-color),
+      var(--positive-offset) 0 var(--bg-color);
   }
   66% {
     background: var(--bg-fade-color);
     box-shadow:
-      -24px 0 var(--bg-color),
-      24px 0 var(--bg-color);
+      var(--negative-offset) 0 var(--bg-color),
+      var(--positive-offset) 0 var(--bg-color);
   }
   100% {
     background: var(--bg-color);
     box-shadow:
-      -24px 0 var(--bg-color),
-      24px 0 var(--bg-fade-color);
+      var(--negative-offset) 0 var(--bg-color),
+      var(--positive-offset) 0 var(--bg-fade-color);
   }
 }
 

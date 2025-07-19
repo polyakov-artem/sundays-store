@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { Order, TExtProductProjection, TIntrinsicDiv } from '../../../types/types';
 import classNames from 'classnames';
 import ProductCard from '../ProductCard/ProductCard';
@@ -58,4 +58,4 @@ const ProductList: FC<TProductListProps> = (props) => {
   return <div className={classes}>{content}</div>;
 };
 
-export default ProductList;
+export default memo(ProductList);

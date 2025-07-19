@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { TIntrinsicP } from '../../../types/types';
 import classNames from 'classnames';
 import './ProductBadge.scss';
@@ -25,4 +25,4 @@ const ProductBadge: FC<TProductBadgeProps> = (props) => {
   );
 };
 
-export default ProductBadge;
+export default memo(ProductBadge);

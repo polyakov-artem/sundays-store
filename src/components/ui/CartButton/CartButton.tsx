@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import Button from '../../shared/Button/Button';
 import { getFullPath } from '../../../utils/getFullPath';
@@ -44,4 +44,4 @@ const CartButton: FC<TCartButtonProps> = (props) => {
   );
 };
 
-export default CartButton;
+export default memo(CartButton);
