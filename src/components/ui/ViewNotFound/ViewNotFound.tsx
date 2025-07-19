@@ -14,26 +14,24 @@ export const NOT_FOUND_TITLE = `${VIEW_NOT_FOUND}__title`;
 export const NOT_FOUND_BTN = `${VIEW_NOT_FOUND}__btn`;
 export const NOT_FOUND_IMG = `${VIEW_NOT_FOUND}__img`;
 
-const windowClasses = classNames(BLOCK, NOT_FOUND_WINDOW);
+const windowClasses = classNames(WRAPPER, BLOCK, NOT_FOUND_WINDOW);
 
 const ViewNotFound: FC = () => {
   const { t } = useTranslation();
 
   return (
     <main className={VIEW_NOT_FOUND}>
-      <div className={WRAPPER}>
-        <div className={windowClasses}>
-          <h1 className={NOT_FOUND_TITLE}>{t(I18nKey.PageWasNotFound)}</h1>
-          <img className={NOT_FOUND_IMG} src={imgSrc} alt="" />
-          <Button
-            className={NOT_FOUND_BTN}
-            el="a"
-            theme="primary"
-            view="primary"
-            href={`${PUBLIC_PATH}`}>
-            {t(I18nKey.GoToHomePage)}
-          </Button>
-        </div>
+      <div className={windowClasses}>
+        <h1 className={NOT_FOUND_TITLE}>{t(I18nKey.PageWasNotFound)}</h1>
+        <img className={NOT_FOUND_IMG} src={imgSrc} alt="" />
+        <Button
+          className={NOT_FOUND_BTN}
+          el="a"
+          theme="primary"
+          view="primary"
+          href={`${PUBLIC_PATH}`}>
+          {t(I18nKey.GoToHomePage)}
+        </Button>
       </div>
     </main>
   );

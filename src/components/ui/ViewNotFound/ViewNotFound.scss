@@ -1,12 +1,16 @@
 .view-not-found {
-  padding: var(--g-md-gap) 0;
+  flex-grow: 1;
+  padding: var(--g-md-gap);
+  display: flex;
 
   &__window {
-    padding: var(--g-xlg-gap) var(--g-md-gap);
+    padding: var(--g-md-gap);
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: var(--g-md-gap);
     align-items: center;
+    justify-content: center;
   }
 
   &__title {
