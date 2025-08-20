@@ -1,1 +1,0 @@
-import{r as c,U as l,j as p}from"./index-DFWjq6dT.js";const m="input-field",d=s=>{const{className:t,view:e,theme:a,invalid:i,scale:n,...o}=s,r=l(m,t,{view:e,theme:a,invalid:i,scale:n});return p.jsx("input",{className:r,...o,"data-testid":"input-field"})},x=c.memo(d);export{x as I};
